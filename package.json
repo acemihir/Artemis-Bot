@@ -1,14 +1,17 @@
 {
-  "name": "suggestions",
+  "name": "Suggestions",
   "version": "v5.0.0",
+  "description": "Official Suggestions Discord Bot",
   "main": "index.js",
-  "repository": "https://github.com/jerskisnow/Suggestions",
-  "author": "Jerry Blaauw (jerskisnow)",
-  "license": "GNU General Public License v3.0",
+  "repository": "https://github.com/jerskisnow/Suggestions.git",
+  "author": "jerskisnow@gmail.com",
+  "license": "GPL-3.0",
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "bluebird": "^3.7.2",
-    "discord.js": "^13.0.0-dev.1ac9a2eb5bfef6d009de7c54d3fac5e3d4a5afdc",
-    "pg": "^8.6.0",
+    "discord-api-types": "^0.22.0",
+    "discord.js": "^13.0.1",
+    "pg": "^8.7.1",
     "redis": "^3.1.2",
     "topgg-autoposter": "^2.0.0"
   }

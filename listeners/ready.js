@@ -1,8 +1,15 @@
+// ================================
 const { promises } = require('fs')
-const { botCache } = require('../structures/cache')
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 const config = require('../config')
+const { botCache } = require('../structures/cache')
 
+const rest = new REST({ version: '9' }).setToken(config.botToken);
+
+// ================================
 module.exports = async function (client) {
+    // Set an interval for the activity so all guilds are loaded/cached before counting.
     setInterval(async function () {
         const guilds_result = await client.shard.fetchClientValues('guilds.cache.size')
         const guildCount = guilds_result.reduce((prev, count) => prev + count, 0)
@@ -12,31 +19,42 @@ module.exports = async function (client) {
         })
     }, config.activityUpdateInterval * 60 * 1000)
 
+    // Register the commands
     await registerCommands(client)
 
     console.log('Fully started.')
 }
 
+// ================================
 async function registerCommands(client) {
-    if (client.application.owner == null) {
-        await client.application.fetch()
-    }
+    const commands = [];
 
-    (await promises.readdir('./commands')).forEach(file => require(`../commands/${file}`))
+    (await promises.readdir('./commands')).forEach(file => {
+        const cmdFile = require('../commands/' + file)
 
-    const list = []
-    for (let [key, value] of botCache.commands) {
-        const data = {
-            name: key,
-            description: value.desc
+        botCache.commands.set(file.split('.')[0], cmdFile.command)
+        if (cmdFile.buttons != null) {
+            for (let i = 0; i < cmdFile.buttons.length; i++) {
+                botCache.buttonActions.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
+            }
         }
-        if (value.options != null) data.options = value.options
 
-        list.push(data)
+        commands.push(cmdFile.command.data.toJSON())
+    })
+
+    console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`);
+
+    try {
+        if (config.devMode) {
+            await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
+        } else {
+            await rest.put(Routes.applicationGuildCommands(client.user.id), { body: commands })
+        }
+    } catch (ex) {
+        console.error(ex)
     }
 
-    if (config.devBuild) await client.guilds.cache.get(config.devGuild)?.commands.set(list)
-    else await client.application?.commands.set(list)
+    console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`);
 }
 
 module.exports.once = true

@@ -1,11 +1,14 @@
+// ================================
 const { promises } = require('fs')
 const { Client } = require('discord.js')
 const config = require('./config')
 
+// ================================
 const client = new Client({
     intents: ['GUILDS', 'GUILD_MESSAGES']
 })
 
+// ================================
 async function bindListeners() {
     (await promises.readdir('./listeners')).forEach(file => {
         const obj = require(`./listeners/${file}`)
@@ -19,4 +22,5 @@ async function bindListeners() {
 
 bindListeners()
 
+// ================================
 client.login(config.botToken)

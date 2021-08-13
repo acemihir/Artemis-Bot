@@ -1,11 +1,21 @@
-const { botCache } = require('../structures/cache')
-const { createId } = require('../utils')
+// ================================
+const { SlashCommandBuilder } = require('@discordjs/builders')
 
-botCache.commands.set('poll', {
-    desc: 'Create a poll',
-    isPremium: true,
-    exec: async function (client, interaction) {
-        await interaction.reply('Coming soon!')
-        const pollId = createId('p_')
-    }
-})
+// ================================
+const data = new SlashCommandBuilder()
+	.setName('poll')
+	.setDescription('Create a poll.')
+
+const execute = async function(client, interaction) {
+	await interaction.reply('to be done')
+	const repId = createId('p_')
+}
+
+// ================================
+module.exports.command = {
+	isPremium: false,
+	permLevel: 1,
+
+	data: data,
+	execute: execute
+}

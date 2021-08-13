@@ -1,18 +1,21 @@
-const { botCache, getFromCache } = require('../structures/cache')
-const { createId } = require('../utils')
+// ================================
+const { SlashCommandBuilder } = require('@discordjs/builders')
 
-botCache.commands.set('suggest', {
-    desc: 'Create a suggestion',
-    options: [
-        {
-            name: 'description',
-            type: 'STRING',
-            description: 'A detailed description of your suggestions',
-            required: true
-        }
-    ],
-    exec: async function (client, interaction) {
-        await interaction.reply('Coming soon!')
-        const sugId = createId('s_')
-    }
-})
+// ================================
+const data = new SlashCommandBuilder()
+	.setName('suggest')
+	.setDescription('Create a suggestion.')
+
+const execute = async function(client, interaction) {
+	await interaction.reply('to be done')
+	const sugId = createId('s_')
+}
+
+// ================================
+module.exports.command = {
+	isPremium: false,
+	permLevel: 0,
+
+	data: data,
+	execute: execute
+}

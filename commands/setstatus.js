@@ -1,50 +1,56 @@
-const { botCache, getFromCache } = require('../structures/cache')
+// ================================
+const { SlashCommandBuilder } = require('@discordjs/builders')
 
-botCache.commands.set('setstatus', {
-    desc: 'Change the status of a suggestion or report',
-    options: [
-        {
-            name: 'id',
-            type: 4,
-            description: 'The ID of the suggestion/report',
-            required: true
-        },
-        {
-            name: 'status',
-            type: 3,
-            description: 'The desired status-action of the suggestion/report',
-            required: true,
-            choices: [
-                {
-                    name: 'approve',
-                    value: 'approve'
-                },
-                {
-                    name: 'reject',
-                    value: 'reject'
-                },
-                {
-                    name: 'consider',
-                    value: 'consider'
-                },
-                {
-                    name: 'resolve',
-                    value: 'resolve'
-                }
-            ]
-        }
-    ],
-    exec: async function (client, interaction) {
-        const cacheObj = await getFromCache(interaction.guildID)
-        if (cacheObj.staffRole == null) {
-            await interaction.reply('Please ask an administrator to setup the staffrole!')
-            return
-        }
-        if (!interaction.member.roles.cache.has(cacheObj.staffRole)) {
-            await interaction.reply('You don\'t have the staffrole, that\' required for this command.')
-            return
-        }
+// ================================
+const data = new SlashCommandBuilder()
+	.setName('setstatus')
+	.setDescription('Change the status of a suggestion/report/poll.')
 
-        // ...
-    }
-})
+	// Suggestions
+	.addSubcommand(scmd =>
+		scmd.setName('suggestions').setDescription('Change the status for a suggestion.')
+			.addStringOption(opt => opt.setName('Suggestion ID').setDescription('The ID of the suggestion.'))
+			.addStringOption(opt => opt.setName('Status').setDescription('The new status of the suggestion.')
+				.addChoices([
+					['Open', 'open'],
+					['Approved', 'approved'],
+					['Rejected', 'rejected'],
+					['Considering', 'considering']
+				]).setRequired(true))
+	)
+
+	// Reports
+	.addSubcommand(scmd =>
+		scmd.setName('reports').setDescription('Change the status for a report.')
+			.addStringOption(opt => opt.setName('Report ID').setDescription('The ID of the report.'))
+			.addStringOption(opt => opt.setName('Status').setDescription('The new status of the report.')
+				.addChoices([
+					['Open', 'open'],
+					['Resolved', 'resolved'],
+					['Progressing', 'progressing']
+				]).setRequired(true))
+	)
+
+	// Polls
+	.addSubcommand(scmd =>
+		scmd.setName('polls').setDescription('Change the status for a poll.')
+			.addStringOption(opt => opt.setName('Poll ID').setDescription('The ID of the poll.'))
+			.addStringOption(opt => opt.setName('Status').setDescription('The new status of the poll.')
+				.addChoices([
+					['Open', 'open'],
+					['Finished', 'finished']
+				]).setRequired(true))
+	)
+
+const execute = async function(client, interaction) {
+	await interaction.reply('to be done')
+}
+
+// ================================
+module.exports.command = {
+	isPremium: false,
+	permLevel: 1,
+
+	data: data,
+	execute: execute
+}
