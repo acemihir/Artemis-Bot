@@ -6,24 +6,24 @@ const data = new SlashCommandBuilder()
 	.setName('help')
 	.setDescription('Obtain information general information about the bot.')
 	.addStringOption(opt =>
-		opt.setName('command')
-			.setDescription('Obtain information about a certain command.')
-			.addChoices([
-				['Suggest', 'suggest'],
-				['Report', 'report'],
-				['About', 'about'],
-				['Help', 'help'],
-				['Graph', 'graph'],
-				['SetStatus', 'setstatus'],
-				['Move', 'move'],
-				['Poll', 'poll'],
-				['Setup', 'setup'],
-				['Config', 'config'],
-				['Blacklist', 'blacklist']
-			]).setRequired(true))
+	opt.setName('command')
+		.setDescription('Obtain information about a certain command.')
+		.addChoices([
+			['Suggest', 'suggest'],
+			['Report', 'report'],
+			['About', 'about'],
+			['Help', 'help'],
+			['Graph', 'graph'],
+			['SetStatus', 'setstatus'],
+			['Move', 'move'],
+			['Poll', 'poll'],
+			['Setup', 'setup'],
+			['Config', 'config'],
+			['Blacklist', 'blacklist']
+		]).setRequired(true))
 
 const execute = async function(client, interaction) {
-        await interaction.reply(
+		await interaction.reply(
 `\`\`\`asciidoc
 == Commands ==
 [View the autocompletion for more detailed explanation.]
@@ -42,14 +42,8 @@ const execute = async function(client, interaction) {
 /config     :: Modify the bot's configuration for your server.
 /blacklist  :: Prevent someone from creating suggestions and/or reports.
 \`\`\``
-        )
+		)
 }
-
-/*
-module.exports.buttonActions = [
-	{ id = '', onClick = async function() {} }
-]
- */
 
 // ================================
 module.exports.command = {

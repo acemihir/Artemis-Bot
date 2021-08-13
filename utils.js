@@ -1,4 +1,7 @@
 const config = require('./config')
+const Filter = require('bad-words')
+
+const wordFilter = new Filter()
 
 module.exports.createId = function (prefix) {
     const chars = config.ids.chars
@@ -9,4 +12,8 @@ module.exports.createId = function (prefix) {
     }
 
     return prefix + result
+}
+
+module.exports.filterText = function (text) {
+    return wordFilter.clean(text)
 }
