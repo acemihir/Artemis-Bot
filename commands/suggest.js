@@ -20,7 +20,7 @@ const execute = async function(client, interaction) {
 }
 
 
-module.exports.buttonActions = [
+const buttonActions = [
     {
         id = 'sug_upvote',
         onClick = async function(client, interaction) {
