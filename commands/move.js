@@ -8,7 +8,7 @@ const data = new SlashCommandBuilder()
 
     // Suggestions
     .addSubcommand(scmd =>
-        scmd.setName('suggestions').setDescription('Change the status for a suggestion.')
+        scmd.setName('suggestions').setDescription('Move the suggestion message to another channel.')
             .addStringOption(opt => opt.setName('Suggestion ID').setDescription('The ID of the suggestion.'))
             .addChannelOption(opt => opt.setName('Channel').setDescription('The channel where the message should be moved to.')
                 .setRequired(true))
@@ -16,7 +16,7 @@ const data = new SlashCommandBuilder()
 
     // Reports
     .addSubcommand(scmd =>
-        scmd.setName('reports').setDescription('Change the status for a report.')
+        scmd.setName('reports').setDescription('Move the suggestion report to another channel.')
             .addStringOption(opt => opt.setName('Report ID').setDescription('The ID of the report.'))
             .addChannelOption(opt => opt.setName('Channel').setDescription('The channel where the message should be moved to.')
                 .setRequired(true))
@@ -24,7 +24,7 @@ const data = new SlashCommandBuilder()
 
     // Polls
     .addSubcommand(scmd =>
-        scmd.setName('polls').setDescription('Change the status for a poll.')
+        scmd.setName('polls').setDescription('Move the suggestion poll to another channel.')
             .addStringOption(opt => opt.setName('Poll ID').setDescription('The ID of the poll.'))
             .addChannelOption(opt => opt.setName('Channel').setDescription('The channel where the message should be moved to.')
                 .setRequired(true))

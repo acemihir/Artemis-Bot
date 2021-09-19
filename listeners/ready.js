@@ -48,7 +48,7 @@ async function registerCommands(client) {
         if (config.devMode) {
             await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
         } else {
-            await rest.put(Routes.applicationGuildCommands(client.user.id), { body: commands })
+            await rest.put(Routes.applicationCommands(client.user.id), { body: commands })
         }
     } catch (ex) {
         console.error(ex)

@@ -6,6 +6,10 @@ const { createId, filterText } = require('../utils')
 const data = new SlashCommandBuilder()
     .setName('suggest')
     .setDescription('Create a suggestion.')
+    .addStringOption(opt =>
+        opt.setName('description')
+            .setDescription('A brief description of your suggetion.')
+            .setRequired(true))
 
 const execute = async function(client, interaction) {
     const input = await interaction.fetchReply()

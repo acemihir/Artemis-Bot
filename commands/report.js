@@ -6,6 +6,10 @@ const { createId } = require('../utils')
 const data = new SlashCommandBuilder()
     .setName('report')
     .setDescription('Create a report.')
+    .addStringOption(opt =>
+        opt.setName('description')
+            .setDescription('A brief description of your report.')
+            .setRequired(true))
 
 const execute = async function(client, interaction) {
     await interaction.reply('to be done')
