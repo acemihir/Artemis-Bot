@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS suggestions (
     avatar TEXT NOT NULL,
     channel TEXT NOT NULL,
     message TEXT NOT NULL,
-    status INT NOT NULL,
+    status VARCHAR(20) NOT NULL,
     timestamp TIMESTAMP NOT NULL
 )
 
