@@ -2,7 +2,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createId, filterText } = require('../utils')
 const { runQuery } = require('../structures/database')
-const { MessageEmbed, MessageActionRow, Message, MessageButton } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
+const config = require('../config')
+const fetch = require('node-fetch')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -41,11 +43,23 @@ const execute = async function(client, interaction) {
 
     await interaction.reply('Your report has been submitted.')
 
-    // Save the report to the database
-    runQuery(
-        'INSERT INTO reports (id, context, author, avatar, channel, message, status) VALUES ($1::text, $1::text, $1::text, $1::text, $1::text, $1::text, $1::text)', [
-        repId, repDesc, interaction.user.id, interaction.user.avatarURL(), repChannel.id, msg.id, 'Open'
-    ])
+    fetch(`${config.backend.url}/submit`, {
+        method: 'POST',
+        body: JSON.stringify({
+            id: repId,
+            context: repDesc,
+            author: interaction.user.id,
+            avatar: interaction.user.avatarURL(),
+            guild: interaction.guildId,
+            channel: repChannel.id,
+            message: msg.id,
+            status: 'Open'
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Api-Key': config.backend.apiKey
+        }
+    })
 }
 
 // ================================
