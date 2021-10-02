@@ -8,7 +8,7 @@ const { runQuery } = require('../structures/database')
 // ================================
 module.exports.botCache = {
     commands: new Map(),
-    buttonActions: new Map()
+    buttons: new Map()
 }
 
 // ================================
@@ -29,7 +29,7 @@ module.exports.setInRedis = async function(guildId, data) {
         await cacheGuild(guildId)
     }
 
-    await redisClient.setAsync(guildId, JSON.stringify(newData), 'EX', 60 * 60 * config.cacheExpireTime)
+    await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
 }
 
 module.exports.removeFromRedis = async function(guildId) {

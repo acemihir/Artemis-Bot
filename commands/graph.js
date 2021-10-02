@@ -8,7 +8,6 @@ const data = new SlashCommandBuilder()
     .addStringOption(opt =>
         opt.setName('type')
             .setDescription('The specific graph you want to see.')
-            .setRequired(true)
             .addChoice('Suggestions', 'suggestions')
             .addChoice('Reports', 'reports'))
 

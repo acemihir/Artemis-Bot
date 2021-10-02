@@ -1,7 +1,7 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
-const { botCache, getFromCache, setInCache } = require('../structures/cache')
+const { getFromRedis, setInRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
 const config = require('../config')
 
@@ -10,18 +10,20 @@ const data = new SlashCommandBuilder()
     .setName('setup')
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
-const execute = async function(client, interaction) {
-    const filter = msg => msg.author.id === interaction.user.id
-
+const execute = async function(_client, interaction) {
+    // ================================
     const embed = new MessageEmbed()
         .setColor(config.embedColor.b)
         .setDescription('In which channel should suggestions show up? (Type: #channel)')
 
     await interaction.reply({ embeds: [embed] })
 
-    const interChannel = interaction.guild.channels.cache.get(interaction.channelID)
+    // ================================
+    // await filter
+    const filter = msg => msg.author.id === interaction.user.id
 
-    const chnAwait = await interChannel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
+    // ================================
+    const chnAwait = await interaction.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
     await chnAwait.first().delete()
 
     const channelId = chnAwait.first().content.replace('<#', '').replace('>', '')
@@ -32,10 +34,11 @@ const execute = async function(client, interaction) {
         return
     }
 
+    // ================================
     embed.setDescription('Which role should be able to review suggestions, so which role should have access to the `/setstatus` command? (Type: @role)')
     await interaction.editReply({ embeds: [embed] })
 
-    const roleAwait = await interChannel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
+    const roleAwait = await interaction.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
     await roleAwait.first().delete()
 
     const roleId = roleAwait.first().content.replace('<@&', '').replace('>', '')
@@ -46,17 +49,18 @@ const execute = async function(client, interaction) {
         return
     }
 
+    // ================================
     embed.setDescription('That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
     embed.setColor(config.embedColor.g)
     await interaction.editReply({ embeds: [embed] })
 
-    // Cache update (only the staffrole since channels do not get cached)
-    var obj = await getFromCache(interaction.guildID)
+    // ================================
+    // Saving the data
+    var obj = await getFromRedis(interaction.guildId)
     obj.staffRole = roleId
-    await setInCache(interaction.guildID, obj)
+    setInRedis(interaction.guildId, obj)
 
-    // Update database
-    await runQuery('UPDATE servers SET suggestion_channel = $1::text, staff_role = $2::text WHERE id = $3::text', [channelId, roleId, interaction.guildID])
+    runQuery('UPDATE servers SET suggestion_channel = $1::text, staff_role = $2::text WHERE id = $3::text', [channelId, roleId, interaction.guildId])
 }
 
 // ================================

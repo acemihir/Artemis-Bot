@@ -4,7 +4,8 @@ const { createId, filterText } = require('../utils')
 const { runQuery } = require('../structures/database')
 const { MessageEmbed } = require('discord.js')
 const config = require('../config')
-const fetch = require('node-fetch')
+
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -20,7 +21,7 @@ const execute = async function(client, interaction) {
     const repDesc = await interaction.options.getString('description')
 
     const result = await runQuery('SELECT report_channel FROM servers WHERE id = $1::text', [interaction.guild.id])
-    if (result == null || !result.rows.length) {
+    if (result == null || !result.rows.length || result.rows[0].report_channel == null) {
         await interaction.reply('ERROR: Please make sure an administrator has configured the report channel.')
         return
     }
@@ -34,10 +35,9 @@ const execute = async function(client, interaction) {
     const repId = createId('r_')
 
     const embed = new MessageEmbed()
-        .setAuthor(interaction.author.tag, interaction.author.avatarURL())
-        .setColor('#7583ff')
-        .addField('Description', filterText(repDesc))
-        .addField('Information', `**Status:** Open\n**ID":** ${repId}`)
+        .setAuthor(interaction.user.tag, interaction.user.avatarURL())
+        .setColor(config.embedColor.b)
+        .setDescription(`**Description:** ${filterText(repDesc)}\n\n**Status:** Open\n**Id:** ${repId}`)
 
     const msg = await repChannel.send({ embeds: [embed] })
 

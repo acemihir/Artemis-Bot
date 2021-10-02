@@ -5,8 +5,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const data = new SlashCommandBuilder()
     .setName('help')
     .setDescription('Obtain information general information about the bot.')
-    .addStringOption(opt =>
-    opt.setName('command')
+    .addStringOption(opt => opt.setName('command')
         .setDescription('Obtain information about a certain command.')
         .addChoices([
             ['Suggest', 'suggest'],
@@ -16,11 +15,10 @@ const data = new SlashCommandBuilder()
             ['Graph', 'graph'],
             ['SetStatus', 'setstatus'],
             ['Move', 'move'],
-            ['Poll', 'poll'],
             ['Setup', 'setup'],
             ['Config', 'config'],
             ['Blacklist', 'blacklist']
-        ]).setRequired(true))
+        ]))
 
 const execute = async function(client, interaction) {
         await interaction.reply(
@@ -36,7 +34,6 @@ const execute = async function(client, interaction) {
 = Staff =
 /setstatus  :: Change the status of a Suggestion or Report.
 /move       :: Move a suggestion or report to another channel.
-/poll       :: Create a poll in this server.
 = Admin =
 /setup      :: Setup the bot. (This will set the staffrole and suggestion channel)
 /config     :: Modify the bot's configuration for your server.

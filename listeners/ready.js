@@ -32,10 +32,14 @@ async function registerCommands(client) {
     (await promises.readdir('./commands')).forEach(file => {
         const cmdFile = require('../commands/' + file)
 
+        // Set the command
         botCache.commands.set(file.split('.')[0], cmdFile.command)
+        // Check if there are any buttons
         if (cmdFile.buttons != null) {
+            // Loop over the buttons
             for (let i = 0; i < cmdFile.buttons.length; i++) {
-                botCache.buttonActions.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
+                // Set the (button) interaction
+                botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
             }
         }
 

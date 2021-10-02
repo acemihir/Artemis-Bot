@@ -1,4 +1,4 @@
-const { botCache, getFromCache } = require('../structures/cache')
+const { botCache, getFromRedis } = require('../structures/cache')
 
 module.exports = async function(client, interaction) {
     if (interaction.isCommand()) {
@@ -8,7 +8,7 @@ module.exports = async function(client, interaction) {
             const obj = botCache.commands.get(interaction.commandName)
 
             // Fetch the guild data from the cache
-            const cachedData = await getFromCache(interaction.guildID)
+            const cachedData = await getFromRedis(interaction.guildId)
 
             // Check if the command is a premium command
             if (obj.isPremium) {
@@ -55,10 +55,12 @@ module.exports = async function(client, interaction) {
             obj.execute(client, interaction)
         }
     } else if (interaction.isMessageComponent() && interaction.componentType === 'BUTTON') {
+
         // Check if the used button is actually stored in the botCache object
-        if (botCache.interactions.has(interaction.customID)) {
+        if (botCache.buttons.has(interaction.customId)) {
+
             // Retrieve the interaction data from the botCache object and run the binded function
-            botCache.interactions.get(interaction.customID)(client, interaction)
+            botCache.buttons.get(interaction.customId)(client, interaction)
         }
     }
 }
