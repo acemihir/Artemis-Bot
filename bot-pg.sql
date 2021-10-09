@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS servers (
     premium BOOLEAN NOT NULL,
 
     -- Extra
-    staff_role TEXT,
     sug_channel TEXT,
     rep_channel TEXT,
     auto_approve INT,
