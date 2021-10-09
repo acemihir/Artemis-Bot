@@ -1,9 +1,9 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createId, filterText } = require('../utils')
-const { runQuery } = require('../structures/database')
 const { MessageEmbed } = require('discord.js')
 const config = require('../config')
+const { getFromRedis } = require('../structures/cache')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
@@ -20,13 +20,13 @@ const execute = async function(client, interaction) {
     // Fetch the input/args
     const repDesc = await interaction.options.getString('description')
 
-    const result = await runQuery('SELECT report_channel FROM servers WHERE id = $1::text', [interaction.guild.id])
-    if (result == null || !result.rows.length || result.rows[0].report_channel == null) {
+    const cache = await getFromRedis(interaction.guildId)
+    if (cache.rep_channel == null) {
         await interaction.reply('ERROR: Please make sure an administrator has configured the report channel.')
         return
     }
 
-    const repChannel = await interaction.guild.channels.fetch(result.rows[0].report_channel)
+    const repChannel = await interaction.guild.channels.fetch(cache.rep_channel)
     if (repChannel == null) {
         await interaction.reply('ERROR: The configured report channel was not found.')
         return
@@ -39,7 +39,12 @@ const execute = async function(client, interaction) {
         .setColor(config.embedColor.b)
         .setDescription(`**Description:** ${filterText(repDesc)}\n\n**Status:** Open\n**Id:** ${repId}`)
 
-    const msg = await repChannel.send({ embeds: [embed] })
+    let msg
+    try {
+        msg = await repChannel.send({ embeds: [embed] })
+    } catch (ex) {
+        console.error(ex)
+    }
 
     await interaction.reply('Your report has been submitted.')
 
@@ -65,7 +70,7 @@ const execute = async function(client, interaction) {
 // ================================
 module.exports.command = {
     isPremium: false,
-    permLevel: 0,
+    privileged: false,
 
     data: data,
     execute: execute

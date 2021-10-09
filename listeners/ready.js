@@ -31,9 +31,10 @@ async function registerCommands(client) {
 
     (await promises.readdir('./commands')).forEach(file => {
         const cmdFile = require('../commands/' + file)
+        const cmdName = file.split('.')[0]
 
         // Set the command
-        botCache.commands.set(file.split('.')[0], cmdFile.command)
+        botCache.commands.set(cmdName, cmdFile.command)
         // Check if there are any buttons
         if (cmdFile.buttons != null) {
             // Loop over the buttons
@@ -41,6 +42,12 @@ async function registerCommands(client) {
                 // Set the (button) interaction
                 botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
             }
+        }
+
+        // Check if the command is privileged
+        if (cmdFile.command.privileged) {
+            // Add the commandname to the privCommands array in the botCache
+            botCache.privCommands.push(cmdName)
         }
 
         commands.push(cmdFile.command.data.toJSON())

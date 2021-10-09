@@ -8,7 +8,8 @@ const { runQuery } = require('../structures/database')
 // ================================
 module.exports.botCache = {
     commands: new Map(),
-    buttons: new Map()
+    buttons: new Map(),
+    privCommands: []
 }
 
 // ================================
@@ -40,7 +41,8 @@ module.exports.removeFromRedis = async function(guildId) {
 
 // ================================
 async function cacheGuild(guildId) {
-    let result = await runQuery('SELECT staff_role, approve_emoji, reject_emoji, premium FROM servers WHERE id = $1::text', [guildId])
+    // Get all the saved data from the guild
+    let result = await runQuery('SELECT sug_channel, rep_channel, auto_approve, auto_reject, approve_emoji, reject_emoji, del_approved, del_rejected, blacklist FROM servers WHERE id = $1::text', [guildId])
 
     if (!result.rowCount) {
         // Register guild in database if it doesn't already exist
@@ -48,13 +50,6 @@ async function cacheGuild(guildId) {
         result.rows = [{ premium: false }]
     }
 
-    const data = {
-        staffRole: result.rows[0].staff_role,
-        autoApprove: result.rows[0].auto_approve || -1,
-        autoReject: result.rows[0].auto_reject || -1,
-        isPremium: result.rows[0].premium
-    }
-
-    await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
+    await redisClient.setAsync(guildId, JSON.stringify(result.rows[0]), 'EX', 60 * 60 * config.cacheExpireTime)
     return data
 }

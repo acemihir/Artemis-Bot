@@ -4,6 +4,7 @@ const { createId, filterText } = require('../utils')
 const { runQuery } = require('../structures/database')
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 const config = require('../config')
+const { getFromRedis } = require('../structures/cache')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
@@ -20,13 +21,13 @@ const execute = async function(client, interaction) {
     // Fetch the input/args
     const sugDesc = await interaction.options.getString('description')
 
-    const result = await runQuery('SELECT suggestion_channel FROM servers WHERE id = $1::text', [interaction.guild.id])
-    if (result == null || !result.rows.length || result.rows[0].suggestion_channel == null) {
+    const cache = await getFromRedis(interaction.guildId)
+    if (cache.sug_channel == null) {
         await interaction.reply('ERROR: Please make sure an administrator has configured the suggestion channel.')
         return
     }
 
-    const sugChannel = await interaction.guild.channels.fetch(result.rows[0].suggestion_channel)
+    const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
     if (sugChannel == null) {
         await interaction.reply('ERROR: The configured suggestion channel was not found.')
         return
@@ -39,20 +40,28 @@ const execute = async function(client, interaction) {
         .setColor(config.embedColor.b)
         .setDescription(`**Description:** ${filterText(sugDesc)}\n\n**Status:** Open\n**Id:** ${sugId}\n\n0 - upvotes | 0 - downvotes`)
 
+    const approveEmoji = cache.approve_emoji == null ? '⬆️' : cache.approve_emoji
+    const rejectEmoji = cache.reject_emoji == null ? '⬇️' : cache.reject_emoji
+
     const row = new MessageActionRow().addComponents(
         new MessageButton()
             .setCustomId('sug_upvote')
             .setLabel('Upvote')
             .setStyle('SUCCESS')
-            .setEmoji('⬆️'),
+            .setEmoji(approveEmoji),
         new MessageButton()
             .setCustomId('sug_downvote')
             .setLabel('Downvote')
             .setStyle('DANGER')
-            .setEmoji('⬇️')
+            .setEmoji(rejectEmoji)
     )
 
-    const msg = await sugChannel.send({ embeds: [embed], components: [row] })
+    let msg
+    try {
+        msg = await sugChannel.send({ embeds: [embed], components: [row] })
+    } catch (ex) {
+        console.error(ex)
+    }
 
     await interaction.reply('Your suggestion has been submitted.')
 
@@ -93,7 +102,7 @@ module.exports.buttons = [
             })
 
             const data = await response.json()
-            if (data.success) {
+            if (data['success']) {
                 // Get the old embed
                 var embed = interaction.message.embeds[0]
 
@@ -131,7 +140,7 @@ module.exports.buttons = [
             })
 
             const data = await response.json()
-            if (data.success) {
+            if (data['success']) {
                 // Get the old embed
                 var embed = interaction.message.embeds[0]
 
@@ -157,7 +166,7 @@ module.exports.buttons = [
 // ================================
 module.exports.command = {
     isPremium: false,
-    permLevel: 0,
+    privileged: true,
 
     data: data,
     execute: execute

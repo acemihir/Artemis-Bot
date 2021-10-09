@@ -1,7 +1,7 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
-const { getFromRedis, setInRedis } = require('../structures/cache')
+const { getFromRedis, setInRedis, botCache } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
 const config = require('../config')
 
@@ -11,6 +11,11 @@ const data = new SlashCommandBuilder()
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
 const execute = async function(_client, interaction) {
+    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+        interaction.reply('You need to have the `ADMINISTRATOR` permission to use this command.')
+        return
+    }
+
     // ================================
     const embed = new MessageEmbed()
         .setColor(config.embedColor.b)
@@ -55,18 +60,40 @@ const execute = async function(_client, interaction) {
     await interaction.editReply({ embeds: [embed] })
 
     // ================================
-    // Saving the data
+    // Update the cache
     var obj = await getFromRedis(interaction.guildId)
-    obj.staffRole = roleId
+    obj['sug_channel'] = channelId
     setInRedis(interaction.guildId, obj)
 
-    runQuery('UPDATE servers SET suggestion_channel = $1::text, staff_role = $2::text WHERE id = $3::text', [channelId, roleId, interaction.guildId])
+    // Update the discord command permission
+    const commands = await interaction.guild.commands.fetch()
+    const permissions  = []
+    // Loop through all the commands
+    for (const [key, value] of commands.entries()) {
+        if (value.applicationId == interaction.applicationId) {
+            if (botCache.privCommands.includes(value.name)) {
+                permissions.push({
+                    id: key,
+                    permissions: [{
+                        id: roleId,
+                        type: 'ROLE',
+                        permission: true,
+                    }]
+                })
+            }
+        }
+    }
+    // Set the actual permission
+    await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
+    
+    // Update the database values
+    runQuery('UPDATE servers SET sug_channel = $1::text WHERE id = $2::text', [channelId, interaction.guildId])
 }
 
 // ================================
 module.exports.command = {
     isPremium: false,
-    permLevel: 2,
+    privileged: false,
 
     data: data,
     execute: execute
