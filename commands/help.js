@@ -18,7 +18,7 @@ const data = new SlashCommandBuilder()
             ['Setup', 'setup'],
             ['Config', 'config'],
             ['Blacklist', 'blacklist']
-        ]))
+        ]).setRequired(false))
 
 const execute = async function(client, interaction) {
         await interaction.reply(

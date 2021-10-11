@@ -1,0 +1,44 @@
+// ================================
+const { SlashCommandBuilder } = require('@discordjs/builders')
+const { MessageEmbed } = require('discord.js')
+const config = require('../config')
+
+// ================================
+const data = new SlashCommandBuilder()
+    .setName('list')
+    .setDescription('Obtain a list of all open suggestions/reports.')
+    .addStringOption(opt =>
+        opt.setName('type')
+            .setDescription('The specific list you want to see.')
+            .addChoices([
+                ['Suggestions', 'suggestions'],
+                ['Reports', 'reports']
+            ]).setRequired(true)
+            .addChoices(['Suggestions', 'suggestions']).setRequired(true)
+            .addChoice('Reports', 'reports'))
+
+const execute = async function(client, interaction) {
+    const opt = interaction.options.getString('type')
+
+    let desc = 'None'
+    if (opt === 'suggestions') {
+        // ...
+    } else if (opt === 'reports') {
+        // ...
+    }
+
+    const embed = new MessageEmbed()
+        .setColor(config.embedColor.b)
+        .setDescription(desc)
+
+    await interaction.reply({ embeds: [embed] })
+}
+
+// ================================
+module.exports.command = {
+    isPremium: true,
+    privileged: false,
+
+    data: data,
+    execute: execute
+}

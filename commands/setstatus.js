@@ -5,7 +5,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const data = new SlashCommandBuilder()
     .setName('setstatus')
     .setDescription('Change the status of a suggestion/report/poll.')
-    .setDefaultPermission(true)
+    .setDefaultPermission(false)
 
     // Suggestions
     .addSubcommand(scmd =>
