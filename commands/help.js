@@ -30,6 +30,7 @@ const execute = async function(client, interaction) {
 /report     :: Create a report for this server.
 /about      :: Obtain information about this bot.
 /help       :: Shows this particular help message.
+/list       :: Get a list of suggestions, staffmembers can list reports as well (Premium Only)
 /graph      :: Get a graph displaying suggestion/report information. (Premium Only)
 = Staff =
 /setstatus  :: Change the status of a Suggestion or Report.
