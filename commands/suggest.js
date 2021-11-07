@@ -1,12 +1,11 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createId, filterText } = require('../utils')
-const { runQuery } = require('../structures/database')
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 const config = require('../config')
 const { getFromRedis } = require('../structures/cache')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()

@@ -51,5 +51,5 @@ async function cacheGuild(guildId) {
     }
 
     await redisClient.setAsync(guildId, JSON.stringify(result.rows[0]), 'EX', 60 * 60 * config.cacheExpireTime)
-    return data
+    return result
 }

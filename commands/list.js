@@ -13,9 +13,7 @@ const data = new SlashCommandBuilder()
             .addChoices([
                 ['Suggestions', 'suggestions'],
                 ['Reports', 'reports']
-            ]).setRequired(true)
-            .addChoices(['Suggestions', 'suggestions']).setRequired(true)
-            .addChoice('Reports', 'reports'))
+            ]).setRequired(true))
 
 const execute = async function(client, interaction) {
     const opt = interaction.options.getString('type')
