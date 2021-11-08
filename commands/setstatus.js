@@ -56,8 +56,6 @@ const execute = async function(client, interaction) {
 
     const body = await res.json()
     if (body["success"]) {
-        interaction.reply(`Message status was successfully changed to ${status}.`)
-
         const msgId = body["messageId"]
         const chnId = body["channelId"]
 
@@ -81,7 +79,8 @@ const execute = async function(client, interaction) {
             return
         }
 
-        statusUpdate(msg, desStatus)
+        await statusUpdate(msg, desStatus)
+        interaction.reply(`Message status was successfully changed to ${status}.`)
     } else {
         interaction.reply(body["error"])
     }

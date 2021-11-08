@@ -38,7 +38,7 @@ const execute = async function (client, interaction) {
 /setstatus  :: Change the status of a Suggestion or Report.
 /move       :: Move a suggestion or report to another channel.
 = Admin =
- /setup      :: Setup the bot. (This will set the staffrole and suggestion channel)
+/setup      :: Setup the bot. (This will set the staffrole and suggestion channel)
 /config     :: Modify the bot's configuration for your server.
 /blacklist  :: Prevent someone from creating suggestions and/or reports.
             \`\`\``
