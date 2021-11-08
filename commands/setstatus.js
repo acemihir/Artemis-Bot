@@ -1,5 +1,6 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const { Constants } = require('discord.js')
 const config = require('../config')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
@@ -36,14 +37,16 @@ const data = new SlashCommandBuilder()
 
 const execute = async function(client, interaction) {
     const id = interaction.options.getString('id')
-    var status = interaction.options.getString('status')
+
+    const status = interaction.options.getString('status')
+    const desStatus = status.charAt(0).toUpperCase() + status.slice(1)
 
     const res = await fetch(`${config.backend.url}/setstatus`, {
         method: 'POST',
         body: JSON.stringify({
             id: id,
             guild: interaction.guildId,
-            status: status.charAt(0).toUpperCase() + status.slice(1)
+            status: desStatus
         }),
         headers: {
             'Content-Type': 'application/json',
@@ -54,14 +57,38 @@ const execute = async function(client, interaction) {
     const body = await res.json()
     if (body["success"]) {
         interaction.reply(`Message status was successfully changed to ${status}.`)
-        console.log(body)
+
+        const msgId = body["messageId"]
+        const chnId = body["channelId"]
+
+        const channel = await interaction.guild.channels.fetch(chnId)
+        if (channel == null) {
+            interaction.reply('Couldn\'t find the channel the corresponding message was placed in.')
+            return
+        }
+
+        let msg;
+        try {
+            msg = await channel.messages.fetch(msgId)
+        } catch (ex) {
+            if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
+                console.log(ex)
+            }
+        }
+
+        if (msg == null || msg.deleted) {
+            interaction.reply('Couldn\'t find the corresponding message.')
+            return
+        }
+
+        statusUpdate(msg, desStatus)
     } else {
-        interaction.reply(body.error)
+        interaction.reply(body["error"])
     }
 }
 
-module.exports.statusUpdate = async function(msg, status) {
-    const colour = config.embedColor.b
+statusUpdate = async function(msg, status) {
+    let colour = config.embedColor.b
 
     if (status === 'Approved' || status === 'Resolved') {
         colour = config.embedColor.g
@@ -71,7 +98,19 @@ module.exports.statusUpdate = async function(msg, status) {
         colour = config.embedColor.r
     }
 
-    // ...
+    const embed = msg.embeds[0]
+    
+    const descArray = embed.description.split('\n')
+
+    const statusline = descArray[2]
+    const slArray = statusline.split(' ')
+
+    descArray[2] = slArray[0] + ' ' + status
+
+    embed.description = descArray.join('\n')
+    embed.color = parseInt(colour.slice(1), 16)
+
+    await msg.edit({ embeds: [embed] })
 }
 
 // ================================
@@ -82,3 +121,5 @@ module.exports.command = {
     data: data,
     execute: execute
 }
+
+module.exports.statusUpdate = this.statusUpdate
