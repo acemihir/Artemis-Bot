@@ -21,13 +21,10 @@ const data = new SlashCommandBuilder()
         ]).setRequired(false))
 
 const execute = async function (client, interaction) {
-    const opt = interaction.options.getString('command')
-    if (opt == null) {
-        return interaction.reply(
-            `\`\`\`asciidoc
+    let desc = `\`\`\`asciidoc
 == Commands ==
 [View the autocompletion for more detailed explanation.]
- = User =
+= User =
 /suggest    :: Create a suggestion for this server.
 /report     :: Create a report for this server.
 /about      :: Obtain information about this bot.
@@ -40,12 +37,38 @@ const execute = async function (client, interaction) {
 = Admin =
 /setup      :: Setup the bot. (This will set the staffrole and suggestion channel)
 /config     :: Modify the bot's configuration for your server.
-/blacklist  :: Prevent someone from creating suggestions and/or reports.
-            \`\`\``
-        )
+/blacklist  :: Prevent someone from creating suggestions and/or reports. (Premium Only)
+                \`\`\``
+
+    const opt = interaction.options.getString('command')
+
+    if (opt != null) {
+        if (opt === 'suggest') {
+            desc = 'The suggest command can be used by people to suggest their ideas.'
+        } else if (opt === 'report') {
+            desc = 'The report command can be used by users to send a report to the staffmembers.'
+        } else if (opt === 'about') {
+            desc = 'This particular command shows some information about this Discord bot.'
+        } else if (opt === 'help') {
+            desc = 'The command that can be used to obtain a list with all commands + explanations.'
+        } else if (opt === 'list') {
+            desc = 'A premium command that can be used to display all active suggestions/reports.'
+        } else if (opt === 'graph') {
+            desc = 'A premium command that can be used to display some information in graphs.'
+        } else if (opt === 'setstatus') {
+            desc = 'A command that can be used by staffmembers to change the status of a suggestion/report.'
+        } else if (opt === 'move') {
+            desc = 'This command can be used to move the message of a suggestion/report to another channel.'
+        } else if (opt === 'setup') {
+            desc = 'This admin only command can be used to conifgure all fundamentally required settings for this bot.'
+        } else if (opt === 'config') {
+            desc = 'Configuring the bot can be done using this command. This command is admin only.' 
+        } else if (opt === 'blacklist') {
+            desc = 'Users can be blacklisted from submitting suggestions/reports after they\'ve been added to the blacklist. This command is premium only.'
+        }
     }
 
-    // TODO: This
+    interaction.reply(desc)
 }
 
 // ================================
