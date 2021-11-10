@@ -22,13 +22,13 @@ const execute = async function(_client, interaction) {
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.rep_channel == null) {
-        await interaction.reply('ERROR: Please make sure an administrator has configured the report channel.')
+        await interaction.reply('🟥 Please make sure an administrator has configured the report channel.')
         return
     }
 
     const repChannel = await interaction.guild.channels.fetch(cache.rep_channel)
     if (repChannel == null) {
-        await interaction.reply('ERROR: The configured report channel was not found.')
+        await interaction.reply('🟥 The configured report channel was not found.')
         return
     }
 
@@ -46,7 +46,7 @@ const execute = async function(_client, interaction) {
         console.error(ex)
     }
 
-    await interaction.reply('Your report has been submitted.')
+    await interaction.reply('🟩 Your report has been submitted.')
 
     fetch(`${config.backend.url}/submit`, {
         method: 'POST',

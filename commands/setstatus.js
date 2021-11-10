@@ -61,7 +61,7 @@ const execute = async function(client, interaction) {
 
         const channel = await interaction.guild.channels.fetch(chnId)
         if (channel == null) {
-            interaction.reply('Couldn\'t find the channel the corresponding message was placed in.')
+            interaction.reply('🟥 Couldn\'t find the channel the corresponding message was placed in.')
             return
         }
 
@@ -75,18 +75,28 @@ const execute = async function(client, interaction) {
         }
 
         if (msg == null || msg.deleted) {
-            interaction.reply('Couldn\'t find the corresponding message.')
+            interaction.reply('🟥 Couldn\'t find the corresponding message.')
             return
         }
 
         await statusUpdate(msg, desStatus)
-        interaction.reply(`Message status was successfully changed to ${status}.`)
+        interaction.reply(`🟩 Message status was successfully changed to ${status}.`)
     } else {
         interaction.reply(body["error"])
     }
 }
 
-statusUpdate = async function(msg, status) {
+// ================================
+module.exports.command = {
+    isPremium: false,
+    privileged: true,
+
+    data: data,
+    execute: execute
+}
+
+// ================================
+const statusUpdate = async (msg, status) => {
     let colour = config.embedColor.b
 
     if (status === 'Approved' || status === 'Resolved') {
@@ -112,13 +122,4 @@ statusUpdate = async function(msg, status) {
     await msg.edit({ embeds: [embed] })
 }
 
-// ================================
-module.exports.command = {
-    isPremium: false,
-    privileged: true,
-
-    data: data,
-    execute: execute
-}
-
-module.exports.statusUpdate = this.statusUpdate
+module.exports.statusUpdate = statusUpdate

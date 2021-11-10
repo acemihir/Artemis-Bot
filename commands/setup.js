@@ -12,7 +12,7 @@ const data = new SlashCommandBuilder()
 
 const execute = async function(_client, interaction) {
     if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-        interaction.reply('You need to have the `ADMINISTRATOR` permission to use this command.')
+        interaction.reply('🟥 You need to have the `ADMINISTRATOR` permission to use this command.')
         return
     }
 
@@ -33,7 +33,7 @@ const execute = async function(_client, interaction) {
 
     const channelId = chnAwait.first().content.replace('<#', '').replace('>', '')
     if (interaction.guild.channels.cache.get(channelId) == null) {
-        embed.setDescription('That\'s not a valid channel, please run the command again.')
+        embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
         embed.setColor(config.embedColor.r)
         await interaction.editReply({ embeds: [embed] })
         return
@@ -48,14 +48,14 @@ const execute = async function(_client, interaction) {
 
     const roleId = roleAwait.first().content.replace('<@&', '').replace('>', '')
     if (interaction.guild.roles.cache.get(roleId) == null) {
-        embed.setDescription('That\'s not a valid role, please run the command again.')
+        embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
         embed.setColor(config.embedColor.r)
         await interaction.editReply({ embeds: [embed] })
         return
     }
 
     // ================================
-    embed.setDescription('That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
+    embed.setDescription('🟩 That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
     embed.setColor(config.embedColor.g)
     await interaction.editReply({ embeds: [embed] })
 

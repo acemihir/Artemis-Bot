@@ -1,21 +1,30 @@
 {
     "name": "suggestions",
     "version": "v5.0.0",
-    "description": "Currently the most customizable suggestion bot out there! Let people suggest there ideas and review them afterwards!",
-    "main": "index.js",
-    "repository": "https://github.com/jerskisnow/Suggestions.git",
-    "author": "jerskisnow@gmail.com",
+    "description": "Currently the most customizable suggestion bot out there! Let people suggest there ideas and review them afterwards.",
+    "keywords": ["discord-bot", "discordbot", "utility"],
     "license": "GPL-3.0",
+    "homepage": "https://github.com/jerskisnow/Suggestions/wiki",
+    "bugs": "https://github.com/jerskisnow/Suggestions/issues",
+    "repository": "https://github.com/jerskisnow/Suggestions.git",
+    "author": {
+        "name": "Jerry Blaauw",
+        "email": "jerskisnow@gmail.com",
+        "url": "https://github.com/jerskisnow"
+    },
+    "main": "index.js",
     "dependencies": {
         "@discordjs/rest": "^0.1.0-canary.0",
         "bad-words": "^3.0.4",
         "bluebird": "^3.7.2",
         "discord-api-types": "^0.24.0",
         "discord.js": "^13.3.1",
-        "log4js": "^6.3.0",
         "node-fetch": "^3.1.0",
         "pg": "^8.7.1",
-        "redis": "^3.1.2",
-        "topgg-autoposter": "^2.0.0"
+        "redis": "^3.1.2"
+    },
+    "engines": {
+        "node": ">=16.6.0",
+        "yarn": ">=1.22.0"
     }
 }

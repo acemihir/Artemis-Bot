@@ -22,13 +22,13 @@ const execute = async function(_client, interaction) {
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.sug_channel == null) {
-        await interaction.reply('ERROR: Please make sure an administrator has configured the suggestion channel.')
+        await interaction.reply('🟥 Please make sure an administrator has configured the suggestion channel.')
         return
     }
 
     const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
     if (sugChannel == null) {
-        await interaction.reply('ERROR: The configured suggestion channel was not found.')
+        await interaction.reply('🟥 The configured suggestion channel was not found.')
         return
     }
 
@@ -62,7 +62,7 @@ const execute = async function(_client, interaction) {
         console.error(ex)
     }
 
-    await interaction.reply('Your suggestion has been submitted.')
+    await interaction.reply('🟩 Your suggestion has been submitted.')
 
     fetch(`${config.backend.url}/submit`, {
         method: 'POST',

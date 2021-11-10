@@ -17,7 +17,16 @@ const data = new SlashCommandBuilder()
     .setDefaultPermission(false)
 
 const execute = async function(client, interaction) {
-    interaction.reply('to be done')
+    const member = interaction.options.getMember('member')
+    const opt = interaction.options.getString('type')
+
+    if (opt === 'suggestions') {
+        // ...
+    } else if (opt === 'reports') {
+        // ...
+    } else if (opt === 'all') {
+        // ...
+    }
 }
 
 // ================================
