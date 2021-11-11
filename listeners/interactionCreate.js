@@ -1,6 +1,7 @@
 const { botCache, getFromRedis } = require('../structures/cache')
 
 module.exports = async function(client, interaction) {
+    console.log(interaction)
     if (interaction.isCommand()) {
         // Check if the used command is actually stored in the botCache object
         if (botCache.commands.has(interaction.commandName)) {
@@ -27,14 +28,16 @@ module.exports = async function(client, interaction) {
                     embed.setTitle('Premium Command')
                     embed.setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
 
-                    // Send the reply
-                    await interaction.reply({ embeds: [embed], components: [row] })
-                    // Return since the guild is not allowed to run the command due to a lack of premium
-                    return
+                    // Send the message and return
+                    return interaction.reply({ embeds: [embed], components: [row] })
                 }
             }
 
-            obj.execute(client, interaction)
+            if (obj.execute.constructor.name === 'AsyncFunction') {
+                await obj.execute(client, interaction)
+            } else {
+                obj.execute(client, interaction)
+            }
         }
     } else if (interaction.isMessageComponent() && interaction.componentType === 'BUTTON') {
 

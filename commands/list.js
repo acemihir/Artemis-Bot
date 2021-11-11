@@ -15,7 +15,7 @@ const data = new SlashCommandBuilder()
                 ['Reports', 'reports']
             ]).setRequired(true))
 
-const execute = async function(client, interaction) {
+const execute = function(client, interaction) {
     const opt = interaction.options.getString('type')
 
     let desc = 'None'
@@ -29,7 +29,7 @@ const execute = async function(client, interaction) {
         .setColor(config.embedColor.b)
         .setDescription(desc)
 
-    await interaction.reply({ embeds: [embed] })
+    interaction.reply({ embeds: [embed] })
 }
 
 // ================================

@@ -12,15 +12,16 @@ const data = new SlashCommandBuilder()
             ['Report', 'report'],
             ['About', 'about'],
             ['Help', 'help'],
+            ['List', 'list'],
             ['Graph', 'graph'],
             ['SetStatus', 'setstatus'],
             ['Move', 'move'],
+            ['Blacklist', 'blacklist'],
             ['Setup', 'setup'],
-            ['Config', 'config'],
-            ['Blacklist', 'blacklist']
+            ['Config', 'config']
         ]).setRequired(false))
 
-const execute = async function (client, interaction) {
+const execute = function (_client, interaction) {
     let desc = `\`\`\`asciidoc
 == Commands ==
 [View the autocompletion for more detailed explanation.]
@@ -34,11 +35,10 @@ const execute = async function (client, interaction) {
 = Staff =
 /setstatus  :: Change the status of a Suggestion or Report.
 /move       :: Move a suggestion or report to another channel.
+/blacklist  :: Prevent someone from creating suggestions and/or reports. (Premium Only)
 = Admin =
 /setup      :: Setup the bot. (This will set the staffrole and suggestion channel)
-/config     :: Modify the bot's configuration for your server.
-/blacklist  :: Prevent someone from creating suggestions and/or reports. (Premium Only)
-                \`\`\``
+/config     :: Modify the bot's configuration for your server.\`\`\``
 
     const opt = interaction.options.getString('command')
 

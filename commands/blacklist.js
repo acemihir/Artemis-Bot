@@ -16,7 +16,7 @@ const data = new SlashCommandBuilder()
             ]).setRequired(true))
     .setDefaultPermission(false)
 
-const execute = async function(client, interaction) {
+const execute = function(client, interaction) {
     const member = interaction.options.getMember('member')
     const opt = interaction.options.getString('type')
 

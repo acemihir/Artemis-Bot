@@ -1,5 +1,9 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const { Constants } = require('discord.js')
+const config = require('../config')
+
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -10,10 +14,10 @@ const data = new SlashCommandBuilder()
     .addChannelOption(opt => opt.setName('channel').setDescription('The channel where the message should be moved to.').setRequired(true))
 
 const execute = async function(_client, interaction) {
-    const sugId = interaction.options.getString('id')
+    const id = interaction.options.getString('id')
 
     // We must get the message id first
-    const res = await fetch(`${config.backend.url}/fetch/${interaction.guildId}/${sugId}`, {
+    const res = await fetch(`${config.backend.url}/fetch/${interaction.guildId}/${id}`, {
         headers: {
             'Content-Type': 'application/json',
             'Api-Key': config.backend.apiKey
@@ -26,7 +30,7 @@ const execute = async function(_client, interaction) {
     }
 
     // Check old channel
-    const channel = await interaction.guild.channels.fetch(body.data[0].chnId)
+    const channel = await interaction.guild.channels.fetch(body.data[0].channel)
     if (channel == null) {
         interaction.reply('🟥 Couldn\'t find the channel the corresponding message was placed in.')
         return
@@ -40,15 +44,12 @@ const execute = async function(_client, interaction) {
         if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
             console.log(ex)
         }
-    }
-
-    if (msg == null || msg.deleted) {
         return interaction.reply('🟥 Couldn\'t find the corresponding message.')
     }
 
     // New channel checks
-    const sugChannel = interaction.options.getChannel('channel')
-    if (sugChannel == null || sugChannel.deleted) {
+    const newChannel = interaction.options.getChannel('channel')
+    if (newChannel == null || newChannel.deleted) {
         return interaction.reply('🟥 Couldn\'t find that channel.')
     }
 
@@ -59,7 +60,7 @@ const execute = async function(_client, interaction) {
     // Send new message
     let newMsg
     try {
-        newMsg = await sugChannel.send({ embeds: [embed], components: [row] })
+        newMsg = await newChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
         console.error(ex)
         return interaction.reply('🟥 Something went wrong while creating the new message.')
@@ -70,7 +71,7 @@ const execute = async function(_client, interaction) {
         body: JSON.stringify({
             id: id,
             guild: interaction.guildId,
-            channel: sugChannel.id,
+            channel: newChannel.id,
             message: newMsg.id
         }),
         headers: {

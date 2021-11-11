@@ -1,12 +1,14 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js')
+const config = require('../config')
 
 // ================================
 const data = new SlashCommandBuilder()
     .setName('about')
     .setDescription('Obtain general information about the bot.')
 
-const execute = async function(client, interaction) {
+const execute = function(_client, interaction) {
     const row = new MessageActionRow().addComponents(
         new MessageButton()
             .setURL('https://top.gg/bot/566616056165302282/invite/')
@@ -37,7 +39,7 @@ const execute = async function(client, interaction) {
         " Members can submit their ideas, a staff member can then approve, consider or reject them." +
         " Suggestions also offers support for reports, polls and a lot more!\n\nConsider taking a look at the buttons below this message for more information and how to support us.")
 
-    await interaction.reply({ embeds: [embed], components: [row] })
+    interaction.reply({ embeds: [embed], components: [row] })
 }
 
 // ================================

@@ -11,8 +11,8 @@ const data = new SlashCommandBuilder()
             .addChoice('Suggestions', 'suggestions')
             .addChoice('Reports', 'reports'))
 
-const execute = async function(client, interaction) {
-    await interaction.reply('to be done')
+const execute = function(_client, interaction) {
+    interaction.reply('to be done')
 }
 
 // ================================

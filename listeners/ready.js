@@ -14,7 +14,7 @@ module.exports = async function (client) {
         const guilds_result = await client.shard.fetchClientValues('guilds.cache.size')
         const guildCount = guilds_result.reduce((prev, count) => prev + count, 0)
 
-        await client.user.setActivity(`${guildCount} servers | ${client.shard.count} shards`, {
+        client.user.setActivity(`${guildCount} servers | ${client.shard.count} shards`, {
             type: 'WATCHING'
         })
     }, config.activityUpdateInterval * 60 * 1000)

@@ -35,7 +35,7 @@ const data = new SlashCommandBuilder()
                 ]).setRequired(true))
     )
 
-const execute = async function(client, interaction) {
+const execute = async function(_client, interaction) {
     const id = interaction.options.getString('id')
 
     const status = interaction.options.getString('status')
