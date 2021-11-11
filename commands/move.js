@@ -25,8 +25,8 @@ const execute = async function(_client, interaction) {
     })
 
     const body = await res.json()
-    if (!body["success"]) {
-        return interaction.reply(body["error"])
+    if (!body['success']) {
+        return interaction.reply(body['error'])
     }
 
     // Check old channel
@@ -37,7 +37,7 @@ const execute = async function(_client, interaction) {
     }
 
     // Try to get old message
-    let msg;
+    let msg
     try {
         msg = await channel.messages.fetch(body.data[0].message)
     } catch (ex) {

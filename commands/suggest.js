@@ -55,7 +55,7 @@ const execute = async function(_client, interaction) {
             .setEmoji(rejectEmoji)
     )
 
-    let msg
+    let msg 
     try {
         msg = await sugChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
@@ -108,7 +108,7 @@ module.exports.buttons = [
                 // Split it for each line
                 const msgArray = embed.description.split('\n')
                 // Manipulate the votes
-                msgArray[msgArray.length - 1] = `${data["new_upvotes"]} - upvotes | ${data["new_downvotes"]} - downvotes`
+                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`
 
                 // Set the manipulated embed description
                 embed.description = msgArray.join('\n')
@@ -118,7 +118,7 @@ module.exports.buttons = [
 
                 interaction.deferUpdate()
             } else {
-                interaction.reply({ content: data["error"], ephemeral: true })
+                interaction.reply({ content: data['error'], ephemeral: true })
             }
         }
     },
@@ -146,7 +146,7 @@ module.exports.buttons = [
                 // Split it for each line
                 const msgArray = embed.description.split('\n')
                 // Manipulate the votes
-                msgArray[msgArray.length - 1] = `${data["new_upvotes"]} - upvotes | ${data["new_downvotes"]} - downvotes`
+                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`
 
                 // Set the manipulated embed description
                 embed.description = msgArray.join('\n')
@@ -156,7 +156,7 @@ module.exports.buttons = [
 
                 interaction.deferUpdate()
             } else {
-                interaction.reply({ content: data["error"], ephemeral: true })
+                interaction.reply({ content: data['error'], ephemeral: true })
             }
         }
     }

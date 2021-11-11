@@ -17,7 +17,7 @@ const data = new SlashCommandBuilder()
     .setDefaultPermission(false)
 
 const execute = function(client, interaction) {
-    const member = interaction.options.getMember('member')
+    // const member = interaction.options.getMember('member')
     const opt = interaction.options.getString('type')
 
     if (opt === 'suggestions') {

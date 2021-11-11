@@ -2,7 +2,11 @@
     "name": "suggestions",
     "version": "v5.0.0",
     "description": "Currently the most customizable suggestion bot out there! Let people suggest there ideas and review them afterwards.",
-    "keywords": ["discord-bot", "discordbot", "utility"],
+    "keywords": [
+        "discord-bot",
+        "discordbot",
+        "utility"
+    ],
     "license": "GPL-3.0",
     "homepage": "https://github.com/jerskisnow/Suggestions/wiki",
     "bugs": "https://github.com/jerskisnow/Suggestions/issues",
@@ -22,6 +26,9 @@
         "node-fetch": "^3.1.0",
         "pg": "^8.7.1",
         "redis": "^3.1.2"
+    },
+    "devDependencies": {
+        "eslint": "^8.2.0"
     },
     "engines": {
         "node": ">=16.6.0",

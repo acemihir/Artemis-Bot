@@ -1,11 +1,11 @@
 // ================================
 const { promises } = require('fs')
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+const { REST } = require('@discordjs/rest')
+const { Routes } = require('discord-api-types/v9')
 const config = require('../config')
 const { botCache } = require('../structures/cache')
 
-const rest = new REST({ version: '9' }).setToken(config.botToken);
+const rest = new REST({ version: '9' }).setToken(config.botToken)
 
 // ================================
 module.exports = async function (client) {
@@ -56,7 +56,7 @@ async function registerCommands(client) {
         commands.push(cmdFile.command.data.toJSON())
     })
 
-    console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`);
+    console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
 
     try {
         if (config.devMode) {
@@ -68,7 +68,7 @@ async function registerCommands(client) {
         console.error(ex)
     }
 
-    console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`);
+    console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
 }
 
 module.exports.once = true

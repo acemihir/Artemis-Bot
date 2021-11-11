@@ -15,13 +15,12 @@ const data = new SlashCommandBuilder()
     .addSubcommand(scmd =>
         scmd.setName('suggestions').setDescription('Change the status for a suggestion.')
             .addStringOption(opt => opt.setName('id').setDescription('The ID of the suggestion.'))
-            .addStringOption(opt => opt.setName('status').setDescription('The new status of the suggestion.')
-                .addChoices([
-                    ['Open', 'open'],
-                    ['Approved', 'approved'],
-                    ['Rejected', 'rejected'],
-                    ['Considering', 'considering']
-                ]))
+            .addStringOption(opt => opt.setName('status').setDescription('The new status of the suggestion.').addChoices([
+                ['Open', 'open'],
+                ['Approved', 'approved'],
+                ['Rejected', 'rejected'],
+                ['Considering', 'considering']
+            ]))
     )
 
     // Reports
@@ -29,10 +28,10 @@ const data = new SlashCommandBuilder()
         scmd.setName('reports').setDescription('Change the status for a report.')
             .addStringOption(opt => opt.setName('id').setDescription('The ID of the report.').setRequired(true))
             .addStringOption(opt => opt.setName('status').setDescription('The new status of the report.').addChoices([
-                    ['Open', 'open'],
-                    ['Resolved', 'resolved'],
-                    ['Progressing', 'progressing']
-                ]).setRequired(true))
+                ['Open', 'open'],
+                ['Resolved', 'resolved'],
+                ['Progressing', 'progressing']
+            ]).setRequired(true))
     )
 
 const execute = async function(_client, interaction) {
@@ -55,9 +54,9 @@ const execute = async function(_client, interaction) {
     })
 
     const body = await res.json()
-    if (body["success"]) {
-        const msgId = body["messageId"]
-        const chnId = body["channelId"]
+    if (body['success']) {
+        const msgId = body['messageId']
+        const chnId = body['channelId']
 
         const channel = await interaction.guild.channels.fetch(chnId)
         if (channel == null) {
@@ -65,7 +64,7 @@ const execute = async function(_client, interaction) {
             return
         }
 
-        let msg;
+        let msg
         try {
             msg = await channel.messages.fetch(msgId)
         } catch (ex) {
@@ -82,7 +81,7 @@ const execute = async function(_client, interaction) {
         await statusUpdate(msg, desStatus)
         interaction.reply(`🟩 Message status was successfully changed to ${status}.`)
     } else {
-        interaction.reply(body["error"])
+        interaction.reply(body['error'])
     }
 }
 
