@@ -9,24 +9,15 @@ const { Routes } = require('./node_modules/discord-api-types/v9')
 const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] })
 
 // ================================
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'))
+const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
 for (const file of eventFiles) {
-    const event = require(`./events/${file}`)
+    const event = require(`./listeners/${file}`)
     if (event.once) {
         client.once(file.split('.')[0], (...args) => event.execute(...args))
     } else {
         client.on(file.split('.')[0], (...args) => event.execute(...args))
     }
 }
-
-// (await promises.readdir('./listeners')).forEach(file => {
-//     const obj = require(`./listeners/${file}`)
-//     if (obj.once) {
-//         client.once(file.split('.')[0], obj.bind(null, client))
-//     } else {
-//         client.on(file.split('.')[0], obj.bind(null, client))
-//     }
-// })
 
 // ================================
 const commands = []
