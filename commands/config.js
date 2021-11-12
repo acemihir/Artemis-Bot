@@ -106,7 +106,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the suggestions show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed], rows: null })
+            interaction.message.edit({ embeds: [embed], rows: [] })
+            interaction.deferReply().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -118,7 +119,8 @@ module.exports.buttons = [
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
-                return interaction.message.edit({ embeds: [embed] })
+                await interaction.message.edit({ embeds: [embed] })
+                interaction.deferReply().catch(console.error)
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -152,7 +154,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed], rows: null })
+            interaction.message.edit({ embeds: [embed], rows: [] })
+            interaction.deferReply().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -164,7 +167,8 @@ module.exports.buttons = [
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
-                return interaction.message.edit({ embeds: [embed] })
+                interaction.message.edit({ embeds: [embed] })
+                return interaction.deferReply().catch(console.error)
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -211,7 +215,7 @@ module.exports.buttons = [
 
             // Edit the message
             await interaction.message.edit({ embeds: [embed], components: [row] })
-            await interaction.deferUpdate().catch(console.error)
+            interaction.deferUpdate().catch(console.error)
         }
     },
     {
@@ -232,7 +236,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('Which role should be able to interact with created Suggestions & Reports? (Type: @role)')
 
-            interaction.message.edit({ embeds: [embed], rows: null })
+            await interaction.message.edit({ embeds: [embed], rows: [] })
+            interaction.deferReply().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -244,7 +249,8 @@ module.exports.buttons = [
             if (role == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
-                return interaction.message.edit({ embeds: [embed] })
+                await interaction.message.edit({ embeds: [embed] })
+                interaction.deferReply().catch(console.error)
             }
 
             // Update the discord command permission
