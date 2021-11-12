@@ -47,4 +47,4 @@ main()
 
 // Spawn the shard
 manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
-manager.spawn()
+manager.spawn(6, 15000, false)
