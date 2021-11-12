@@ -106,7 +106,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the suggestions show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed], rows: [] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -131,7 +131,7 @@ module.exports.buttons = [
             embed.setDescription(`Suggestions will now show up in <#${chnId}>.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferUpdate()
+            interaction.deferReply()
         }
     },
     {
@@ -152,7 +152,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed], rows: [] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -177,7 +177,7 @@ module.exports.buttons = [
             embed.setDescription(`Reports will now show up in <#${chnId}>.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferUpdate()
+            interaction.deferReply()
         }
     },
 
@@ -232,7 +232,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('Which role should be able to interact with created Suggestions & Reports? (Type: @role)')
 
-            interaction.message.edit({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed], rows: [] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -272,7 +272,7 @@ module.exports.buttons = [
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            await interaction.deferUpdate()
+            interaction.deferReply()
         }
     },
 
