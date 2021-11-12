@@ -67,5 +67,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
     }
 })()
 
+process.on('warning', console.warn)
+
 // ================================
 client.login(config.botToken)
