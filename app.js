@@ -62,8 +62,6 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
     try {
         console.log('Started refreshing application (/) commands.')
 
-        console.log(commands)
-
         if (config.devMode) {
             await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands })
         } else {
