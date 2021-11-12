@@ -4,10 +4,6 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 
 const main = async function () {
     const manager = new ShardingManager('app.js', { token: config.botToken })
-    
-    // Spawn the shard
-    manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
-    await manager.spawn()
 
     // Production stuff
     if (!config.devMode) {
@@ -45,6 +41,10 @@ const main = async function () {
             // TODO: This
         }, 1800000)
     }
+
+    // Spawn the shard
+    manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
+    manager.spawn()
 }
 
 main()
