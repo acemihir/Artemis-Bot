@@ -106,8 +106,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the suggestions show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed], rows: [] })
-            interaction.deferReply().catch(console.error)
+            interaction.message.edit({ embeds: [embed], rows: [null] })
+            interaction.deferUpdate().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -120,7 +120,7 @@ module.exports.buttons = [
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
                 await interaction.message.edit({ embeds: [embed] })
-                interaction.deferReply().catch(console.error)
+                interaction.deferUpdate().catch(console.error)
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -133,7 +133,7 @@ module.exports.buttons = [
             embed.setDescription(`Suggestions will now show up in <#${chnId}>.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferReply().catch(console.error)
+            interaction.deferUpdate().catch(console.error)
         }
     },
     {
@@ -154,8 +154,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed], rows: [] })
-            interaction.deferReply().catch(console.error)
+            interaction.message.edit({ embeds: [embed], rows: [null] })
+            interaction.deferUpdate().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -168,7 +168,7 @@ module.exports.buttons = [
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
                 interaction.message.edit({ embeds: [embed] })
-                return interaction.deferReply().catch(console.error)
+                return interaction.deferUpdate().catch(console.error)
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -181,7 +181,7 @@ module.exports.buttons = [
             embed.setDescription(`Reports will now show up in <#${chnId}>.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferReply().catch(console.error)
+            interaction.deferUpdate().catch(console.error)
         }
     },
 
@@ -236,8 +236,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('Which role should be able to interact with created Suggestions & Reports? (Type: @role)')
 
-            await interaction.message.edit({ embeds: [embed], rows: [] })
-            interaction.deferReply().catch(console.error)
+            await interaction.message.edit({ embeds: [embed], rows: [null] })
+            interaction.deferUpdate().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -250,7 +250,7 @@ module.exports.buttons = [
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
                 await interaction.message.edit({ embeds: [embed] })
-                interaction.deferReply().catch(console.error)
+                interaction.deferUpdate().catch(console.error)
             }
 
             // Update the discord command permission
@@ -278,7 +278,7 @@ module.exports.buttons = [
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)
 
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferReply().catch(console.error)
+            interaction.deferUpdate().catch(console.error)
         }
     },
 
