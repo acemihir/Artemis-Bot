@@ -4,6 +4,7 @@ const { botCache, getFromRedis } = require('../structures/cache')
 
 module.exports = async function(client, interaction) {
     if (interaction.isCommand()) {
+        console.log('Debugging: command being executed.')
         // Check if the used command is actually stored in the botCache object
         if (botCache.commands.has(interaction.commandName)) {
             // Retrieve the command data from the botCache object
