@@ -9,7 +9,7 @@ const client = new Client({
 })
 
 // ================================
-const bindListeners = async function() {
+async function bindListeners() {
     (await promises.readdir('./listeners')).forEach(file => {
         const obj = require(`./listeners/${file}`)
         if (obj.once) {
