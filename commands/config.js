@@ -15,7 +15,7 @@ const execute = function (client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
             ]
         })
     }
@@ -59,7 +59,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }
@@ -95,7 +95,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }
@@ -118,7 +118,7 @@ module.exports.buttons = [
             const chnId = chnAwait.first().content.replace('<#', '').replace('>', '')
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
-                embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
+                embed.setDescription('That\'s not a valid channel, please run the command again.')
                 await interaction.message.edit({ embeds: [embed] })
                 interaction.deferUpdate().catch(console.error)
             }
@@ -142,7 +142,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }
@@ -165,7 +165,7 @@ module.exports.buttons = [
             const chnId = chnAwait.first().content.replace('<#', '').replace('>', '')
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
-                embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
+                embed.setDescription('That\'s not a valid channel, please run the command again.')
                 interaction.message.edit({ embeds: [embed] })
                 return interaction.deferUpdate().catch(console.error)
             }
@@ -192,7 +192,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }
@@ -223,7 +223,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }
@@ -246,7 +246,7 @@ module.exports.buttons = [
             const role = interaction.guild.roles.cache.get(roleAwait.first().content.replace('<@&', '').replace('>', ''))
             if (role == null) {
                 embed.setColor(config.embedColor.r)
-                embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
+                embed.setDescription('That\'s not a valid role, please run the command again.')
                 await interaction.message.edit({ embeds: [embed] })
                 interaction.deferUpdate().catch(console.error)
             }
@@ -263,7 +263,7 @@ module.exports.buttons = [
                             permissions: [{
                                 id: role.id,
                                 type: 'ROLE',
-                                permission: true,
+                                permission: true
                             }]
                         })
                     }
@@ -288,7 +288,7 @@ module.exports.buttons = [
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
-                        .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                        .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
                     ], ephemeral: true
                 })
             }

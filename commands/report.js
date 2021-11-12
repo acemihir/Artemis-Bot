@@ -25,7 +25,7 @@ const execute = async function (_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Please make sure an administrator has configured the report channel.')
+                .setDescription('Please make sure an administrator has configured the report channel.')
             ]
         })
     }
@@ -35,7 +35,7 @@ const execute = async function (_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 The configured report channel was not found.')
+                .setDescription('The configured report channel was not found.')
             ]
         })
     }
@@ -57,7 +57,7 @@ const execute = async function (_client, interaction) {
     await interaction.reply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.g)
-            .setDescription('🟩 Your report has been submitted.')
+            .setDescription('Your report has been submitted.')
         ]
     })
 

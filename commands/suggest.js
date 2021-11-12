@@ -25,7 +25,7 @@ const execute = async function (_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Please make sure an administrator has configured the suggestion channel.')
+                .setDescription('Please make sure an administrator has configured the suggestion channel.')
             ]
         })
     }
@@ -35,7 +35,7 @@ const execute = async function (_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 The configured suggestion channel was not found.')
+                .setDescription('The configured suggestion channel was not found.')
             ]
         })
     }
@@ -73,7 +73,7 @@ const execute = async function (_client, interaction) {
     await interaction.reply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.g)
-            .setDescription('🟩 Your suggestion has been submitted.')
+            .setDescription('Your suggestion has been submitted.')
         ]
     })
 

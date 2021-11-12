@@ -15,7 +15,7 @@ const execute = async function(client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 You need to have the `ADMINISTRATOR` permission to do that.')
+                .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
             ]
         })
     }
@@ -37,7 +37,7 @@ const execute = async function(client, interaction) {
     const sugChannelId = sugAwait.first().content.replace('<#', '').replace('>', '')
     if (interaction.guild.channels.cache.get(sugChannelId) == null) {
         embed.setColor(config.embedColor.r)
-        embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
+        embed.setDescription('That\'s not a valid channel, please run the command again.')
         return interaction.editReply({ embeds: [embed] })
     }
 
@@ -52,7 +52,7 @@ const execute = async function(client, interaction) {
     const repChannelId = sugAwait.first().content.replace('<#', '').replace('>', '')
     if (interaction.guild.channels.cache.get(sugChannelId) == null) {
         embed.setColor(config.embedColor.r)
-        embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
+        embed.setDescription('That\'s not a valid channel, please run the command again.')
         return interaction.editReply({ embeds: [embed] })
     }   
 
@@ -67,13 +67,13 @@ const execute = async function(client, interaction) {
     const roleId = roleAwait.first().content.replace('<@&', '').replace('>', '')
     if (interaction.guild.roles.cache.get(roleId) == null) {
         embed.setColor(config.embedColor.r)
-        embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
+        embed.setDescription('That\'s not a valid role, please run the command again.')
         return interaction.editReply({ embeds: [embed] })
     }
 
     // ================================
     embed.setColor(config.embedColor.g)
-    embed.setDescription('🟩 That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
+    embed.setDescription('That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
     await interaction.editReply({ embeds: [embed] })
 
     // ================================

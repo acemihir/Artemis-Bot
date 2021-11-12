@@ -35,7 +35,7 @@ const execute = async function(_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Couldn\'t find the channel the corresponding message was placed in.')
+                .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
             ]
         })
     }
@@ -51,7 +51,7 @@ const execute = async function(_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Couldn\'t find the corresponding message.')
+                .setDescription('Couldn\'t find the corresponding message.')
             ]
         })
     }
@@ -62,7 +62,7 @@ const execute = async function(_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Couldn\'t find that channel.')
+                .setDescription('Couldn\'t find that channel.')
             ]
         })
     }
@@ -80,7 +80,7 @@ const execute = async function(_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Something went wrong while creating the new message.')
+                .setDescription('Something went wrong while creating the new message.')
             ]
         })
     }
@@ -107,7 +107,7 @@ const execute = async function(_client, interaction) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
-                .setDescription('🟥 Could not delete the message, delete it manually.')
+                .setDescription('Could not delete the message, delete it manually.')
             ]
         })
     }
@@ -115,7 +115,7 @@ const execute = async function(_client, interaction) {
     interaction.reply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.g)
-            .setDescription('🟩 Successfully moved the message to another channel.')
+            .setDescription('Successfully moved the message to another channel.')
         ]
     })
 }

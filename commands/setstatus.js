@@ -63,7 +63,7 @@ const execute = async function(_client, interaction) {
             return interaction.reply({
                 embeds: [new MessageEmbed()
                     .setColor(config.embedColor.r)
-                    .setDescription('🟥 Couldn\'t find the channel the corresponding message was placed in.')
+                    .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
                 ]
             })
         }
@@ -81,7 +81,7 @@ const execute = async function(_client, interaction) {
             return interaction.reply({
                 embeds: [new MessageEmbed()
                     .setColor(config.embedColor.r)
-                    .setDescription('🟥 Couldn\'t find the corresponding message.')
+                    .setDescription('Couldn\'t find the corresponding message.')
                 ]
             })
         }
@@ -90,7 +90,7 @@ const execute = async function(_client, interaction) {
         interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.g)
-                .setDescription(`🟩 Message status was successfully changed to ${status}.`)
+                .setDescription(`Message status was successfully changed to ${status}.`)
             ]
         })
     } else {
