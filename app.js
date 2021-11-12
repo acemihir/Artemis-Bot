@@ -10,7 +10,10 @@ const client = new Client({
 
 // ================================
 const bindListeners = async function() {
+    await new Promise(resolve => setTimeout(resolve, 15000))
+
     console.log('IS CLIENT READY? ', client.isReady());
+
     (await promises.readdir('./listeners')).forEach(file => {
         const obj = require(`./listeners/${file}`)
         if (obj.once) {
