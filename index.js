@@ -2,14 +2,12 @@ const { ShardingManager } = require('discord.js')
 const config = require('./config')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-const manager = new ShardingManager('app.js', { token: config.botToken })
-
-// Spawn the shard
-manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
-manager.spawn()
-
-
 const main = async function () {
+    const manager = new ShardingManager('app.js', { token: config.botToken })
+    
+    // Spawn the shard
+    manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
+    await manager.spawn()
 
     // Production stuff
     if (!config.devMode) {
