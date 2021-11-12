@@ -1,7 +1,3 @@
-// ================================
-const config = require('../config')
-
-// ================================
 module.exports = {
     once: true,
     execute(client) {
@@ -13,7 +9,7 @@ module.exports = {
             await client.user.setActivity(`${guildCount} servers | ${client.shard.count} shards`, {
                 type: 'WATCHING'
             })
-        }, config.activityUpdateInterval * 60 * 1000)
+        }, 15 * 60 * 1000)
 
         console.log('Fully started.')
     },
