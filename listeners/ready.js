@@ -58,14 +58,11 @@ async function registerCommands(client) {
 
     console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
 
-    try {
-        if (config.devMode) {
-            await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
-        } else {
-            await rest.put(Routes.applicationCommands(client.user.id), { body: commands })
-        }
-    } catch (ex) {
-        console.error(ex)
+    // No catch, just crash with an error
+    if (config.devMode) {
+        await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
+    } else {
+        await rest.put(Routes.applicationCommands(client.user.id), { body: commands })
     }
 
     console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
