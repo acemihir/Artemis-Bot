@@ -1,5 +1,4 @@
 // ================================
-const { promises } = require('fs')
 const { Client } = require('discord.js')
 const config = require('./config')
 const fs = require('fs')
@@ -7,24 +6,27 @@ const { botCache } = require('./structures/cache')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
 
-// ================================
-const client = new Client({
-    intents: ['GUILDS', 'GUILD_MESSAGES']
-})
+const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] })
 
 // ================================
-async function bindListeners() {
-    (await promises.readdir('./listeners')).forEach(file => {
-        const obj = require(`./listeners/${file}`)
-        if (obj.once) {
-            client.once(file.split('.')[0], obj.bind(null, client))
-        } else {
-            client.on(file.split('.')[0], obj.bind(null, client))
-        }
-    })
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'))
+for (const file of eventFiles) {
+    const event = require(`./events/${file}`)
+    if (event.once) {
+        client.once(file.split('.')[0], (...args) => event.execute(...args))
+    } else {
+        client.on(file.split('.')[0], (...args) => event.execute(...args))
+    }
 }
 
-bindListeners()
+// (await promises.readdir('./listeners')).forEach(file => {
+//     const obj = require(`./listeners/${file}`)
+//     if (obj.once) {
+//         client.once(file.split('.')[0], obj.bind(null, client))
+//     } else {
+//         client.on(file.split('.')[0], obj.bind(null, client))
+//     }
+// })
 
 // ================================
 const commands = []
