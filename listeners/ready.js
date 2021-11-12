@@ -26,46 +26,46 @@ module.exports = async function (client) {
 }
 
 // ================================
-async function registerCommands(client) {
-    const commands = [];
+// async function registerCommands(client) {
+//     const commands = [];
 
-    (await promises.readdir('./commands')).forEach(file => {
-        const cmdFile = require('../commands/' + file)
-        const cmdName = file.split('.')[0]
+//     (await promises.readdir('./commands')).forEach(file => {
+//         const cmdFile = require('../commands/' + file)
+//         const cmdName = file.split('.')[0]
 
-        // Check if the command is privileged
-        if (cmdFile.command.privileged) {
-            // Add the commandname to the privCommands array in the botCache
-            botCache.privCommands.push(cmdName)
-        }
+//         // Check if the command is privileged
+//         if (cmdFile.command.privileged) {
+//             // Add the commandname to the privCommands array in the botCache
+//             botCache.privCommands.push(cmdName)
+//         }
 
-        // Delete the privileged property from the object because privileges are indicated elsewhere (optimization)
-        delete cmdFile.command.privileged
+//         // Delete the privileged property from the object because privileges are indicated elsewhere (optimization)
+//         delete cmdFile.command.privileged
 
-        // Set the command
-        botCache.commands.set(cmdName, cmdFile.command)
-        // Check if there are any buttons
-        if (cmdFile.buttons != null) {
-            // Loop over the buttons
-            for (let i = 0; i < cmdFile.buttons.length; i++) {
-                // Set the (button) interaction
-                botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
-            }
-        }
+//         // Set the command
+//         botCache.commands.set(cmdName, cmdFile.command)
+//         // Check if there are any buttons
+//         if (cmdFile.buttons != null) {
+//             // Loop over the buttons
+//             for (let i = 0; i < cmdFile.buttons.length; i++) {
+//                 // Set the (button) interaction
+//                 botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick)
+//             }
+//         }
 
-        commands.push(cmdFile.command.data.toJSON())
-    })
+//         commands.push(cmdFile.command.data.toJSON())
+//     })
 
-    console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
+//     console.log(`Started refreshing application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
 
-    // No catch, just crash with an error
-    if (config.devMode) {
-        await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
-    } else {
-        await rest.put(Routes.applicationCommands(client.user.id), { body: commands })
-    }
+//     // No catch, just crash with an error
+//     if (config.devMode) {
+//         await rest.put(Routes.applicationGuildCommands(client.user.id, config.devGuild), { body: commands })
+//     } else {
+//         await rest.put(Routes.applicationCommands(client.user.id), { body: commands })
+//     }
 
-    console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
-}
+//     console.log(`Successfully reloaded application (/) commands. (DevMode: ${config.devMode ? 'Enabled' : 'Disabled'})`)
+// }
 
 module.exports.once = true
