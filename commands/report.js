@@ -5,7 +5,7 @@ const { MessageEmbed } = require('discord.js')
 const config = require('../config')
 const { getFromRedis } = require('../structures/cache')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -16,20 +16,28 @@ const data = new SlashCommandBuilder()
             .setDescription('A brief description of your report.')
             .setRequired(true))
 
-const execute = async function(_client, interaction) {
+const execute = async function (_client, interaction) {
     // Fetch the input/args
     const repDesc = await interaction.options.getString('description')
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.rep_channel == null) {
-        await interaction.reply('🟥 Please make sure an administrator has configured the report channel.')
-        return
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Please make sure an administrator has configured the report channel.')
+            ]
+        })
     }
 
     const repChannel = await interaction.guild.channels.fetch(cache.rep_channel)
     if (repChannel == null) {
-        await interaction.reply('🟥 The configured report channel was not found.')
-        return
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 The configured report channel was not found.')
+            ]
+        })
     }
 
     const repId = createId('r_')
@@ -46,7 +54,12 @@ const execute = async function(_client, interaction) {
         console.error(ex)
     }
 
-    await interaction.reply('🟩 Your report has been submitted.')
+    await interaction.reply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.g)
+            .setDescription('🟩 Your report has been submitted.')
+        ]
+    })
 
     fetch(`${config.backend.url}/submit`, {
         method: 'POST',

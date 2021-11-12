@@ -1,6 +1,6 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { Constants } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js')
 const config = require('../config')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
@@ -32,8 +32,12 @@ const execute = async function(_client, interaction) {
     // Check old channel
     const channel = await interaction.guild.channels.fetch(body.data[0].channel)
     if (channel == null) {
-        interaction.reply('🟥 Couldn\'t find the channel the corresponding message was placed in.')
-        return
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Couldn\'t find the channel the corresponding message was placed in.')
+            ]
+        })
     }
 
     // Try to get old message
@@ -44,13 +48,23 @@ const execute = async function(_client, interaction) {
         if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
             console.log(ex)
         }
-        return interaction.reply('🟥 Couldn\'t find the corresponding message.')
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Couldn\'t find the corresponding message.')
+            ]
+        })
     }
 
     // New channel checks
     const newChannel = interaction.options.getChannel('channel')
     if (newChannel == null || newChannel.deleted) {
-        return interaction.reply('🟥 Couldn\'t find that channel.')
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Couldn\'t find that channel.')
+            ]
+        })
     }
 
     // Get the old message
@@ -63,7 +77,12 @@ const execute = async function(_client, interaction) {
         newMsg = await newChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
         console.error(ex)
-        return interaction.reply('🟥 Something went wrong while creating the new message.')
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Something went wrong while creating the new message.')
+            ]
+        })
     }
 
     await fetch(`${config.backend.url}/move`, {
@@ -85,10 +104,20 @@ const execute = async function(_client, interaction) {
         await msg.delete()
     } catch (ex) {
         console.error(ex)
-        return interaction.reply('🟥 Could not delete the message, delete it manually.')
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Could not delete the message, delete it manually.')
+            ]
+        })
     }
 
-    interaction.reply('🟩 Successfully moved the message to another channel.')
+    interaction.reply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.g)
+            .setDescription('🟩 Successfully moved the message to another channel.')
+        ]
+    })
 }
 
 // ================================

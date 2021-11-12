@@ -3,7 +3,6 @@ const config = require('../config')
 const { botCache, getFromRedis } = require('../structures/cache')
 
 module.exports = async function(client, interaction) {
-    console.log(interaction)
     if (interaction.isCommand()) {
         // Check if the used command is actually stored in the botCache object
         if (botCache.commands.has(interaction.commandName)) {
@@ -26,7 +25,7 @@ module.exports = async function(client, interaction) {
 
                     // Construct the embed
                     const embed = new MessageEmbed()
-                    embed.setColor(config.embedColor.r)
+                    embed.setColor(config.embedColor.b)
                     embed.setTitle('Premium Command')
                     embed.setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
 

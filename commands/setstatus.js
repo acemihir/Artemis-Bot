@@ -1,6 +1,6 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { Constants } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js')
 const config = require('../config')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
@@ -60,8 +60,12 @@ const execute = async function(_client, interaction) {
 
         const channel = await interaction.guild.channels.fetch(chnId)
         if (channel == null) {
-            interaction.reply('🟥 Couldn\'t find the channel the corresponding message was placed in.')
-            return
+            return interaction.reply({
+                embeds: [new MessageEmbed()
+                    .setColor(config.embedColor.r)
+                    .setDescription('🟥 Couldn\'t find the channel the corresponding message was placed in.')
+                ]
+            })
         }
 
         let msg
@@ -74,12 +78,21 @@ const execute = async function(_client, interaction) {
         }
 
         if (msg == null || msg.deleted) {
-            interaction.reply('🟥 Couldn\'t find the corresponding message.')
-            return
+            return interaction.reply({
+                embeds: [new MessageEmbed()
+                    .setColor(config.embedColor.r)
+                    .setDescription('🟥 Couldn\'t find the corresponding message.')
+                ]
+            })
         }
 
         await statusUpdate(msg, desStatus)
-        interaction.reply(`🟩 Message status was successfully changed to ${status}.`)
+        interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.g)
+                .setDescription(`🟩 Message status was successfully changed to ${status}.`)
+            ]
+        })
     } else {
         interaction.reply(body['error'])
     }

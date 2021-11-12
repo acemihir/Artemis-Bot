@@ -5,7 +5,7 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 const config = require('../config')
 const { getFromRedis } = require('../structures/cache')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -16,20 +16,28 @@ const data = new SlashCommandBuilder()
             .setDescription('A brief description of your suggestion.')
             .setRequired(true))
 
-const execute = async function(_client, interaction) {
+const execute = async function (_client, interaction) {
     // Fetch the input/args
     const sugDesc = await interaction.options.getString('description')
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.sug_channel == null) {
-        await interaction.reply('🟥 Please make sure an administrator has configured the suggestion channel.')
-        return
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 Please make sure an administrator has configured the suggestion channel.')
+            ]
+        })
     }
 
     const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
     if (sugChannel == null) {
-        await interaction.reply('🟥 The configured suggestion channel was not found.')
-        return
+        return interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('🟥 The configured suggestion channel was not found.')
+            ]
+        })
     }
 
     const sugId = createId('s_')
@@ -55,14 +63,19 @@ const execute = async function(_client, interaction) {
             .setEmoji(rejectEmoji)
     )
 
-    let msg 
+    let msg
     try {
         msg = await sugChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
         console.error(ex)
     }
 
-    await interaction.reply('🟩 Your suggestion has been submitted.')
+    await interaction.reply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.g)
+            .setDescription('🟩 Your suggestion has been submitted.')
+        ]
+    })
 
     fetch(`${config.backend.url}/submit`, {
         method: 'POST',
@@ -86,7 +99,7 @@ const execute = async function(_client, interaction) {
 module.exports.buttons = [
     {
         id: 'sug_upvote',
-        onClick: async function(_client, interaction) {
+        onClick: async function (_client, interaction) {
             const response = await fetch(`${config.backend.url}/suggestions/upvote`, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -124,7 +137,7 @@ module.exports.buttons = [
     },
     {
         id: 'sug_downvote',
-        onClick: async function(_client, interaction) {
+        onClick: async function (_client, interaction) {
             const response = await fetch(`${config.backend.url}/suggestions/downvote`, {
                 method: 'POST',
                 body: JSON.stringify({
