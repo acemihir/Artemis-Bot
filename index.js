@@ -2,15 +2,11 @@ const { ShardingManager } = require('discord.js')
 const config = require('./config')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-const main = async function () {
-    const manager = new ShardingManager('app.js', { token: config.botToken, totalShards: 'auto', respawn: true })
-    
-    // Spawn the shard
-    manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
-    await manager.spawn({ timeout: -1 }).catch(console.error)
+const manager = new ShardingManager('app.js', { token: config.botToken, totalShards: 'auto', respawn: true })
 
-    // Production stuff
-    if (!config.devMode) {
+// Production stuff
+if (!config.devMode) {
+    (async () => {
         // Every 30 minutes
         setInterval(async () => {
             // TopGG (top.gg)
@@ -44,7 +40,8 @@ const main = async function () {
             // Discord Bot List (discordbotlist.com)
             // TODO: This
         }, 1800000)
-    }
+    })()
 }
 
-main()
+manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
+manager.spawn({ timeout: -1 }).catch(console.error)
