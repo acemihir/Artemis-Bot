@@ -106,7 +106,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the suggestions show up? (Type: #channel)')
 
-            interaction.reply({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -118,7 +118,7 @@ module.exports.buttons = [
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
-                return interaction.editReply({ embeds: [embed] })
+                return interaction.message.edit({ embeds: [embed] })
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -130,7 +130,7 @@ module.exports.buttons = [
             embed.setColor(config.embedColor.g)
             embed.setDescription(`Suggestions will now show up in <#${chnId}>.`)
 
-            await interaction.editReply({ embeds: [embed] })
+            await interaction.message.edit({ embeds: [embed] })
             interaction.deferUpdate()
         }
     },
@@ -152,7 +152,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
-            interaction.reply({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -164,7 +164,7 @@ module.exports.buttons = [
             if (interaction.guild.channels.cache.get(chnId) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid channel, please run the command again.')
-                return interaction.editReply({ embeds: [embed] })
+                return interaction.message.edit({ embeds: [embed] })
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -176,7 +176,8 @@ module.exports.buttons = [
             embed.setColor(config.embedColor.g)
             embed.setDescription(`Reports will now show up in <#${chnId}>.`)
 
-            await interaction.editReply({ embeds: [embed] })
+            await interaction.message.edit({ embeds: [embed] })
+            interaction.deferUpdate()
         }
     },
 
@@ -231,7 +232,7 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('Which role should be able to interact with created Suggestions & Reports? (Type: @role)')
 
-            interaction.reply({ embeds: [embed] })
+            interaction.message.edit({ embeds: [embed] })
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -243,7 +244,7 @@ module.exports.buttons = [
             if (role == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('🟥 That\'s not a valid role, please run the command again.')
-                return interaction.editReply({ embeds: [embed] })
+                return interaction.message.edit({ embeds: [embed] })
             }
 
             // Update the discord command permission
@@ -270,7 +271,8 @@ module.exports.buttons = [
             embed.setColor(config.embedColor.g)
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)
 
-            await interaction.editReply({ embeds: [embed] })
+            await interaction.message.edit({ embeds: [embed] })
+            await interaction.deferUpdate()
         }
     },
 
