@@ -33,6 +33,8 @@ if (!config.devMode) {
             }
         })
 
+        console.log(`Posted stats to BotsForDiscord (server_count: ${guildCount})`)
+
         // Discord Bots (discord.bots.gg)
         // TODO: This
 
