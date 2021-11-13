@@ -62,8 +62,8 @@ client.on('interactionCreate', async (interaction) => {
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.b)
                         .setTitle('Premium Command')
-                        .setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
-                    ], components: [new MessageActionRow().addComponents(new MessageButton()
+                        .setDescription('The command you tried to use is only for premium servers. See the button below for more information.')],
+                    components: [new MessageActionRow().addComponents(new MessageButton()
                         .setURL('https://github.com/jerskisnow/Suggestions/wiki/Donating')
                         .setLabel('Donating')
                         .setEmoji('💰')
