@@ -24,7 +24,7 @@ const client = new Client({
         PresenceManager: 0, // guild.presences
         ReactionManager: 0, // message.reactions
         ReactionUserManager: 0, // reaction.users
-        RoleManager: 0, // guild.roles
+        RoleManager: Infinity, // guild.roles
         StageInstanceManager: 0, // guild.stageInstances
         ThreadManager: 0, // channel.threads
         ThreadMemberManager: 0, // threadchannel.members
