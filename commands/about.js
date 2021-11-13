@@ -1,6 +1,6 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js')
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js-light')
 const config = require('../config')
 
 // ================================

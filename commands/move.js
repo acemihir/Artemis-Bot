@@ -1,6 +1,6 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { Constants, MessageEmbed } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js-light')
 const config = require('../config')
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))

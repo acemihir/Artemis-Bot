@@ -1,5 +1,5 @@
 // ================================
-const { Client, Options } = require('discord.js')
+const { Client, Options } = require('discord.js-light')
 const config = require('./config')
 const fs = require('fs')
 const { botCache } = require('./structures/cache')

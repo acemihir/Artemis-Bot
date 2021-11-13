@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
+const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js-light')
 const config = require('../config')
 const { botCache, getFromRedis } = require('../structures/cache')
 

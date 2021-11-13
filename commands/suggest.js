@@ -1,7 +1,7 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createId, filterText } = require('../utils')
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light')
 const config = require('../config')
 const { getFromRedis } = require('../structures/cache')
 

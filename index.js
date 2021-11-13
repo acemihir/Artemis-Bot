@@ -1,4 +1,4 @@
-const { ShardingManager } = require('discord.js')
+const { ShardingManager } = require('discord.js-light')
 const config = require('./config')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
