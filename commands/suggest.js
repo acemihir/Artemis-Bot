@@ -178,7 +178,6 @@ module.exports.buttons = [
 // ================================
 module.exports.command = {
     isPremium: false,
-    privileged: false,
 
     data: data,
     execute: execute

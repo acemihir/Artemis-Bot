@@ -35,7 +35,6 @@ const execute = function(client, interaction) {
 // ================================
 module.exports.command = {
     isPremium: true,
-    privileged: false,
 
     data: data,
     execute: execute

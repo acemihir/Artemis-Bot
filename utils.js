@@ -1,7 +1,6 @@
 // =================================
 const config = require('./config')
 const Filter = require('bad-words')
-const { promises } = require('fs')
 
 // =================================
 module.exports.createId = function (prefix) {
@@ -51,22 +50,12 @@ module.exports.printLog = function (txt, type, shard = null) {
 
 // =================================
 module.exports.setPrivPermissions = async function (interaction, roleId) {
-    const privCommands = []
-
-    await promises.readdir('./commands', file => {
-        if (require(`./commands/${file}`).command.privileged) {
-            privCommands.push(file.split('.')[0])
-        }
-    })
-
-    console.log(privCommands)
-
     const commands = await interaction.guild.commands.fetch()
 
     const permissions = []
     for (const [k, v] of commands.entries()) {
-        console.log('cmd entry loop')
-        if (v.applicationId === interaction.applicationId && privCommands.includes(v.name)) {
+        console.log(v.name)
+        if (v.applicationId === interaction.applicationId && config.privCommands.includes(v.name)) {
             permissions.push({
                 id: k,
                 permissions: [{
