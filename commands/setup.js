@@ -82,7 +82,7 @@ const execute = async function(client, interaction) {
     var obj = await getFromRedis(interaction.guildId)
     obj['sug_channel'] = sugChannelId
     obj['rep_channel'] = repChannelId
-    setInRedis(interaction.guildId, obj)
+    await setInRedis(interaction.guildId, obj)
 
     // Update command permissions
     await setPrivPermissions(interaction, interaction.applicationId, roleId)

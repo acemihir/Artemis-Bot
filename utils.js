@@ -50,7 +50,7 @@ module.exports.printLog = function (txt, type, shard = null) {
 
 // =================================
 module.exports.setPrivPermissions = async function (interaction, roleId) {
-    const commands = await interaction.guild.commands.fetch()
+    const commands = await interaction.guild.commands.fetch().catch(ex => this.printLog(ex, 'ERROR'))
 
     const permissions = []
     for (const [k, v] of commands.entries()) {
@@ -66,5 +66,5 @@ module.exports.setPrivPermissions = async function (interaction, roleId) {
         }
     }
 
-    await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
+    await interaction.guild.commands.permissions.set({ fullPermissions: permissions }).catch(ex => this.printLog(ex, 'ERROR'))
 }

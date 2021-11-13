@@ -127,9 +127,9 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
         printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids)
 
         if (config.devMode) {
-            await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands })
+            await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands }).catch(ex => printLog(ex, 'ERROR', client.shard.ids))
         } else {
-            await rest.put(Routes.applicationCommands(config.botId), { body: commands })
+            await rest.put(Routes.applicationCommands(config.botId), { body: commands }).catch(ex => printLog(ex, 'ERROR', client.shard.ids))
         }
 
         printLog('Applcaition (/) commands have been refreshed.', 'INFO', client.shard.ids)
