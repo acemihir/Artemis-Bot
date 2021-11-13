@@ -269,6 +269,9 @@ module.exports.buttons = [
                     }
                 }
             }
+            console.log(commands)
+            console.log(permissions)
+
             // Set the actual permission
             await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
 
