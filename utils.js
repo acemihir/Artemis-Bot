@@ -42,14 +42,14 @@ module.exports.printLog = function (txt, type, shard = null) {
         pref = shard === null ? '[INFO ]' : `[INFO-${shard} ]`
     }
 
-    func(`${pref} ${d.getHours()}:${d.getSeconds()}: ${txt}`)
+    func(`${pref} ${d.getHours()}:${d.getSeconds()} > ${txt}`)
 }
 
 // =================================
 module.exports.setPrivPermissions = async function (commands, appId, roleId) {
     const privCommands = []
 
-    await promises.readdir(file => {
+    await promises.readdir('../commands', file => {
         if (require(`./commands/${file}`).command.privileged) {
             privCommands.push(file.split('.')[0])
         }
