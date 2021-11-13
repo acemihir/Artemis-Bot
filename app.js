@@ -97,17 +97,6 @@ client.on('interactionCreate', async (interaction) => {
     }
 })
 
-const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
-for (const file of eventFiles) {
-    const event = require(`./listeners/${file}`)
-    debugLog(client.shard.ids + ' Registering ' + file.split('.')[0])
-    if (event.once) {
-        client.once(file.split('.')[0], (...args) => event.execute(...args))
-    } else {
-        client.on(file.split('.')[0], (...args) => event.execute(...args))
-    }
-}
-
 // ================================
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 const commands = []
