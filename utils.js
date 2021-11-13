@@ -54,7 +54,6 @@ module.exports.setPrivPermissions = async function (interaction, roleId) {
 
     const permissions = []
     for (const [k, v] of commands.entries()) {
-        console.log(v.name)
         if (v.applicationId === interaction.applicationId && config.privCommands.includes(v.name)) {
             permissions.push({
                 id: k,
@@ -66,8 +65,6 @@ module.exports.setPrivPermissions = async function (interaction, roleId) {
             })
         }
     }
-
-    console.log(permissions)
 
     await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
 }

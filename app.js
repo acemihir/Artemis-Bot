@@ -60,7 +60,7 @@ client.on('interactionCreate', async (interaction) => {
             if (obj.isPremium) {
                 // Fetch the guild data from the cache
                 const cachedData = await getFromRedis(interaction.guildId)
-                
+
                 // Check if the guild does not have premium
                 if (!cachedData.premium) {
                     // Construct the row
@@ -132,7 +132,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
             await rest.put(Routes.applicationCommands(config.botId), { body: commands })
         }
 
-        printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids)
+        printLog('Applcaition (/) commands have been refreshed.', 'INFO', client.shard.ids)
     } catch (error) {
         printLog(error, 'ERROR', client.shard.ids)
     }
