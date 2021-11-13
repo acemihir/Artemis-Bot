@@ -1,11 +1,11 @@
 // ================================
-const { Client, Options } = require('discord.js-light')
+const { Client, Options, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light')
 const config = require('./config')
 const fs = require('fs')
-const { botCache } = require('./structures/cache')
+const { botCache, getFromRedis } = require('./structures/cache')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
-const { logger } = require('./utils')
+const { debugLog, infoLog, errorLog, warnLog } = require('./utils')
 
 const client = new Client({
     makeCache: Options.cacheWithLimits({
@@ -30,14 +30,77 @@ const client = new Client({
         UserManager: 0, // client.users
         VoiceStateManager: 0 // guild.voiceStates
     }),
-    intents: ['GUILDS', 'GUILD_MESSAGES'] 
+    intents: ['GUILDS', 'GUILD_MESSAGES']
 })
 
 // ================================
+client.on('ready', async (client) => {
+    // Set an interval for the activity so all guilds are loaded/cached before counting.
+    setInterval(async function () {
+        const guilds_result = await client.shard.fetchClientValues('guilds.cache.size')
+        const guildCount = guilds_result.reduce((prev, count) => prev + count, 0)
+
+        client.user.setActivity(`${guildCount} servers | ${client.shard.count} shards`, {
+            type: 'WATCHING'
+        })
+    }, 15 * 60 * 1000)
+
+    infoLog(client.shard.ids + ' Fully started.')
+})
+
+client.on('interactionCreate', async (interaction) => {
+    if (interaction.isCommand()) {
+        // Check if the used command is actually stored in the botCache object
+        if (botCache.commands.has(interaction.commandName)) {
+            // Retrieve the command data from the botCache object
+            const obj = botCache.commands.get(interaction.commandName)
+
+            // Fetch the guild data from the cache
+            const cachedData = await getFromRedis(interaction.guildId)
+
+            // Check if the command is a premium command
+            if (obj.isPremium) {
+                // Check if the guild does not have premium
+                if (!cachedData.premium) {
+                    // Construct the row
+                    const row = new MessageActionRow().addComponents(new MessageButton()
+                        .setURL('https://github.com/jerskisnow/Suggestions/wiki/Donating')
+                        .setLabel('Donating')
+                        .setEmoji('💰')
+                        .setStyle('LINK'))
+
+                    // Construct the embed
+                    const embed = new MessageEmbed()
+                    embed.setColor(config.embedColor.b)
+                    embed.setTitle('Premium Command')
+                    embed.setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
+
+                    // Send the message and return
+                    return interaction.reply({ embeds: [embed], components: [row] })
+                }
+            }
+
+            if (obj.execute.constructor.name === 'AsyncFunction') {
+                await obj.execute(interaction.client, interaction)
+            } else {
+                obj.execute(interaction.client, interaction)
+            }
+        }
+    } else if (interaction.isMessageComponent() && interaction.componentType === 'BUTTON') {
+
+        // Check if the used button is actually stored in the botCache object
+        if (botCache.buttons.has(interaction.customId)) {
+
+            // Retrieve the interaction data from the botCache object and run the binded function
+            botCache.buttons.get(interaction.customId)(interaction.client, interaction)
+        }
+    }
+})
+
 const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
 for (const file of eventFiles) {
     const event = require(`./listeners/${file}`)
-    logger.debug(client.shard.ids + ' Registering ' + file.split('.')[0])
+    debugLog(client.shard.ids + ' Registering ' + file.split('.')[0])
     if (event.once) {
         client.once(file.split('.')[0], (...args) => event.execute(...args))
     } else {
@@ -53,15 +116,13 @@ for (const file of commandFiles) {
     const cmdFile = require(`./commands/${file}`)
     const cmdName = file.split('.')[0]
 
-    console.log(cmdFile.command.privileged)
-
     // Check if the command is privileged
     if (cmdFile.command.privileged) {
         // Add the commandname to the privCommands array in the botCache
         botCache.privCommands.push(cmdName)
     }
 
-    console.log(botCache.privCommands)
+    debugLog(botCache.privCommands)
 
     delete cmdFile.command.privileged
 
@@ -83,7 +144,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
 
 (async () => {
     try {
-        logger.info(client.shard.ids + ' Started refreshing application (/) commands.')
+        infoLog(client.shard.ids + ' Started refreshing application (/) commands.')
 
         if (config.devMode) {
             await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands })
@@ -91,13 +152,13 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
             await rest.put(Routes.applicationCommands(config.botId), { body: commands })
         }
 
-        logger.info(client.shard.ids + ' Started refreshing application (/) commands.')
+        infoLog(client.shard.ids + ' Started refreshing application (/) commands.')
     } catch (error) {
-        logger.error(error)
+        errorLog(error)
     }
 })()
 
-process.on('warning', logger.warn)
+process.on('warning', warnLog)
 
 // ================================
 client.login(config.botToken)

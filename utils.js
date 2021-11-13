@@ -22,7 +22,26 @@ module.exports.filterText = function (text) {
 }
 
 // =================================
-const log4js = require('log4js')
-const logger = log4js.getLogger()
+module.exports.infoLog = function (text) {
+    const date = new Date()
 
-module.exports.logger = logger
+    console.log(`[INFO] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
+}
+
+module.exports.debugLog = function (text) {
+    const date = new Date()
+
+    console.debug(`[DEBUG] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
+}
+
+module.exports.warnLog = function (text) {
+    const date = new Date()
+
+    console.warn(`[WARN] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
+}
+
+module.exports.errorLog = function (text) {
+    const date = new Date()
+
+    console.error(`[ERROR] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
+}
