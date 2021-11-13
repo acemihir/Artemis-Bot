@@ -95,13 +95,13 @@ client.on('interactionCreate', async (interaction) => {
         }
 
         if (obj.execute.constructor.name === 'AsyncFunction') {
-            await obj.execute(interaction.client, interaction)
+            await obj.execute(interaction)
         } else {
-            obj.execute(interaction.client, interaction)
+            obj.execute(interaction)
         }
     } else if (interaction.isButton() && botCache.buttons.has(interaction.customId)) {
         // Retrieve the interaction data from the botCache object and run the binded function
-        await botCache.buttons.get(interaction.customId)(interaction.client, interaction)
+        await botCache.buttons.get(interaction.customId)(interaction)
     }
 })
 

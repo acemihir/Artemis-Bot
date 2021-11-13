@@ -16,7 +16,7 @@ const data = new SlashCommandBuilder()
             .setDescription('A brief description of your report.')
             .setRequired(true))
 
-const execute = async function (_client, interaction) {
+const execute = async function (interaction) {
     // Fetch the input/args
     const repDesc = await interaction.options.getString('description')
 

@@ -8,7 +8,7 @@ const data = new SlashCommandBuilder()
     .setName('about')
     .setDescription('Obtain general information about the bot.')
 
-const execute = function (_client, interaction) {
+const execute = function (interaction) {
     interaction.reply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.b)

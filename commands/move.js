@@ -12,7 +12,7 @@ const data = new SlashCommandBuilder()
     .addStringOption(opt => opt.setName('id').setDescription('The ID of the suggestion/report.').setRequired(true))
     .addChannelOption(opt => opt.setName('channel').setDescription('The channel where the message should be moved to.').setRequired(true))
 
-const execute = async function(_client, interaction) {
+const execute = async function(interaction) {
     const id = interaction.options.getString('id')
 
     // We must get the message id first

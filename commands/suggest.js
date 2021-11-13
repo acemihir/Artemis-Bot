@@ -16,7 +16,7 @@ const data = new SlashCommandBuilder()
             .setDescription('A brief description of your suggestion.')
             .setRequired(true))
 
-const execute = async function (_client, interaction) {
+const execute = async function (interaction) {
     // Fetch the input/args
     const sugDesc = await interaction.options.getString('description')
 
@@ -99,7 +99,7 @@ const execute = async function (_client, interaction) {
 module.exports.buttons = [
     {
         id: 'sug_upvote',
-        onClick: async function (_client, interaction) {
+        onClick: async function (interaction) {
             const response = await fetch(`${config.backend.url}/suggestions/upvote`, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -137,7 +137,7 @@ module.exports.buttons = [
     },
     {
         id: 'sug_downvote',
-        onClick: async function (_client, interaction) {
+        onClick: async function (interaction) {
             const response = await fetch(`${config.backend.url}/suggestions/downvote`, {
                 method: 'POST',
                 body: JSON.stringify({

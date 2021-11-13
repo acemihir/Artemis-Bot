@@ -21,7 +21,7 @@ const data = new SlashCommandBuilder()
             ['Config', 'config']
         ]).setRequired(false))
 
-const execute = function (_client, interaction) {
+const execute = function (interaction) {
     let desc = `\`\`\`asciidoc
 == Commands ==
 [View the autocompletion for more detailed explanation.]

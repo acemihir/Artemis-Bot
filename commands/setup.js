@@ -10,7 +10,7 @@ const data = new SlashCommandBuilder()
     .setName('setup')
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
-const execute = async function(client, interaction) {
+const execute = async function(interaction) {
     if (!interaction.member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()

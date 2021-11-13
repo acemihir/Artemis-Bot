@@ -10,7 +10,7 @@ const data = new SlashCommandBuilder()
     .setName('config')
     .setDescription('Configure the bot to have it fit your needs.')
 
-const execute = function (client, interaction) {
+const execute = function (interaction) {
     if (!interaction.member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
@@ -21,7 +21,7 @@ const execute = function (client, interaction) {
     }
 
     const embed = new MessageEmbed()
-        .setAuthor('Config -> Main', client.user.avatarURL())
+        .setAuthor('Config -> Main', interaction.client.user.avatarURL())
         .setColor(config.embedColor.b)
         .setDescription('Welcome to the config menu of Suggestions, you can use the buttons below to navigate your way through ' +
             'the options that can be configured. If you encounter a problem or a question raises then don\'t hesitate to ask our ' +
@@ -54,7 +54,7 @@ module.exports.buttons = [
     // Channel Configuration
     {
         id: 'conf_channels',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -66,7 +66,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Channels', client.user.avatarURL())
+                .setAuthor('Config -> Channels', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('Click on the button with the label corresponding to the function for which you want to change the channel.')
 
@@ -90,7 +90,7 @@ module.exports.buttons = [
     },
     {
         id: 'conf_channels_sug',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -102,7 +102,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Channels -> Suggestions', client.user.avatarURL())
+                .setAuthor('Config -> Channels -> Suggestions', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the suggestions show up? (Type: #channel)')
 
@@ -137,7 +137,7 @@ module.exports.buttons = [
     },
     {
         id: 'conf_channels_rep',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -149,7 +149,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Channels -> Reports', client.user.avatarURL())
+                .setAuthor('Config -> Channels -> Reports', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
@@ -187,7 +187,7 @@ module.exports.buttons = [
     // Role configuration
     {
         id: 'conf_roles',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -199,7 +199,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Roles', client.user.avatarURL())
+                .setAuthor('Config -> Roles', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('Click on the button with the label corresponding to the role you want to change.')
 
@@ -218,7 +218,7 @@ module.exports.buttons = [
     },
     {
         id: 'conf_roles_staff',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -230,7 +230,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Roles -> Staff', client.user.avatarURL())
+                .setAuthor('Config -> Roles -> Staff', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('Which role should be able to interact with created Suggestions & Reports? (Type: @role)')
 
@@ -268,7 +268,7 @@ module.exports.buttons = [
     // Behaviour configuration
     {
         id: 'conf_behaviour',
-        onClick: async function (client, interaction) {
+        onClick: async function (interaction) {
             if (!interaction.member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
@@ -280,7 +280,7 @@ module.exports.buttons = [
 
             // Create a new embed
             const embed = new MessageEmbed()
-                .setAuthor('Config -> Channels', client.user.avatarURL())
+                .setAuthor('Config -> Channels', interaction.client.user.avatarURL())
                 .setColor(config.embedColor.b)
                 .setDescription('This section will be available soon.')
 
