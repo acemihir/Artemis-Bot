@@ -116,7 +116,7 @@ module.exports.buttons = [
             await chnAwait.first().delete()
 
             const chnId = chnAwait.first().content.replace('<#', '').replace('>', '')
-            if (interaction.guild.channels.cache.get(chnId) == null) {
+            if ((await interaction.guild.channels.fetch(chnId)) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('That\'s not a valid channel, please run the command again.')
                 await interaction.message.edit({ embeds: [embed] })
@@ -163,7 +163,7 @@ module.exports.buttons = [
             await chnAwait.first().delete()
 
             const chnId = chnAwait.first().content.replace('<#', '').replace('>', '')
-            if (interaction.guild.channels.cache.get(chnId) == null) {
+            if ((await interaction.guild.channels.fetch(chnId)) == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('That\'s not a valid channel, please run the command again.')
                 interaction.message.edit({ embeds: [embed] })
@@ -243,7 +243,7 @@ module.exports.buttons = [
             await roleAwait.first().delete()
 
             // The role directly to check and so we can get the role name later on
-            const role = interaction.guild.roles.cache.get(roleAwait.first().content.replace('<@&', '').replace('>', ''))
+            const role = await interaction.guild.roles.fetch(roleAwait.first().content.replace('<@&', '').replace('>', ''))
             if (role == null) {
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('That\'s not a valid role, please run the command again.')

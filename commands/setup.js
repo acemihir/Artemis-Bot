@@ -35,7 +35,7 @@ const execute = async function(client, interaction) {
     await sugAwait.first().delete()
 
     const sugChannelId = sugAwait.first().content.replace('<#', '').replace('>', '')
-    if (interaction.guild.channels.cache.get(sugChannelId) == null) {
+    if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
         return interaction.editReply({ embeds: [embed] })
@@ -50,7 +50,7 @@ const execute = async function(client, interaction) {
     await repAwait.first().delete()
 
     const repChannelId = sugAwait.first().content.replace('<#', '').replace('>', '')
-    if (interaction.guild.channels.cache.get(sugChannelId) == null) {
+    if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
         return interaction.editReply({ embeds: [embed] })
@@ -65,7 +65,7 @@ const execute = async function(client, interaction) {
     await roleAwait.first().delete()
 
     const roleId = roleAwait.first().content.replace('<@&', '').replace('>', '')
-    if (interaction.guild.roles.cache.get(roleId) == null) {
+    if ((await interaction.guild.roles.fetch(roleId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid role, please run the command again.')
         return interaction.editReply({ embeds: [embed] })

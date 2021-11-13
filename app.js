@@ -1,12 +1,36 @@
 // ================================
-const { Client } = require('discord.js')
+const { Client, Options } = require('discord.js')
 const config = require('./config')
 const fs = require('fs')
 const { botCache } = require('./structures/cache')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
 
-const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] })
+const client = new Client({
+    makeCache: Options.cacheWithLimits({
+        ApplicationCommandManager: 0, // guild.commands
+        BaseGuildEmojiManager: 0, // guild.emojis
+        ChannelManager: 0, // client.channels
+        GuildChannelManager: 0, // guild.channels
+        GuildBanManager: 0, // guild.bans
+        GuildInviteManager: 0, // guild.invites
+        GuildManager: Infinity, // client.guilds
+        GuildMemberManager: 0, // guild.members
+        GuildStickerManager: 0, // guild.stickers
+        MessageManager: 0, // channel.messages
+        PermissionOverwriteManager: 0, // channel.permissionOverwrites
+        PresenceManager: 0, // guild.presences
+        ReactionManager: 0, // message.reactions
+        ReactionUserManager: 0, // reaction.users
+        RoleManager: 0, // guild.roles
+        StageInstanceManager: 0, // guild.stageInstances
+        ThreadManager: 0, // channel.threads
+        ThreadMemberManager: 0, // threadchannel.members
+        UserManager: 0, // client.users
+        VoiceStateManager: 0 // guild.voiceStates
+    }),
+    intents: ['GUILDS', 'GUILD_MESSAGES'] 
+})
 
 // ================================
 const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
