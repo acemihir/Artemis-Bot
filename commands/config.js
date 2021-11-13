@@ -2,8 +2,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light')
 const config = require('../config')
-const { setInRedis, getFromRedis, botCache } = require('../structures/cache')
+const { setInRedis, getFromRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
+const { setPrivPermissions } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -251,29 +252,9 @@ module.exports.buttons = [
                 interaction.deferUpdate().catch(console.error)
             }
 
-            // Update the discord command permission
+            // Update command permissions
             const commands = await interaction.guild.commands.fetch()
-            const permissions = []
-            // Loop through all the commands
-            for (const [key, value] of commands.entries()) {
-                if (value.applicationId == interaction.applicationId) {
-                    if (botCache.privCommands.includes(value.name)) {
-                        permissions.push({
-                            id: key,
-                            permissions: [{
-                                id: role.id,
-                                type: 'ROLE',
-                                permission: true
-                            }]
-                        })
-                    }
-                }
-            }
-            console.log(commands)
-            console.log(permissions)
-
-            // Set the actual permission
-            await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
+            await setPrivPermissions(commands, interaction.applicationId, role.id)
 
             embed.setColor(config.embedColor.g)
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)

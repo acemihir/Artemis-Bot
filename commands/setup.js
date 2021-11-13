@@ -1,9 +1,10 @@
 // ================================
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js-light')
-const { getFromRedis, setInRedis, botCache } = require('../structures/cache')
+const { getFromRedis, setInRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
 const config = require('../config')
+const { setPrivPermissions } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -83,26 +84,9 @@ const execute = async function(client, interaction) {
     obj['rep_channel'] = repChannelId
     setInRedis(interaction.guildId, obj)
 
-    // Update the discord command permission
+    // Update command permissions
     const commands = await interaction.guild.commands.fetch()
-    const permissions  = []
-    // Loop through all the commands
-    for (const [key, value] of commands.entries()) {
-        if (value.applicationId == interaction.applicationId) {
-            if (botCache.privCommands.includes(value.name)) {
-                permissions.push({
-                    id: key,
-                    permissions: [{
-                        id: roleId,
-                        type: 'ROLE',
-                        permission: true,
-                    }]
-                })
-            }
-        }
-    }
-    // Set the actual permission
-    await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
+    await setPrivPermissions(commands, interaction.applicationId, roleId)
     
     // Update the database values
     runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text WHERE id = $3::text', [sugChannelId, repChannelId, interaction.guildId])

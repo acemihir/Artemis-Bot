@@ -8,8 +8,7 @@ const { runQuery } = require('../structures/database')
 // ================================
 module.exports.botCache = {
     commands: new Map(),
-    buttons: new Map(),
-    privCommands: []
+    buttons: new Map()
 }
 
 // ================================

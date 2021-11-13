@@ -105,16 +105,6 @@ for (const file of commandFiles) {
     const cmdFile = require(`./commands/${file}`)
     const cmdName = file.split('.')[0]
 
-    // Check if the command is privileged
-    if (cmdFile.command.privileged) {
-        // Add the commandname to the privCommands array in the botCache
-        botCache.privCommands.push(cmdName)
-    }
-
-    printLog(botCache.privCommand, 'DEBUG', client.shard.ids)
-
-    delete cmdFile.command.privileged
-
     // Set the command
     botCache.commands.set(cmdName, cmdFile.command)
     // Check if there are any buttons
