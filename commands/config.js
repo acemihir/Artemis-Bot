@@ -4,7 +4,6 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-li
 const config = require('../config')
 const { setInRedis, getFromRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
-const { setPrivPermissions } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -252,8 +251,11 @@ module.exports.buttons = [
                 interaction.deferUpdate().catch(console.error)
             }
 
-            // Update command permissions
-            await setPrivPermissions(interaction, role.id)
+            const currentCache = await getFromRedis(interaction.guildId)
+            currentCache['staff_role'] = role.id
+            await setInRedis(interaction.guildId, currentCache)
+
+            await runQuery('UPDATE servers SET staff_role = $1::text WHERE id = $2::text', [role.id, interaction.guildId])
 
             embed.setColor(config.embedColor.g)
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)
@@ -291,8 +293,6 @@ module.exports.buttons = [
 
 // ================================
 module.exports.command = {
-    isPremium: false,
-
     data: data,
     execute: execute
 }

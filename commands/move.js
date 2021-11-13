@@ -122,7 +122,7 @@ const execute = async function(_client, interaction) {
 
 // ================================
 module.exports.command = {
-    isPremium: false,
+    privileged: true,
 
     data: data,
     execute: execute

@@ -47,24 +47,3 @@ module.exports.printLog = function (txt, type, shard = null) {
 
     func(`${pref} ${addZeroBefore(d.getHours())}:${addZeroBefore(d.getSeconds())} > ${txt}`)
 }
-
-// =================================
-module.exports.setPrivPermissions = async function (interaction, roleId) {
-    const commands = await interaction.guild.commands.fetch().catch(ex => this.printLog(ex, 'ERROR'))
-
-    const permissions = []
-    for (const [k, v] of commands.entries()) {
-        if (v.applicationId === interaction.applicationId && config.privCommands.includes(v.name)) {
-            permissions.push({
-                id: k,
-                permissions: [{
-                    id: roleId,
-                    type: 'ROLE',
-                    permission: true,
-                }]
-            })
-        }
-    }
-
-    await interaction.guild.commands.permissions.set({ fullPermissions: permissions }).catch(ex => this.printLog(ex, 'ERROR'))
-}

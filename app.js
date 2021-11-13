@@ -50,51 +50,52 @@ client.on('ready', async (client) => {
 })
 
 client.on('interactionCreate', async (interaction) => {
-    if (interaction.isCommand()) {
-        // Check if the used command is actually stored in the botCache object
-        if (botCache.commands.has(interaction.commandName)) {
-            // Retrieve the command data from the botCache object
-            const obj = botCache.commands.get(interaction.commandName)
+    if (interaction.isCommand() && botCache.commands.has(interaction.commandName)) {
+        const obj = botCache.commands.get(interaction.commandName)
 
-            // Check if the command is a premium command
-            if (obj.isPremium) {
-                // Fetch the guild data from the cache
-                const cachedData = await getFromRedis(interaction.guildId)
+        // This looks odd but saves us from calling getFromRedis twice
+        if (obj.isPremium || obj.privileged) {
+            const cachedData = await getFromRedis(interaction.guildId)
 
-                // Check if the guild does not have premium
-                if (!cachedData.premium) {
-                    // Construct the row
-                    const row = new MessageActionRow().addComponents(new MessageButton()
+            if (obj.isPremium && !cachedData['premium']) {
+                return interaction.reply({
+                    embeds: [new MessageEmbed()
+                        .setColor(config.embedColor.b)
+                        .setTitle('Premium Command')
+                        .setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
+                    ], components: [new MessageActionRow().addComponents(new MessageButton()
                         .setURL('https://github.com/jerskisnow/Suggestions/wiki/Donating')
                         .setLabel('Donating')
                         .setEmoji('💰')
-                        .setStyle('LINK'))
+                        .setStyle('LINK'))]
+                })
+            }
 
-                    // Construct the embed
-                    const embed = new MessageEmbed()
-                    embed.setColor(config.embedColor.b)
-                    embed.setTitle('Premium Command')
-                    embed.setDescription('The command you tried to use is only for premium servers. See the button below for more information.')
+            if (obj.privileged) {
+                const embed = new MessageEmbed()
+                embed.setColor(config.embedColor.r)
+                embed.setTitle('Privileged Command')
 
-                    // Send the message and return
-                    return interaction.reply({ embeds: [embed], components: [row] })
+                if (!cachedData['staff_role']) {
+                    embed.setDescription('This command and privileged and therefore only usable by members with the staff role. (No staff role set)')
+                    return interaction.reply({ embeds: [embed] })
+                }
+
+                const staffRole = await interaction.guild.roles.fetch(cachedData['staff_role'])
+                if (!staffRole) {
+                    embed.setDescription('This command and privileged and therefore only usable by members with the staff role. (Invalid staff role set)')
+                    return interaction.reply({ embeds: [embed] })
+                }
+
+                if (!interaction.member.roles.cache.has(staffRole.id)) {
+                    embed.setDescription('This command and privileged and therefore only usable by members with the staff role.')
+                    return interaction.reply({ embeds: [embed] })
                 }
             }
-
-            if (obj.execute.constructor.name === 'AsyncFunction') {
-                await obj.execute(interaction.client, interaction)
-            } else {
-                obj.execute(interaction.client, interaction)
-            }
         }
-    } else if (interaction.isMessageComponent() && interaction.componentType === 'BUTTON') {
-
-        // Check if the used button is actually stored in the botCache object
-        if (botCache.buttons.has(interaction.customId)) {
-
-            // Retrieve the interaction data from the botCache object and run the binded function
-            botCache.buttons.get(interaction.customId)(interaction.client, interaction)
-        }
+    } else if (interaction.isButton() && botCache.buttons.has(interaction.customId)) {
+        // Retrieve the interaction data from the botCache object and run the binded function
+        botCache.buttons.get(interaction.customId)(interaction.client, interaction)
     }
 })
 

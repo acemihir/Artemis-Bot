@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS servers (
     -- Required
     id TEXT PRIMARY KEY NOT NULL,
     premium BOOLEAN NOT NULL,
+    staff_role TEXT,
 
     -- Extra
     sug_channel TEXT,

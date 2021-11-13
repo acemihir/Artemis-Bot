@@ -4,7 +4,6 @@ const { MessageEmbed } = require('discord.js-light')
 const { getFromRedis, setInRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
 const config = require('../config')
-const { setPrivPermissions } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -82,19 +81,15 @@ const execute = async function(client, interaction) {
     var obj = await getFromRedis(interaction.guildId)
     obj['sug_channel'] = sugChannelId
     obj['rep_channel'] = repChannelId
+    obj['staff_role'] = roleId
     await setInRedis(interaction.guildId, obj)
-
-    // Update command permissions
-    await setPrivPermissions(interaction, interaction.applicationId, roleId)
     
     // Update the database values
-    runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text WHERE id = $3::text', [sugChannelId, repChannelId, interaction.guildId])
+    runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text, staff_role = $3::text WHERE id = $4::text', [sugChannelId, repChannelId, roleId, interaction.guildId])
 }
 
 // ================================
 module.exports.command = {
-    isPremium: false,
-
     data: data,
     execute: execute
 }
