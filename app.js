@@ -5,7 +5,7 @@ const fs = require('fs')
 const { botCache, getFromRedis } = require('./structures/cache')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
-const { debugLog, infoLog, errorLog, warnLog } = require('./utils')
+const { printLog } = require('./utils')
 
 const client = new Client({
     makeCache: Options.cacheWithLimits({
@@ -45,7 +45,7 @@ client.on('ready', async (client) => {
         })
     }, 15 * 60 * 1000)
 
-    infoLog(client.shard.ids + ' Fully started.')
+    printLog('Fully started.', 'INFO', client.shard.ids)
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -111,7 +111,7 @@ for (const file of commandFiles) {
         botCache.privCommands.push(cmdName)
     }
 
-    debugLog(botCache.privCommands)
+    printLog(botCache.privCommand, 'DEBUG', client.shard.ids)
 
     delete cmdFile.command.privileged
 
@@ -133,7 +133,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
 
 (async () => {
     try {
-        infoLog(client.shard.ids + ' Started refreshing application (/) commands.')
+        printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids)
 
         if (config.devMode) {
             await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands })
@@ -141,13 +141,13 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
             await rest.put(Routes.applicationCommands(config.botId), { body: commands })
         }
 
-        infoLog(client.shard.ids + ' Started refreshing application (/) commands.')
+        printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids)
     } catch (error) {
-        errorLog(error)
+        printLog(error, 'ERROR', client.shard.ids)
     }
 })()
 
-process.on('warning', warnLog)
+process.on('warning', w => printLog(w, 'WARN', client.shard.ids))
 
 // ================================
 client.login(config.botToken)

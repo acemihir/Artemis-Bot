@@ -22,26 +22,24 @@ module.exports.filterText = function (text) {
 }
 
 // =================================
-module.exports.infoLog = function (text) {
-    const date = new Date()
+module.exports.printLog = function (txt, type, shard = null) {
+    const d = new Date()
 
-    console.log(`[INFO] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
-}
+    let func, pref
 
-module.exports.debugLog = function (text) {
-    const date = new Date()
+    if (type === 'DEBUG') {
+        func = console.debug
+        pref = shard === null ? '[DEBUG]' : `[DEBUG-${shard}]`
+    } else if (type === 'WARN') {
+        func = console.warn
+        pref = shard === null ? '[WARN_]' : `[WARN-${shard}_]`
+    } else if (type === 'ERROR') {
+        func = console.error
+        pref = shard === null ? '[ERROR]' : `[ERROR-${shard}]`
+    } else {
+        func = console.info
+        pref = shard === null ? '[INFO_]' : `[INFO-${shard}_]`
+    }
 
-    console.debug(`[DEBUG] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
-}
-
-module.exports.warnLog = function (text) {
-    const date = new Date()
-
-    console.warn(`[WARN] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
-}
-
-module.exports.errorLog = function (text) {
-    const date = new Date()
-
-    console.error(`[ERROR] ${date.getHours()}:${date.getSeconds()} >> ${text}`)
+    func(`${pref} ${d.getHours()}:${d.getSeconds()}: ${txt}`)
 }
