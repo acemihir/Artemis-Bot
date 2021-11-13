@@ -1,5 +1,6 @@
 const { ShardingManager } = require('discord.js-light')
 const config = require('./config')
+const { printLog } = require('./utils')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 const manager = new ShardingManager('app.js', { token: config.botToken, totalShards: 'auto', respawn: true })
@@ -19,7 +20,7 @@ if (!config.devMode) {
             })
         })
 
-        console.log(`Posted stats to TopGG (server_count: ${guildCount}, shard_count: ${manager.totalShards})`)
+        printLog(`Posted stats to TopGG (server_count: ${guildCount}, shard_count: ${manager.totalShards})`, 'INFO')
 
         // BotsForDiscord (discords.com/bots)
         await fetch(`https://discords.com/bots/api/bot/${config.botId}`, {
@@ -33,7 +34,7 @@ if (!config.devMode) {
             }
         })
 
-        console.log(`Posted stats to BotsForDiscord (server_count: ${guildCount})`)
+        printLog(`Posted stats to BotsForDiscord (server_count: ${guildCount})`, 'INFO')
 
         // Discord Bots (discord.bots.gg)
         // TODO: This
@@ -43,5 +44,5 @@ if (!config.devMode) {
     }, 1800000)
 }
 
-manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`))
+manager.on('shardCreate', shard => printLog('Launched shard!', 'INFO', shard.id))
 manager.spawn({ timeout: -1 }).catch(console.error)
