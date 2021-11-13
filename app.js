@@ -56,11 +56,11 @@ client.on('interactionCreate', async (interaction) => {
             // Retrieve the command data from the botCache object
             const obj = botCache.commands.get(interaction.commandName)
 
-            // Fetch the guild data from the cache
-            const cachedData = await getFromRedis(interaction.guildId)
-
             // Check if the command is a premium command
             if (obj.isPremium) {
+                // Fetch the guild data from the cache
+                const cachedData = await getFromRedis(interaction.guildId)
+                
                 // Check if the guild does not have premium
                 if (!cachedData.premium) {
                     // Construct the row
