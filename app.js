@@ -51,6 +51,7 @@ client.on('ready', async (client) => {
 
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand() && botCache.commands.has(interaction.commandName)) {
+        console.log('Running command')
         const obj = botCache.commands.get(interaction.commandName)
 
         // This looks odd but saves us from calling getFromRedis twice
@@ -94,8 +95,9 @@ client.on('interactionCreate', async (interaction) => {
             }
         }
     } else if (interaction.isButton() && botCache.buttons.has(interaction.customId)) {
+        console.log('Running button')
         // Retrieve the interaction data from the botCache object and run the binded function
-        botCache.buttons.get(interaction.customId)(interaction.client, interaction)
+        await botCache.buttons.get(interaction.customId)(interaction.client, interaction)
     }
 })
 
