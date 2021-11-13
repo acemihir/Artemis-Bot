@@ -59,10 +59,13 @@ module.exports.setPrivPermissions = async function (interaction, roleId) {
         }
     })
 
+    console.log(privCommands)
+
     const commands = await interaction.guild.commands.fetch()
 
     const permissions = []
     for (const [k, v] of commands.entries()) {
+        console.log('cmd entry loop')
         if (v.applicationId === interaction.applicationId && privCommands.includes(v.name)) {
             permissions.push({
                 id: k,
