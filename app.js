@@ -7,6 +7,7 @@ const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
 const { printLog } = require('./utils')
 
+// ================================
 const client = new Client({
     makeCache: Options.cacheWithLimits({
         ApplicationCommandManager: 0, // guild.commands
@@ -137,7 +138,9 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
     }
 })()
 
+// ================================
+// Some logging
 process.on('warning', w => printLog(w, 'WARN', client.shard.ids))
 
-// ================================
+// Client login
 client.login(config.botToken)

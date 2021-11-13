@@ -44,5 +44,5 @@ if (!config.devMode) {
     }, 1800000)
 }
 
-manager.on('shardCreate', shard => printLog('Launched shard!', 'INFO', shard.id))
+manager.on('shardCreate', shard => printLog('Launched shard.', 'INFO', shard.id))
 manager.spawn({ timeout: -1 }).catch(console.error)

@@ -23,6 +23,10 @@ module.exports.filterText = function (text) {
 }
 
 // =================================
+function addZeroBefore(n) {
+    return (n < 10 ? '0' : '') + n
+}
+
 module.exports.printLog = function (txt, type, shard = null) {
     const d = new Date()
 
@@ -42,14 +46,14 @@ module.exports.printLog = function (txt, type, shard = null) {
         pref = shard === null ? '[INFO ]' : `[INFO-${shard} ]`
     }
 
-    func(`${pref} ${d.getHours()}:${d.getSeconds()} > ${txt}`)
+    func(`${pref} ${addZeroBefore(d.getHours())}:${addZeroBefore(d.getSeconds())} > ${txt}`)
 }
 
 // =================================
 module.exports.setPrivPermissions = async function (commands, appId, roleId) {
     const privCommands = []
 
-    await promises.readdir('../commands', file => {
+    await promises.readdir('./commands', file => {
         if (require(`./commands/${file}`).command.privileged) {
             privCommands.push(file.split('.')[0])
         }
@@ -68,6 +72,8 @@ module.exports.setPrivPermissions = async function (commands, appId, roleId) {
             })
         }
     }
+
+    console.log(permissions)
 
     await commands.permissions.set({ fullPermissions: permissions })
 }
