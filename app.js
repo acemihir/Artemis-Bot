@@ -36,6 +36,7 @@ const client = new Client({
 const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
 for (const file of eventFiles) {
     const event = require(`./listeners/${file}`)
+    console.log('Registering ' + file.split('.')[0])
     if (event.once) {
         client.once(file.split('.')[0], (...args) => event.execute(...args))
     } else {
