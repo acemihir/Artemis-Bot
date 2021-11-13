@@ -1,3 +1,5 @@
+const { logger } = require('../utils')
+
 module.exports = {
     once: true,
     execute(client) {
@@ -11,6 +13,6 @@ module.exports = {
             })
         }, 15 * 60 * 1000)
 
-        console.log('Fully started.')
+        logger.debug(client.shard.ids + ' Fully started.')
     },
 }

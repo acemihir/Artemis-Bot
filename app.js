@@ -5,6 +5,7 @@ const fs = require('fs')
 const { botCache } = require('./structures/cache')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('./node_modules/discord-api-types/v9')
+const { logger } = require('./utils')
 
 const client = new Client({
     makeCache: Options.cacheWithLimits({
@@ -36,7 +37,7 @@ const client = new Client({
 const eventFiles = fs.readdirSync('./listeners').filter(file => file.endsWith('.js'))
 for (const file of eventFiles) {
     const event = require(`./listeners/${file}`)
-    console.log('Registering ' + file.split('.')[0])
+    logger.debug(client.shard.ids + ' Registering ' + file.split('.')[0])
     if (event.once) {
         client.once(file.split('.')[0], (...args) => event.execute(...args))
     } else {
@@ -45,12 +46,14 @@ for (const file of eventFiles) {
 }
 
 // ================================
-const commands = []
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+const commands = []
 
 for (const file of commandFiles) {
     const cmdFile = require(`./commands/${file}`)
     const cmdName = file.split('.')[0]
+
+    console.log(cmdFile.command.privileged)
 
     // Check if the command is privileged
     if (cmdFile.command.privileged) {
@@ -58,7 +61,9 @@ for (const file of commandFiles) {
         botCache.privCommands.push(cmdName)
     }
 
-    // delete cmdFile.command.privileged
+    console.log(botCache.privCommands)
+
+    delete cmdFile.command.privileged
 
     // Set the command
     botCache.commands.set(cmdName, cmdFile.command)
@@ -78,7 +83,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
 
 (async () => {
     try {
-        console.log('Started refreshing application (/) commands.')
+        logger.info(client.shard.ids + ' Started refreshing application (/) commands.')
 
         if (config.devMode) {
             await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands })
@@ -86,13 +91,13 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
             await rest.put(Routes.applicationCommands(config.botId), { body: commands })
         }
 
-        console.log('Successfully reloaded application (/) commands.')
+        logger.info(client.shard.ids + ' Started refreshing application (/) commands.')
     } catch (error) {
-        console.error(error)
+        logger.error(error)
     }
 })()
 
-process.on('warning', console.warn)
+process.on('warning', logger.warn)
 
 // ================================
 client.login(config.botToken)
