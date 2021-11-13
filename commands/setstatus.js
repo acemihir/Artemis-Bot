@@ -9,7 +9,6 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const data = new SlashCommandBuilder()
     .setName('setstatus')
     .setDescription('Change the status of a suggestion/report/poll.')
-    .setDefaultPermission(false)
 
     // Suggestions
     .addSubcommand(scmd =>

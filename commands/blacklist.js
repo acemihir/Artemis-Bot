@@ -14,7 +14,6 @@ const data = new SlashCommandBuilder()
                 ['Reports', 'reports'],
                 ['All', 'all']
             ]).setRequired(true))
-    .setDefaultPermission(false)
 
 const execute = function(client, interaction) {
     // const member = interaction.options.getMember('member')

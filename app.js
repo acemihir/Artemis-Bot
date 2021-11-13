@@ -133,7 +133,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
             await rest.put(Routes.applicationCommands(config.botId), { body: commands }).catch(ex => printLog(ex, 'ERROR', client.shard.ids))
         }
 
-        printLog('Applcaition (/) commands have been refreshed.', 'INFO', client.shard.ids)
+        printLog('Application (/) commands have been refreshed.', 'INFO', client.shard.ids)
     } catch (error) {
         printLog(error, 'ERROR', client.shard.ids)
     }

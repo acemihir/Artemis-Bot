@@ -9,7 +9,6 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const data = new SlashCommandBuilder()
     .setName('move')
     .setDescription('Move a suggestion/report.')
-    .setDefaultPermission(false)  
     .addStringOption(opt => opt.setName('id').setDescription('The ID of the suggestion/report.').setRequired(true))
     .addChannelOption(opt => opt.setName('channel').setDescription('The channel where the message should be moved to.').setRequired(true))
 
