@@ -46,7 +46,7 @@ client.on('ready', async (client) => {
         })
     }, 15 * 60 * 1000)
 
-    printLog('Fully started.', 'INFO', client.shard.ids)
+    printLog('\u001b[32mFully initialized and ready.\u001b[0m', 'INFO', client.shard.ids)
 })
 
 client.on('interactionCreate', async (interaction) => {

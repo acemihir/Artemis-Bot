@@ -85,8 +85,7 @@ const execute = async function(client, interaction) {
     setInRedis(interaction.guildId, obj)
 
     // Update command permissions
-    const commands = await interaction.guild.commands.fetch()
-    await setPrivPermissions(commands, interaction.applicationId, roleId)
+    await setPrivPermissions(interaction, interaction.applicationId, roleId)
     
     // Update the database values
     runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text WHERE id = $3::text', [sugChannelId, repChannelId, interaction.guildId])

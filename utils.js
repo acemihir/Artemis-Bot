@@ -50,7 +50,7 @@ module.exports.printLog = function (txt, type, shard = null) {
 }
 
 // =================================
-module.exports.setPrivPermissions = async function (commands, appId, roleId) {
+module.exports.setPrivPermissions = async function (interaction, roleId) {
     const privCommands = []
 
     await promises.readdir('./commands', file => {
@@ -59,9 +59,11 @@ module.exports.setPrivPermissions = async function (commands, appId, roleId) {
         }
     })
 
+    const commands = await interaction.guild.commands.fetch()
+
     const permissions = []
     for (const [k, v] of commands.entries()) {
-        if (v.applicationId === appId && privCommands.includes(v.name)) {
+        if (v.applicationId === interaction.applicationId && privCommands.includes(v.name)) {
             permissions.push({
                 id: k,
                 permissions: [{
@@ -75,5 +77,5 @@ module.exports.setPrivPermissions = async function (commands, appId, roleId) {
 
     console.log(permissions)
 
-    await commands.permissions.set({ fullPermissions: permissions })
+    await interaction.guild.commands.permissions.set({ fullPermissions: permissions })
 }

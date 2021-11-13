@@ -253,8 +253,7 @@ module.exports.buttons = [
             }
 
             // Update command permissions
-            const commands = await interaction.guild.commands.fetch()
-            await setPrivPermissions(commands, interaction.applicationId, role.id)
+            await setPrivPermissions(interaction, role.id)
 
             embed.setColor(config.embedColor.g)
             embed.setDescription(`The ${role.name} can now interact with Suggestions & Reports.`)
