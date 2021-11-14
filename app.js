@@ -3,9 +3,9 @@ const { Client, Options, MessageEmbed, MessageActionRow, MessageButton } = requi
 const config = require('./config')
 const fs = require('fs')
 const { botCache, getFromRedis } = require('./structures/cache')
-const { REST } = require('@discordjs/rest')
-const { Routes } = require('./node_modules/discord-api-types/v9')
 const { printLog } = require('./utils')
+
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 // ================================
 const client = new Client({
@@ -24,7 +24,7 @@ const client = new Client({
         PresenceManager: 0, // guild.presences
         ReactionManager: 0, // message.reactions
         ReactionUserManager: 0, // reaction.users
-        RoleManager: Infinity, // guild.roles
+        RoleManager: 0, // guild.roles
         StageInstanceManager: 0, // guild.stageInstances
         ThreadManager: 0, // channel.threads
         ThreadMemberManager: 0, // threadchannel.members
@@ -50,6 +50,7 @@ client.on('ready', async (client) => {
 })
 
 client.on('interactionCreate', async (interaction) => {
+    console.log(interaction.member.roles.cache.has('693378835819003964'))
     if (interaction.isCommand() && botCache.commands.has(interaction.commandName)) {
         const obj = botCache.commands.get(interaction.commandName)
 
@@ -127,19 +128,24 @@ for (const file of commandFiles) {
     commands.push(cmdFile.command.data.toJSON())
 }
 
-const rest = new REST({ version: '9' }).setToken(config.botToken);
-
 (async () => {
     try {
         printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids)
 
-        if (config.devMode) {
-            await rest.put(Routes.applicationGuildCommands(config.botId, config.devGuild), { body: commands }).catch(ex => printLog(ex, 'ERROR', client.shard.ids))
-        } else {
-            await rest.put(Routes.applicationCommands(config.botId), { body: commands }).catch(ex => printLog(ex, 'ERROR', client.shard.ids))
-        }
+        const url = config.devMode ?
+            `https://discord.com/api/v8/applications/${config.botId}/guilds/${config.devGuild}/commands` :
+            `https://discord.com/api/v8/applications/${config.botId}/commands`
 
-        printLog('Application (/) commands have been refreshed.', 'INFO', client.shard.ids)
+        const res = await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(commands),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bot ' + config.botToken
+            }
+        })
+
+        printLog(`Application (/) commands PUT response: ${res.statusText} (${res.status})`, 'INFO', client.shard.ids)
     } catch (error) {
         printLog(error, 'ERROR', client.shard.ids)
     }
