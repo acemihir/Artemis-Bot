@@ -50,7 +50,6 @@ client.on('ready', async (client) => {
 })
 
 client.on('interactionCreate', async (interaction) => {
-    console.log(interaction.member.roles.cache.has('693378835819003964'))
     if (interaction.isCommand() && botCache.commands.has(interaction.commandName)) {
         const obj = botCache.commands.get(interaction.commandName)
 
