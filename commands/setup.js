@@ -11,7 +11,11 @@ const data = new SlashCommandBuilder()
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
 const execute = async function(interaction) {
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+    let member = interaction.member
+    if (!member) {
+        member = await interaction.guild.members.fetch()
+    }
+    if (!member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)

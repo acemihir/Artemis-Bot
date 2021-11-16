@@ -153,6 +153,8 @@ for (const file of commandFiles) {
 // ================================
 // Some logging
 process.on('warning', w => printLog(w, 'WARN', client.shard.ids))
+process.on('unhandledRejection', ex => printLog(ex, 'ERROR', client.shard.ids))
+process.on('uncaughtException', ex => printLog(ex, 'ERROR', client.shard.ids))
 
 // Client login
 client.login(config.botToken)

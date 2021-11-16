@@ -10,8 +10,12 @@ const data = new SlashCommandBuilder()
     .setName('config')
     .setDescription('Configure the bot to have it fit your needs.')
 
-const execute = function (interaction) {
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+const execute = async function (interaction) {
+    let member = interaction.member
+    if (!member) {
+        member = await interaction.guild.members.fetch()
+    }
+    if (member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
