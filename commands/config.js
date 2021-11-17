@@ -4,6 +4,7 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-li
 const config = require('../config')
 const { setInRedis, getFromRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
+const { checkPermission } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -11,13 +12,11 @@ const data = new SlashCommandBuilder()
     .setDescription('Configure the bot to have it fit your needs.')
 
 const execute = async function (interaction) {
-    let member = interaction.member
-    if (member == null || member.permissions == null) {
-        member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-    }
+    const member = await interaction.member.fetch()
+    console.log(member.user.tag)
     console.log(member.permissions.has('ADMINISTRATOR'))
     console.log(member.permissions.toArray() + '\n======================')
-    if (!member.permissions.has('ADMINISTRATOR')) {
+    if (!checkPermission(interaction, 'ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)

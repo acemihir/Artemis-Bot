@@ -11,10 +11,8 @@ const data = new SlashCommandBuilder()
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
 const execute = async function(interaction) {
-    let member = interaction.member
-    if (member == null || member.permissions == null) {
-        member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-    }
+    const member = await interaction.member.fetch()
+    console.log(member.user.tag)
     console.log(member.permissions.has('ADMINISTRATOR'))
     console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has('ADMINISTRATOR')) {
