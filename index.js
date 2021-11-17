@@ -3,7 +3,7 @@ const config = require('./config')
 const { printLog } = require('./utils')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-const manager = new ShardingManager('app.js', { token: config.botToken, totalShards: 'auto', respawn: true })
+const manager = new ShardingManager('app.js', { token: config.botToken })
 
 // Production stuff
 if (!config.devMode) {
@@ -45,4 +45,4 @@ if (!config.devMode) {
 }
 
 manager.on('shardCreate', shard => printLog('Launched shard.', 'INFO', shard.id))
-manager.spawn({ timeout: -1 }).catch(console.error)
+manager.spawn().catch(console.error)
