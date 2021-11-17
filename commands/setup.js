@@ -12,9 +12,11 @@ const data = new SlashCommandBuilder()
 
 const execute = async function(interaction) {
     let member = interaction.member
-    if (member == null) {
+    if (member == null || member.permissions == null) {
         member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
     }
+    console.log(member.permissions.has('ADMINISTRATOR'))
+    console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
