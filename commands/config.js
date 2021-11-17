@@ -4,7 +4,6 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-li
 const config = require('../config')
 const { setInRedis, getFromRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
-const { checkPermission } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -16,7 +15,7 @@ const execute = async function (interaction) {
     console.log(member.user.tag)
     console.log(member.permissions.has('ADMINISTRATOR'))
     console.log(member.permissions.toArray() + '\n======================')
-    if (!checkPermission(interaction, 'ADMINISTRATOR')) {
+    if (!member.permissions.has(interaction, 'ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
