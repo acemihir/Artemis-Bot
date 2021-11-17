@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { Constants, MessageEmbed } = require('discord.js-light')
 const config = require('../config')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -12,7 +12,9 @@ const data = new SlashCommandBuilder()
     .addStringOption(opt => opt.setName('id').setDescription('The ID of the suggestion/report.').setRequired(true))
     .addChannelOption(opt => opt.setName('channel').setDescription('The channel where the message should be moved to.').setRequired(true))
 
-const execute = async function(interaction) {
+const execute = async function (interaction) {
+    await interaction.deferReply()
+
     const id = interaction.options.getString('id')
 
     // We must get the message id first
@@ -25,13 +27,13 @@ const execute = async function(interaction) {
 
     const body = await res.json()
     if (!body['success']) {
-        return interaction.reply(body['error'])
+        return await interaction.editReply(body['error'])
     }
 
     // Check old channel
     const channel = await interaction.guild.channels.fetch(body.data[0].channel)
     if (channel == null) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
@@ -47,7 +49,7 @@ const execute = async function(interaction) {
         if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
             console.log(ex)
         }
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find the corresponding message.')
@@ -58,7 +60,7 @@ const execute = async function(interaction) {
     // New channel checks
     const newChannel = interaction.options.getChannel('channel')
     if (newChannel == null || newChannel.deleted) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find that channel.')
@@ -75,8 +77,8 @@ const execute = async function(interaction) {
     try {
         newMsg = await newChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
-        console.error(ex)
-        return interaction.reply({
+        // console.error(ex)
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Something went wrong while creating the new message.')
@@ -102,8 +104,8 @@ const execute = async function(interaction) {
     try {
         await msg.delete()
     } catch (ex) {
-        console.error(ex)
-        return interaction.reply({
+        // console.error(ex)
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Could not delete the message, delete it manually.')
@@ -111,7 +113,7 @@ const execute = async function(interaction) {
         })
     }
 
-    interaction.reply({
+    await interaction.editReply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.g)
             .setDescription('Successfully moved the message to another channel.')

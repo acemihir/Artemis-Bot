@@ -17,12 +17,11 @@ const data = new SlashCommandBuilder()
             .setRequired(true))
 
 const execute = async function (interaction) {
-    // Fetch the input/args
-    const sugDesc = await interaction.options.getString('description')
+    await interaction.deferReply()
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.sug_channel == null) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Please make sure an administrator has configured the suggestion channel.')
@@ -32,7 +31,7 @@ const execute = async function (interaction) {
 
     const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
     if (sugChannel == null) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('The configured suggestion channel was not found.')
@@ -41,43 +40,41 @@ const execute = async function (interaction) {
     }
 
     const sugId = createId('s_')
-
-    const embed = new MessageEmbed()
-        .setAuthor(interaction.user.tag, interaction.user.avatarURL())
-        .setColor(config.embedColor.b)
-        .setDescription(`**Description:** ${filterText(sugDesc)}\n\n**Status:** Open\n**Id:** ${sugId}\n\n0 - upvotes | 0 - downvotes`)
+    const sugDesc = interaction.options.getString('description')
 
     const approveEmoji = cache.approve_emoji == null ? '⬆️' : cache.approve_emoji
     const rejectEmoji = cache.reject_emoji == null ? '⬇️' : cache.reject_emoji
 
-    const row = new MessageActionRow().addComponents(
-        new MessageButton()
-            .setCustomId('sug_upvote')
-            .setLabel('Upvote')
-            .setStyle('SUCCESS')
-            .setEmoji(approveEmoji),
-        new MessageButton()
-            .setCustomId('sug_downvote')
-            .setLabel('Downvote')
-            .setStyle('DANGER')
-            .setEmoji(rejectEmoji)
-    )
-
     let msg
     try {
-        msg = await sugChannel.send({ embeds: [embed], components: [row] })
+        msg = await sugChannel.send({
+            embeds: [new MessageEmbed()
+                .setAuthor(interaction.user.tag, interaction.user.avatarURL())
+                .setColor(config.embedColor.b)
+                .setDescription(`**Description:** ${filterText(sugDesc)}\n\n**Status:** Open\n**Id:** ${sugId}\n\n0 - upvotes | 0 - downvotes`)],
+            components: [new MessageActionRow().addComponents(
+                new MessageButton()
+                    .setCustomId('sug_upvote')
+                    .setLabel('Upvote')
+                    .setStyle('SUCCESS')
+                    .setEmoji(approveEmoji),
+                new MessageButton()
+                    .setCustomId('sug_downvote')
+                    .setLabel('Downvote')
+                    .setStyle('DANGER')
+                    .setEmoji(rejectEmoji)
+            )]
+        })
     } catch (ex) {
-        console.error(ex)
+        return await interaction.reply({
+            embeds: [new MessageEmbed()
+                .setColor(config.embedColor.r)
+                .setDescription('I could not send the suggestion message. (This could be permission related)')
+            ]
+        })
     }
 
-    await interaction.reply({
-        embeds: [new MessageEmbed()
-            .setColor(config.embedColor.g)
-            .setDescription('Your suggestion has been submitted.')
-        ]
-    })
-
-    fetch(`${config.backend.url}/submit`, {
+    await fetch(`${config.backend.url}/submit`, {
         method: 'POST',
         body: JSON.stringify({
             id: sugId,
@@ -93,6 +90,13 @@ const execute = async function (interaction) {
             'Content-Type': 'application/json',
             'Api-Key': config.backend.apiKey
         }
+    })
+
+    await interaction.editReply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.g)
+            .setDescription('Your suggestion has been submitted.')
+        ]
     })
 }
 

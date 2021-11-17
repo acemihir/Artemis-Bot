@@ -17,12 +17,11 @@ const data = new SlashCommandBuilder()
             .setRequired(true))
 
 const execute = async function (interaction) {
-    // Fetch the input/args
-    const repDesc = await interaction.options.getString('description')
+    await interaction.deferReply()
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.rep_channel == null) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Please make sure an administrator has configured the report channel.')
@@ -32,7 +31,7 @@ const execute = async function (interaction) {
 
     const repChannel = await interaction.guild.channels.fetch(cache.rep_channel)
     if (repChannel == null) {
-        return interaction.reply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('The configured report channel was not found.')
@@ -41,27 +40,21 @@ const execute = async function (interaction) {
     }
 
     const repId = createId('r_')
-
-    const embed = new MessageEmbed()
-        .setAuthor(interaction.user.tag, interaction.user.avatarURL())
-        .setColor(config.embedColor.b)
-        .setDescription(`**Description:** ${filterText(repDesc)}\n\n**Status:** Open\n**Id:** ${repId}`)
+    const repDesc = await interaction.options.getString('description')
 
     let msg
     try {
-        msg = await repChannel.send({ embeds: [embed] })
+        msg = await repChannel.send({
+            embeds: [new MessageEmbed()
+                .setAuthor(interaction.user.tag, interaction.user.avatarURL())
+                .setColor(config.embedColor.b)
+                .setDescription(`**Description:** ${filterText(repDesc)}\n\n**Status:** Open\n**Id:** ${repId}`)]
+        })
     } catch (ex) {
         console.error(ex)
     }
 
-    await interaction.reply({
-        embeds: [new MessageEmbed()
-            .setColor(config.embedColor.g)
-            .setDescription('Your report has been submitted.')
-        ]
-    })
-
-    fetch(`${config.backend.url}/submit`, {
+    await fetch(`${config.backend.url}/submit`, {
         method: 'POST',
         body: JSON.stringify({
             id: repId,
@@ -77,6 +70,13 @@ const execute = async function (interaction) {
             'Content-Type': 'application/json',
             'Api-Key': config.backend.apiKey
         }
+    })
+
+    await interaction.editReply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.g)
+            .setDescription('Your report has been submitted.')
+        ]
     })
 }
 

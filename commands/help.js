@@ -62,7 +62,7 @@ const execute = function (interaction) {
         } else if (opt === 'setup') {
             desc = 'This admin only command can be used to conifgure all fundamentally required settings for this bot.'
         } else if (opt === 'config') {
-            desc = 'Configuring the bot can be done using this command. This command is admin only.' 
+            desc = 'Configuring the bot can be done using this command. This command is admin only.'
         } else if (opt === 'blacklist') {
             desc = 'Users can be blacklisted from submitting suggestions/reports after they\'ve been added to the blacklist. This command is premium only.'
         }

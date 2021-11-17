@@ -10,13 +10,13 @@ const data = new SlashCommandBuilder()
     .setName('setup')
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
-const execute = async function(interaction) {
+const execute = async function (interaction) {
     const member = await interaction.member.fetch()
     console.log(member.user.tag)
     console.log(member.permissions.has('ADMINISTRATOR'))
     console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has('ADMINISTRATOR')) {
-        return interaction.reply({
+        return await interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -42,7 +42,7 @@ const execute = async function(interaction) {
     if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
-        return interaction.editReply({ embeds: [embed] })
+        return await interaction.editReply({ embeds: [embed] })
     }
 
     // ================================
@@ -57,8 +57,8 @@ const execute = async function(interaction) {
     if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
-        return interaction.editReply({ embeds: [embed] })
-    }   
+        return await interaction.editReply({ embeds: [embed] })
+    }
 
     // ================================
     // Staff role
@@ -72,7 +72,7 @@ const execute = async function(interaction) {
     if ((await interaction.guild.roles.fetch(roleId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid role, please run the command again.')
-        return interaction.editReply({ embeds: [embed] })
+        return await interaction.editReply({ embeds: [embed] })
     }
 
     // ================================
@@ -87,9 +87,9 @@ const execute = async function(interaction) {
     obj['rep_channel'] = repChannelId
     obj['staff_role'] = roleId
     await setInRedis(interaction.guildId, obj)
-    
+
     // Update the database values
-    runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text, staff_role = $3::text WHERE id = $4::text', [sugChannelId, repChannelId, roleId, interaction.guildId])
+    await runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text, staff_role = $3::text WHERE id = $4::text', [sugChannelId, repChannelId, roleId, interaction.guildId])
 }
 
 // ================================

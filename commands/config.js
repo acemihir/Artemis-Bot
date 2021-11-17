@@ -16,7 +16,7 @@ const execute = async function (interaction) {
     console.log(member.permissions.has('ADMINISTRATOR'))
     console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has(interaction, 'ADMINISTRATOR')) {
-        return interaction.reply({
+        return await interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -50,7 +50,7 @@ const execute = async function (interaction) {
         // Add an extra ("other") category here when needed
     )
 
-    interaction.reply({ embeds: [embed], components: [row] })
+    await interaction.reply({ embeds: [embed], components: [row] })
 }
 
 module.exports.buttons = [
@@ -59,12 +59,9 @@ module.exports.buttons = [
     {
         id: 'conf_channels',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -93,18 +90,15 @@ module.exports.buttons = [
 
             // Edit the message
             await interaction.message.edit({ embeds: [embed], components: [row] })
-            interaction.deferUpdate().catch(console.error)
+            await interaction.deferUpdate().catch(console.error)
         }
     },
     {
         id: 'conf_channels_sug',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -150,12 +144,9 @@ module.exports.buttons = [
     {
         id: 'conf_channels_rep',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -169,8 +160,8 @@ module.exports.buttons = [
                 .setColor(config.embedColor.b)
                 .setDescription('In which channel should the reports show up? (Type: #channel)')
 
-            interaction.message.edit({ embeds: [embed], components: [] })
-            interaction.deferUpdate().catch(console.error)
+            await interaction.message.edit({ embeds: [embed], components: [] })
+            await interaction.deferUpdate().catch(console.error)
 
             const filter = msg => msg.author.id === interaction.user.id
 
@@ -183,7 +174,7 @@ module.exports.buttons = [
                 embed.setColor(config.embedColor.r)
                 embed.setDescription('That\'s not a valid channel, please run the command again.')
                 interaction.message.edit({ embeds: [embed] })
-                return interaction.deferUpdate().catch(console.error)
+                return await interaction.deferUpdate().catch(console.error)
             }
 
             const currentCache = await getFromRedis(interaction.guildId)
@@ -204,12 +195,9 @@ module.exports.buttons = [
     {
         id: 'conf_roles',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -233,18 +221,15 @@ module.exports.buttons = [
 
             // Edit the message
             await interaction.message.edit({ embeds: [embed], components: [row] })
-            interaction.deferUpdate().catch(console.error)
+            await interaction.deferUpdate().catch(console.error)
         }
     },
     {
         id: 'conf_roles_staff',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -293,12 +278,9 @@ module.exports.buttons = [
     {
         id: 'conf_behaviour',
         onClick: async function (interaction) {
-            let member = interaction.member
-            if (member == null) {
-                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
-            }
+            const member = await interaction.member.fetch()
             if (!member.permissions.has('ADMINISTRATOR')) {
-                return interaction.reply({
+                return await interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
                         .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
@@ -314,7 +296,7 @@ module.exports.buttons = [
 
             // Edit the message
             await interaction.message.edit({ embeds: [embed] })
-            interaction.deferUpdate().catch(console.error)
+            await interaction.deferUpdate().catch(console.error)
         }
     }
 ]

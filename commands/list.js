@@ -15,7 +15,7 @@ const data = new SlashCommandBuilder()
                 ['Reports', 'reports']
             ]).setRequired(true))
 
-const execute = function(interaction) {
+const execute = function (interaction) {
     const opt = interaction.options.getString('type')
 
     let desc = 'None'

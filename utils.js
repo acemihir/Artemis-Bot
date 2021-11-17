@@ -22,7 +22,7 @@ module.exports.filterText = function (text) {
 }
 
 // =================================
-function addZeroBefore(n) {
+const addZeroBefore = function (n) {
     return (n < 10 ? '0' : '') + n
 }
 

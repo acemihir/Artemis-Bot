@@ -16,7 +16,7 @@ bluebird.promisifyAll(redis)
 const redisClient = redis.createClient()
 module.exports.redisClient = redisClient
 
-module.exports.getFromRedis = async function(guildId) {
+module.exports.getFromRedis = async function (guildId) {
     if (await redisClient.existsAsync(guildId)) {
         return JSON.parse(await redisClient.getAsync(guildId))
     }
@@ -24,7 +24,7 @@ module.exports.getFromRedis = async function(guildId) {
     return await cacheGuild(guildId)
 }
 
-module.exports.setInRedis = async function(guildId, data) {
+module.exports.setInRedis = async function (guildId, data) {
     if (!await redisClient.existsAsync(guildId)) {
         await cacheGuild(guildId)
     }
@@ -32,7 +32,7 @@ module.exports.setInRedis = async function(guildId, data) {
     await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
 }
 
-module.exports.removeFromRedis = async function(guildId) {
+module.exports.removeFromRedis = async function (guildId) {
     if (await redisClient.existsAsync(guildId)) {
         await redisClient.delAsync(guildId)
     }

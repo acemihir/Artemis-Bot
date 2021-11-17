@@ -15,7 +15,7 @@ const data = new SlashCommandBuilder()
                 ['All', 'all']
             ]).setRequired(true))
 
-const execute = function(interaction) {
+const execute = function (interaction) {
     // const member = interaction.options.getMember('member')
     const opt = interaction.options.getString('type')
 

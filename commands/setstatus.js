@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { Constants, MessageEmbed } = require('discord.js-light')
 const config = require('../config')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -33,7 +33,7 @@ const data = new SlashCommandBuilder()
             ]).setRequired(true))
     )
 
-const execute = async function(interaction) {
+const execute = async function (interaction) {
     const id = interaction.options.getString('id')
 
     const status = interaction.options.getString('status')
@@ -59,7 +59,7 @@ const execute = async function(interaction) {
 
         const channel = await interaction.guild.channels.fetch(chnId)
         if (channel == null) {
-            return interaction.reply({
+            return await interaction.reply({
                 embeds: [new MessageEmbed()
                     .setColor(config.embedColor.r)
                     .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
@@ -112,13 +112,13 @@ const statusUpdate = async (msg, status) => {
     if (status === 'Approved' || status === 'Resolved') {
         colour = config.embedColor.g
     } else if (status === 'Considering' || status === 'Progressing') {
-        colour = config.embedColor.y  
+        colour = config.embedColor.y
     } else if (status === 'Rejected') {
         colour = config.embedColor.r
     }
 
     const embed = msg.embeds[0]
-    
+
     const descArray = embed.description.split('\n')
 
     const statusline = descArray[2]
