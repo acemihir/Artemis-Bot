@@ -12,8 +12,8 @@ const data = new SlashCommandBuilder()
 
 const execute = async function(interaction) {
     let member = interaction.member
-    if (!member) {
-        member = await interaction.guild.members.fetch()
+    if (member == null) {
+        member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
     }
     if (!member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({

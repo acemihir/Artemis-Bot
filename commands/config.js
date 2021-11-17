@@ -12,10 +12,10 @@ const data = new SlashCommandBuilder()
 
 const execute = async function (interaction) {
     let member = interaction.member
-    if (!member) {
-        member = await interaction.guild.members.fetch()
+    if (member == null) {
+        member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
     }
-    if (member.permissions.has('ADMINISTRATOR')) {
+    if (!member.permissions.has('ADMINISTRATOR')) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
@@ -59,7 +59,11 @@ module.exports.buttons = [
     {
         id: 'conf_channels',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
@@ -95,7 +99,11 @@ module.exports.buttons = [
     {
         id: 'conf_channels_sug',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
@@ -142,7 +150,11 @@ module.exports.buttons = [
     {
         id: 'conf_channels_rep',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
@@ -192,7 +204,11 @@ module.exports.buttons = [
     {
         id: 'conf_roles',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
@@ -223,7 +239,11 @@ module.exports.buttons = [
     {
         id: 'conf_roles_staff',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
@@ -273,7 +293,11 @@ module.exports.buttons = [
     {
         id: 'conf_behaviour',
         onClick: async function (interaction) {
-            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            let member = interaction.member
+            if (member == null) {
+                member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true})
+            }
+            if (!member.permissions.has('ADMINISTRATOR')) {
                 return interaction.reply({
                     embeds: [new MessageEmbed()
                         .setColor(config.embedColor.r)
