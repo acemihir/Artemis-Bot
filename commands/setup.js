@@ -12,9 +12,9 @@ const data = new SlashCommandBuilder()
 
 const execute = async function (interaction) {
     const member = await interaction.member.fetch()
-    console.log(member.user.tag)
-    console.log(member.permissions.has('ADMINISTRATOR'))
-    console.log(member.permissions.toArray() + '\n======================')
+    // console.log(member.user.tag)
+    // console.log(member.permissions.has('ADMINISTRATOR'))
+    // console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has('ADMINISTRATOR')) {
         return await interaction.reply({
             embeds: [new MessageEmbed()
@@ -76,11 +76,6 @@ const execute = async function (interaction) {
     }
 
     // ================================
-    embed.setColor(config.embedColor.g)
-    embed.setDescription('That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
-    await interaction.editReply({ embeds: [embed] })
-
-    // ================================
     // Update the cache
     var obj = await getFromRedis(interaction.guildId)
     obj['sug_channel'] = sugChannelId
@@ -90,6 +85,11 @@ const execute = async function (interaction) {
 
     // Update the database values
     await runQuery('UPDATE servers SET sug_channel = $1::text, rep_channel = $2::text, staff_role = $3::text WHERE id = $4::text', [sugChannelId, repChannelId, roleId, interaction.guildId])
+
+    // ================================
+    embed.setColor(config.embedColor.g)
+    embed.setDescription('That\'s all! You\'re done configurating suggestions! Please keep in mind that you will be able to change these and other settings using the `/config` command.')
+    await interaction.editReply({ embeds: [embed] })
 }
 
 // ================================

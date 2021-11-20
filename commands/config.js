@@ -12,9 +12,9 @@ const data = new SlashCommandBuilder()
 
 const execute = async function (interaction) {
     const member = await interaction.member.fetch()
-    console.log(member.user.tag)
-    console.log(member.permissions.has('ADMINISTRATOR'))
-    console.log(member.permissions.toArray() + '\n======================')
+    // console.log(member.user.tag)
+    // console.log(member.permissions.has('ADMINISTRATOR'))
+    // console.log(member.permissions.toArray() + '\n======================')
     if (!member.permissions.has(interaction, 'ADMINISTRATOR')) {
         return await interaction.reply({
             embeds: [new MessageEmbed()
