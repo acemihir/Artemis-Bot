@@ -59,7 +59,7 @@ const execute = async function (interaction) {
 
         const channel = await interaction.guild.channels.fetch(chnId)
         if (channel == null) {
-            return await interaction.reply({
+            return interaction.reply({
                 embeds: [new MessageEmbed()
                     .setColor(config.embedColor.r)
                     .setDescription('Couldn\'t find the channel the corresponding message was placed in.')

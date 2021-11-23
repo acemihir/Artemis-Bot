@@ -32,7 +32,7 @@ const execute = async function (interaction) {
     if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
-        return await interaction.editReply({ embeds: [embed] })
+        return interaction.editReply({ embeds: [embed] })
     }
 
     // ================================
@@ -47,7 +47,7 @@ const execute = async function (interaction) {
     if ((await interaction.guild.channels.fetch(sugChannelId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid channel, please run the command again.')
-        return await interaction.editReply({ embeds: [embed] })
+        return interaction.editReply({ embeds: [embed] })
     }
 
     // ================================
@@ -62,7 +62,7 @@ const execute = async function (interaction) {
     if ((await interaction.guild.roles.fetch(roleId)) == null) {
         embed.setColor(config.embedColor.r)
         embed.setDescription('That\'s not a valid role, please run the command again.')
-        return await interaction.editReply({ embeds: [embed] })
+        return interaction.editReply({ embeds: [embed] })
     }
 
     // ================================

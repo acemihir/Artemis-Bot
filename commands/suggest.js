@@ -21,7 +21,7 @@ const execute = async function (interaction) {
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.sug_channel == null) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Please make sure an administrator has configured the suggestion channel.')
@@ -31,7 +31,7 @@ const execute = async function (interaction) {
 
     const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
     if (sugChannel == null) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('The configured suggestion channel was not found.')
@@ -66,7 +66,7 @@ const execute = async function (interaction) {
             )]
         })
     } catch (ex) {
-        return await interaction.reply({
+        return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('I could not send the suggestion message. (This could be permission related)')

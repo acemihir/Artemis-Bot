@@ -21,7 +21,7 @@ const execute = async function (interaction) {
 
     const cache = await getFromRedis(interaction.guildId)
     if (cache.rep_channel == null) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Please make sure an administrator has configured the report channel.')
@@ -31,7 +31,7 @@ const execute = async function (interaction) {
 
     const repChannel = await interaction.guild.channels.fetch(cache.rep_channel)
     if (repChannel == null) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('The configured report channel was not found.')

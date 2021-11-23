@@ -27,13 +27,13 @@ const execute = async function (interaction) {
 
     const body = await res.json()
     if (!body['success']) {
-        return await interaction.editReply(body['error'])
+        return interaction.editReply(body['error'])
     }
 
     // Check old channel
     const channel = await interaction.guild.channels.fetch(body.data[0].channel)
     if (channel == null) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
@@ -49,7 +49,7 @@ const execute = async function (interaction) {
         if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
             console.log(ex)
         }
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find the corresponding message.')
@@ -60,7 +60,7 @@ const execute = async function (interaction) {
     // New channel checks
     const newChannel = interaction.options.getChannel('channel')
     if (newChannel == null || newChannel.deleted) {
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Couldn\'t find that channel.')
@@ -77,8 +77,7 @@ const execute = async function (interaction) {
     try {
         newMsg = await newChannel.send({ embeds: [embed], components: [row] })
     } catch (ex) {
-        // console.error(ex)
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Something went wrong while creating the new message.')
@@ -104,8 +103,7 @@ const execute = async function (interaction) {
     try {
         await msg.delete()
     } catch (ex) {
-        // console.error(ex)
-        return await interaction.editReply({
+        return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Could not delete the message, delete it manually.')
