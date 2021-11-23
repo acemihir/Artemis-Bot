@@ -5,13 +5,12 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 
 const manager = new ShardingManager('app.js', { token: config.botToken })
 
-// Production stuff
 if (!config.devMode) {
-    // Every 30 minutes
     setInterval(async () => {
-        // TopGG (top.gg)
         const guildCount = (await manager.fetchClientValues('guilds.cache.size')).reduce((a, b) => a + b, 0)
-
+        
+        // =================================
+        // TopGG (top.gg)
         await fetch(`https://top.gg/api/bots/${config.botId}/stats`, {
             method: 'POST',
             body: JSON.stringify({
@@ -22,6 +21,7 @@ if (!config.devMode) {
 
         printLog(`Posted stats to TopGG (server_count: ${guildCount}, shard_count: ${manager.totalShards})`, 'INFO')
 
+        // =================================
         // BotsForDiscord (discords.com/bots)
         await fetch(`https://discords.com/bots/api/bot/${config.botId}`, {
             method: 'POST',
@@ -36,12 +36,14 @@ if (!config.devMode) {
 
         printLog(`Posted stats to BotsForDiscord (server_count: ${guildCount})`, 'INFO')
 
+        // =================================
         // Discord Bots (discord.bots.gg)
         // TODO: This
 
+        // =================================
         // Discord Bot List (discordbotlist.com)
         // TODO: This
-    }, 1800000)
+    }, 1800000 /* 30 minutes */)
 }
 
 manager.on('shardCreate', shard => printLog('Launched shard.', 'INFO', shard.id))

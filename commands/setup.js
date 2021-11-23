@@ -4,6 +4,7 @@ const { MessageEmbed } = require('discord.js-light')
 const { getFromRedis, setInRedis } = require('../structures/cache')
 const { runQuery } = require('../structures/database')
 const config = require('../config')
+const { handlePermission } = require('../utils')
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -11,18 +12,7 @@ const data = new SlashCommandBuilder()
     .setDescription('Setup the required settings for Suggestions to work properly.')
 
 const execute = async function (interaction) {
-    const member = await interaction.member.fetch()
-    // console.log(member.user.tag)
-    // console.log(member.permissions.has('ADMINISTRATOR'))
-    // console.log(member.permissions.toArray() + '\n======================')
-    if (!member.permissions.has('ADMINISTRATOR')) {
-        return await interaction.reply({
-            embeds: [new MessageEmbed()
-                .setColor(config.embedColor.r)
-                .setDescription('You need to have the `ADMINISTRATOR` permission to do that.')
-            ]
-        })
-    }
+    if (!await handlePermission(interaction)) return
 
     // ================================
     const filter = msg => msg.author.id === interaction.user.id

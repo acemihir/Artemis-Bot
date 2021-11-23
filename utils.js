@@ -1,6 +1,7 @@
 // =================================
 const config = require('./config')
 const Filter = require('bad-words')
+const { MessageEmbed } = require('discord.js-light')
 
 // =================================
 module.exports.createId = function (prefix) {
@@ -46,4 +47,25 @@ module.exports.printLog = function (txt, type, shard = null) {
     }
 
     func(`${pref} ${addZeroBefore(d.getHours())}:${addZeroBefore(d.getSeconds())} > ${txt}`)
+}
+
+// =================================
+module.exports.handlePermission = async function (interaction) {
+    if (interaction.ownerId === interaction.user.id) {
+        return true
+    }
+
+    const member = await interaction.member.fetch()
+    if (member.permissions.has('ADMINISTRATOR')) {
+        return true
+    }
+
+    await interaction.reply({
+        embeds: [new MessageEmbed()
+            .setColor(config.embedColor.r)
+            .setDescription('You need to have the `ADMINISTRATOR` permission, or be the guild owner to do that.')
+        ], ephemeral: true
+    })
+    
+    return false
 }
