@@ -42,9 +42,6 @@ const execute = async function (interaction) {
     const sugId = createId('s_')
     const sugDesc = interaction.options.getString('description')
 
-    const approveEmoji = cache.approve_emoji == null ? '⬆️' : cache.approve_emoji
-    const rejectEmoji = cache.reject_emoji == null ? '⬇️' : cache.reject_emoji
-
     let msg
     try {
         msg = await sugChannel.send({
@@ -57,12 +54,12 @@ const execute = async function (interaction) {
                     .setCustomId('sug_upvote')
                     .setLabel('Upvote')
                     .setStyle('SUCCESS')
-                    .setEmoji(approveEmoji),
+                    .setEmoji(cache.approve_emoji),
                 new MessageButton()
                     .setCustomId('sug_downvote')
                     .setLabel('Downvote')
                     .setStyle('DANGER')
-                    .setEmoji(rejectEmoji)
+                    .setEmoji(cache.reject_emoji)
             )]
         })
     } catch (ex) {

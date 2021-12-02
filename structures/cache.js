@@ -1,6 +1,6 @@
 // ================================
-const redis = require('redis')
 const bluebird = require('bluebird')
+const redis = require('redis')
 const config = require('../config')
 
 const { runQuery } = require('../structures/database')
@@ -14,7 +14,6 @@ module.exports.botCache = {
 // ================================
 bluebird.promisifyAll(redis)
 const redisClient = redis.createClient()
-module.exports.redisClient = redisClient
 
 module.exports.getFromRedis = async function (guildId) {
     if (await redisClient.existsAsync(guildId)) {
@@ -49,6 +48,27 @@ async function cacheGuild(guildId) {
         result.rows = [{ premium: false }]
     }
 
-    await redisClient.setAsync(guildId, JSON.stringify(result.rows[0]), 'EX', 60 * 60 * config.cacheExpireTime)
+    // Configure some default params
+    const data = {
+        staff_role: result.rows[0].staff_role,
+        
+        sug_channel: result.rows[0].sug_channel,
+        rep_channel: result.rows[0].rep_channel,
+        
+        auto_consider: result.rows[0].auto_consider || -1,
+        auto_approve: result.rows[0].auto_approve || -1,
+        auto_reject: result.rows[0].auto_reject || -1,
+        
+        approve_emoji: result.rows[0].approve_emoji || '⬆️',
+        reject_emoji: result.rows[0].reject_emoji || '⬇️',
+        
+        del_approved: result.rows[0].del_approved || false,
+        del_rejected: result.rows[0].del_approved || false,
+        
+        blacklist: result.rows[0].del_approved || '[]',
+    }
+
+    // Set the data in the cache
+    await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
     return result
 }
