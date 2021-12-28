@@ -1,5 +1,5 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -13,11 +13,11 @@ const data = new SlashCommandBuilder()
                 ['Suggestions', 'suggestions'],
                 ['Reports', 'reports'],
                 ['All', 'all']
-            ]).setRequired(true))
+            ]).setRequired(true));
 
 const execute = function (interaction) {
     // const member = interaction.options.getMember('member')
-    const opt = interaction.options.getString('type')
+    const opt = interaction.options.getString('type');
 
     if (opt === 'suggestions') {
         // ...
@@ -26,7 +26,7 @@ const execute = function (interaction) {
     } else if (opt === 'all') {
         // ...
     }
-}
+};
 
 // ================================
 module.exports.command = {
@@ -35,4 +35,4 @@ module.exports.command = {
 
     data: data,
     execute: execute
-}
+};

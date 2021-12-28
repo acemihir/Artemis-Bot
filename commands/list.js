@@ -1,7 +1,7 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageEmbed } = require('discord.js-light')
-const config = require('../config')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageEmbed } = require('discord.js-light');
+const config = require('../config');
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -13,12 +13,12 @@ const data = new SlashCommandBuilder()
             .addChoices([
                 ['Suggestions', 'suggestions'],
                 ['Reports', 'reports']
-            ]).setRequired(true))
+            ]).setRequired(true));
 
 const execute = function (interaction) {
-    const opt = interaction.options.getString('type')
+    const opt = interaction.options.getString('type');
 
-    let desc = 'None'
+    let desc = 'None';
     if (opt === 'suggestions') {
         // ...
     } else if (opt === 'reports') {
@@ -27,13 +27,13 @@ const execute = function (interaction) {
 
     const embed = new MessageEmbed()
         .setColor(config.embedColor.b)
-        .setDescription(desc)
+        .setDescription(desc);
 
-    interaction.reply({ embeds: [embed] })
-}
+    interaction.reply({ embeds: [embed] });
+};
 
 // ================================
 module.exports.command = {
     data: data,
     execute: execute
-}
+};

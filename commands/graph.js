@@ -1,5 +1,5 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -9,11 +9,11 @@ const data = new SlashCommandBuilder()
         opt.setName('type')
             .setDescription('The specific graph you want to see.')
             .addChoice('Suggestions', 'suggestions')
-            .addChoice('Reports', 'reports'))
+            .addChoice('Reports', 'reports'));
 
 const execute = function (interaction) {
-    interaction.reply('to be done')
-}
+    interaction.reply('to be done');
+};
 
 // ================================
 module.exports.command = {
@@ -21,4 +21,4 @@ module.exports.command = {
 
     data: data,
     execute: execute
-}
+};

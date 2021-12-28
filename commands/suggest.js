@@ -1,11 +1,11 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { createId, filterText } = require('../utils')
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light')
-const config = require('../config')
-const { getFromRedis } = require('../structures/cache')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { createId, filterText } = require('../utils');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light');
+const config = require('../config');
+const { getFromRedis } = require('../structures/cache');
 
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -14,35 +14,35 @@ const data = new SlashCommandBuilder()
     .addStringOption(opt =>
         opt.setName('description')
             .setDescription('A brief description of your suggestion.')
-            .setRequired(true))
+            .setRequired(true));
 
 const execute = async function (interaction) {
-    await interaction.deferReply()
+    await interaction.deferReply();
 
-    const cache = await getFromRedis(interaction.guildId)
+    const cache = await getFromRedis(interaction.guildId);
     if (cache.sug_channel == null) {
         return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('Please make sure an administrator has configured the suggestion channel.')
             ]
-        })
+        });
     }
 
-    const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel)
+    const sugChannel = await interaction.guild.channels.fetch(cache.sug_channel);
     if (sugChannel == null) {
         return interaction.editReply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('The configured suggestion channel was not found.')
             ]
-        })
+        });
     }
 
-    const sugId = createId('s_')
-    const sugDesc = interaction.options.getString('description')
+    const sugId = createId('s_');
+    const sugDesc = interaction.options.getString('description');
 
-    let msg
+    let msg;
     try {
         msg = await sugChannel.send({
             embeds: [new MessageEmbed()
@@ -61,14 +61,14 @@ const execute = async function (interaction) {
                     .setStyle('DANGER')
                     .setEmoji(cache.reject_emoji)
             )]
-        })
+        });
     } catch (ex) {
         return interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.r)
                 .setDescription('I could not send the suggestion message. (This could be permission related)')
             ]
-        })
+        });
     }
 
     await fetch(`${config.backend.url}/submit`, {
@@ -87,15 +87,15 @@ const execute = async function (interaction) {
             'Content-Type': 'application/json',
             'Api-Key': config.backend.apiKey
         }
-    })
+    });
 
     await interaction.editReply({
         embeds: [new MessageEmbed()
             .setColor(config.embedColor.g)
             .setDescription('Your suggestion has been submitted.')
         ]
-    })
-}
+    });
+};
 
 module.exports.buttons = [
     {
@@ -112,27 +112,27 @@ module.exports.buttons = [
                     'Content-Type': 'application/json',
                     'Api-Key': config.backend.apiKey
                 }
-            })
+            });
 
-            const data = await response.json()
+            const data = await response.json();
             if (data['success']) {
                 // Get the old embed
-                var embed = interaction.message.embeds[0]
+                var embed = interaction.message.embeds[0];
 
                 // Split it for each line
-                const msgArray = embed.description.split('\n')
+                const msgArray = embed.description.split('\n');
                 // Manipulate the votes
-                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`
+                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`;
 
                 // Set the manipulated embed description
-                embed.description = msgArray.join('\n')
+                embed.description = msgArray.join('\n');
 
                 // Update the first message
-                interaction.message.edit({ embeds: [embed] })
+                interaction.message.edit({ embeds: [embed] });
 
-                interaction.deferUpdate()
+                interaction.deferUpdate();
             } else {
-                interaction.reply({ content: data['error'], ephemeral: true })
+                interaction.reply({ content: data['error'], ephemeral: true });
             }
         }
     },
@@ -150,34 +150,34 @@ module.exports.buttons = [
                     'Content-Type': 'application/json',
                     'Api-Key': config.backend.apiKey
                 }
-            })
+            });
 
-            const data = await response.json()
+            const data = await response.json();
             if (data['success']) {
                 // Get the old embed
-                var embed = interaction.message.embeds[0]
+                var embed = interaction.message.embeds[0];
 
                 // Split it for each line
-                const msgArray = embed.description.split('\n')
+                const msgArray = embed.description.split('\n');
                 // Manipulate the votes
-                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`
+                msgArray[msgArray.length - 1] = `${data['new_upvotes']} - upvotes | ${data['new_downvotes']} - downvotes`;
 
                 // Set the manipulated embed description
-                embed.description = msgArray.join('\n')
+                embed.description = msgArray.join('\n');
 
                 // Update the first message
-                interaction.message.edit({ embeds: [embed] })
+                interaction.message.edit({ embeds: [embed] });
 
-                interaction.deferUpdate()
+                interaction.deferUpdate();
             } else {
-                interaction.reply({ content: data['error'], ephemeral: true })
+                interaction.reply({ content: data['error'], ephemeral: true });
             }
         }
     }
-]
+];
 
 // ================================
 module.exports.command = {
     data: data,
     execute: execute
-}
+};

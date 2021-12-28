@@ -1,51 +1,54 @@
 // ================================
-const bluebird = require('bluebird')
-const redis = require('redis')
-const config = require('../config')
+const bluebird = require('bluebird');
+const redis = require('redis');
 
-const { runQuery } = require('../structures/database')
+const { runQuery } = require('../structures/database');
 
 // ================================
 module.exports.botCache = {
     commands: new Map(),
     buttons: new Map()
-}
+};
 
 // ================================
-bluebird.promisifyAll(redis)
-const redisClient = redis.createClient()
+bluebird.promisifyAll(redis);
+const redisClient = redis.createClient();
 
 module.exports.getFromRedis = async function (guildId) {
+    let res;
+
     if (await redisClient.existsAsync(guildId)) {
-        return JSON.parse(await redisClient.getAsync(guildId))
+        res = JSON.parse(await redisClient.getAsync(guildId));
+    } else {
+        res = await cacheGuild(guildId);
     }
 
-    return await cacheGuild(guildId)
-}
+    return res;
+};
 
 module.exports.setInRedis = async function (guildId, data) {
     if (!await redisClient.existsAsync(guildId)) {
-        await cacheGuild(guildId)
+        await cacheGuild(guildId);
     }
 
-    await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
-}
+    await redisClient.setAsync(guildId, JSON.stringify(data));
+};
 
 module.exports.removeFromRedis = async function (guildId) {
     if (await redisClient.existsAsync(guildId)) {
-        await redisClient.delAsync(guildId)
+        await redisClient.delAsync(guildId);
     }
-}
+};
 
 // ================================
 async function cacheGuild(guildId) {
     // Get all the saved data from the guild
-    let result = await runQuery('SELECT staff_role, sug_channel, rep_channel, auto_consider, auto_approve, auto_reject, approve_emoji, reject_emoji, del_approved, del_rejected, blacklist FROM servers WHERE id = $1::text', [guildId])
+    let result = await runQuery('SELECT staff_role, sug_channel, rep_channel, auto_consider, auto_approve, auto_reject, approve_emoji, reject_emoji, del_approved, del_rejected, blacklist FROM servers WHERE id = $1::text', [guildId]);
 
     if (!result.rowCount) {
         // Register guild in database if it doesn't already exist
-        await runQuery('INSERT INTO servers (id, premium) VALUES ($1::text, $2::bool)', [guildId, false])
-        result.rows = [{ premium: false }]
+        await runQuery('INSERT INTO servers (id, premium) VALUES ($1::text, $2::bool)', [guildId, false]);
+        result.rows = [{ premium: false }];
     }
 
     // Configure some default params
@@ -66,9 +69,9 @@ async function cacheGuild(guildId) {
         del_rejected: result.rows[0].del_approved || false,
         
         blacklist: result.rows[0].del_approved || '[]',
-    }
+    };
 
     // Set the data in the cache
-    await redisClient.setAsync(guildId, JSON.stringify(data), 'EX', 60 * 60 * config.cacheExpireTime)
-    return result
+    await redisClient.setAsync(guildId, JSON.stringify(data));
+    return result;
 }

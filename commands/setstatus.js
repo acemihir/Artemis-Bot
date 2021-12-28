@@ -1,9 +1,9 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { Constants, MessageEmbed } = require('discord.js-light')
-const config = require('../config')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { Constants, MessageEmbed } = require('discord.js-light');
+const config = require('../config');
 
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -31,13 +31,13 @@ const data = new SlashCommandBuilder()
                 ['Resolved', 'resolved'],
                 ['Progressing', 'progressing']
             ]).setRequired(true))
-    )
+    );
 
 const execute = async function (interaction) {
-    const id = interaction.options.getString('id')
+    const id = interaction.options.getString('id');
 
-    const status = interaction.options.getString('status')
-    const desStatus = status.charAt(0).toUpperCase() + status.slice(1)
+    const status = interaction.options.getString('status');
+    const desStatus = status.charAt(0).toUpperCase() + status.slice(1);
 
     const res = await fetch(`${config.backend.url}/setstatus`, {
         method: 'POST',
@@ -50,29 +50,29 @@ const execute = async function (interaction) {
             'Content-Type': 'application/json',
             'Api-Key': config.backend.apiKey
         }
-    })
+    });
 
-    const body = await res.json()
+    const body = await res.json();
     if (body['success']) {
-        const msgId = body['messageId']
-        const chnId = body['channelId']
+        const msgId = body['messageId'];
+        const chnId = body['channelId'];
 
-        const channel = await interaction.guild.channels.fetch(chnId)
+        const channel = await interaction.guild.channels.fetch(chnId);
         if (channel == null) {
             return interaction.reply({
                 embeds: [new MessageEmbed()
                     .setColor(config.embedColor.r)
                     .setDescription('Couldn\'t find the channel the corresponding message was placed in.')
                 ]
-            })
+            });
         }
 
-        let msg
+        let msg;
         try {
-            msg = await channel.messages.fetch(msgId)
+            msg = await channel.messages.fetch(msgId);
         } catch (ex) {
             if (ex.code !== Constants.APIErrors.UNKNOWN_MESSAGE) {
-                console.log(ex)
+                console.log(ex);
             }
         }
 
@@ -82,20 +82,20 @@ const execute = async function (interaction) {
                     .setColor(config.embedColor.r)
                     .setDescription('Couldn\'t find the corresponding message.')
                 ]
-            })
+            });
         }
 
-        await statusUpdate(msg, desStatus)
+        await statusUpdate(msg, desStatus);
         interaction.reply({
             embeds: [new MessageEmbed()
                 .setColor(config.embedColor.g)
                 .setDescription(`Message status was successfully changed to ${status}.`)
             ]
-        })
+        });
     } else {
-        interaction.reply(body['error'])
+        interaction.reply(body['error']);
     }
-}
+};
 
 // ================================
 module.exports.command = {
@@ -103,33 +103,33 @@ module.exports.command = {
 
     data: data,
     execute: execute
-}
+};
 
 // ================================
 const statusUpdate = async (msg, status) => {
-    let colour = config.embedColor.b
+    let colour = config.embedColor.b;
 
     if (status === 'Approved' || status === 'Resolved') {
-        colour = config.embedColor.g
+        colour = config.embedColor.g;
     } else if (status === 'Considering' || status === 'Progressing') {
-        colour = config.embedColor.y
+        colour = config.embedColor.y;
     } else if (status === 'Rejected') {
-        colour = config.embedColor.r
+        colour = config.embedColor.r;
     }
 
-    const embed = msg.embeds[0]
+    const embed = msg.embeds[0];
 
-    const descArray = embed.description.split('\n')
+    const descArray = embed.description.split('\n');
 
-    const statusline = descArray[2]
-    const slArray = statusline.split(' ')
+    const statusline = descArray[2];
+    const slArray = statusline.split(' ');
 
-    descArray[2] = slArray[0] + ' ' + status
+    descArray[2] = slArray[0] + ' ' + status;
 
-    embed.description = descArray.join('\n')
-    embed.color = parseInt(colour.slice(1), 16)
+    embed.description = descArray.join('\n');
+    embed.color = parseInt(colour.slice(1), 16);
 
-    await msg.edit({ embeds: [embed] })
-}
+    await msg.edit({ embeds: [embed] });
+};
 
-module.exports.statusUpdate = statusUpdate
+module.exports.statusUpdate = statusUpdate;

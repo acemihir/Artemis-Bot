@@ -1,5 +1,5 @@
-const { Pool } = require('pg')
-const config = require('../config')
+const { Pool } = require('pg');
+const config = require('../config');
 
 const pool = new Pool({
     host: config.database.hostname,
@@ -10,17 +10,17 @@ const pool = new Pool({
     idleTimeoutMillis: 0,
     connectionTimeoutMillis: 0,
     max: 25
-})
+});
 
 module.exports.runQuery = async function (query, params) {
-    const client = await pool.connect()
-    let result
+    const client = await pool.connect();
+    let result;
     try {
-        result = !params ? await client.query(query) : await client.query(query, params)
+        result = !params ? await client.query(query) : await client.query(query, params);
     } catch (ex) {
-        console.error(ex)
+        console.error(ex);
     } finally {
-        client.release()
+        client.release();
     }
-    return result
-}
+    return result;
+};

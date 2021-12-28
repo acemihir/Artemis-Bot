@@ -1,12 +1,12 @@
 // ================================
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js-light')
-const config = require('../config')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js-light');
+const config = require('../config');
 
 // ================================
 const data = new SlashCommandBuilder()
     .setName('about')
-    .setDescription('Obtain general information about the bot.')
+    .setDescription('Obtain general information about the bot.');
 
 const execute = function (interaction) {
     interaction.reply({
@@ -38,11 +38,11 @@ const execute = function (interaction) {
                 .setEmoji('👥')
                 .setStyle('LINK')
         )]
-    })
-}
+    });
+};
 
 // ================================
 module.exports.command = {
     data: data,
     execute: execute
-}
+};
