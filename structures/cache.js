@@ -35,7 +35,7 @@ module.exports.removeFromRedis = async function (guildId) {
 };
 
 // ================================
-async function cacheGuild(guildId) {
+const cacheGuild = async function (guildId) {
     // Get all the saved data from the guild
     let result = await runQuery('SELECT staff_role, sug_channel, rep_channel, auto_consider, auto_approve, auto_reject, approve_emoji, reject_emoji, del_approved, del_rejected, blacklist FROM servers WHERE id = $1::text', [guildId]);
 
@@ -66,6 +66,6 @@ async function cacheGuild(guildId) {
     };
 
     // Set the data in the cache
-    await client.setAsync(guildId, JSON.stringify(data));
+    await client.set(guildId, JSON.stringify(data));
     return result;
-}
+};
