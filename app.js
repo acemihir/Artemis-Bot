@@ -2,7 +2,7 @@
 const { Client, Options, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light');
 const config = require('./config');
 const fs = require('fs');
-const { botCache, getFromRedis } = require('./structures/cache');
+const { botCache, initiate, getFromRedis } = require('./structures/cache');
 const { printLog } = require('./utils');
 
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -36,6 +36,9 @@ const client = new Client({
 
 // ================================
 client.on('ready', async (client) => {
+    // Initiate redis
+    initiate();
+
     // Set an interval for the activity so all guilds are loaded/cached before counting.
     setInterval(async function () {
         const guilds_result = await client.shard.fetchClientValues('guilds.cache.size');

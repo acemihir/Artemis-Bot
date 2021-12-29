@@ -1,7 +1,5 @@
 // ================================
-const bluebird = require('bluebird');
-const redis = require('redis');
-
+const { createClient } = require('redis');
 const { runQuery } = require('../structures/database');
 
 // ================================
@@ -11,32 +9,28 @@ module.exports.botCache = {
 };
 
 // ================================
-bluebird.promisifyAll(redis);
-const redisClient = redis.createClient();
+const client = createClient();
+
+module.exports.initiate = async function () {
+    client.on('error', (err) => console.log('Redis Client Error', err));
+    await client.connect();
+};
 
 module.exports.getFromRedis = async function (guildId) {
-    let res;
-
-    if (await redisClient.existsAsync(guildId)) {
-        res = JSON.parse(await redisClient.getAsync(guildId));
-    } else {
-        res = await cacheGuild(guildId);
+    if (await client.exists(guildId)) {
+        return JSON.parse(await client.get(guildId));
     }
 
-    return res;
+    return await cacheGuild(guildId);
 };
 
 module.exports.setInRedis = async function (guildId, data) {
-    if (!await redisClient.existsAsync(guildId)) {
-        await cacheGuild(guildId);
-    }
-
-    await redisClient.setAsync(guildId, JSON.stringify(data));
+    await client.set(guildId, JSON.stringify(data));
 };
 
 module.exports.removeFromRedis = async function (guildId) {
-    if (await redisClient.existsAsync(guildId)) {
-        await redisClient.delAsync(guildId);
+    if (await client.exists(guildId)) {
+        await client.del(guildId);
     }
 };
 
@@ -72,6 +66,6 @@ async function cacheGuild(guildId) {
     };
 
     // Set the data in the cache
-    await redisClient.setAsync(guildId, JSON.stringify(data));
+    await client.setAsync(guildId, JSON.stringify(data));
     return result;
 }
