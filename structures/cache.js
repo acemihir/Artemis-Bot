@@ -67,5 +67,5 @@ const cacheGuild = async function (guildId) {
 
     // Set the data in the cache
     await client.set(guildId, JSON.stringify(data));
-    return result;
+    return data;
 };
