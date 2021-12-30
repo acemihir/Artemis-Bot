@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js-light');
 const { getFromRedis, setInRedis } = require('../structures/cache');
 const { runQuery } = require('../structures/database');
 const config = require('../config');
-const { handlePermission } = require('../utils');
+const { isAdmin } = require('../utils');
 
 // ================================
 const data = new SlashCommandBuilder()
@@ -12,7 +12,7 @@ const data = new SlashCommandBuilder()
     .setDescription('Setup the required settings for Suggestions to work properly.');
 
 const execute = async function (interaction) {
-    if (!await handlePermission(interaction)) return;
+    if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
     // ================================
     const filter = msg => msg.author.id === interaction.user.id;

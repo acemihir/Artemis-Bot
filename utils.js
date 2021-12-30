@@ -1,9 +1,9 @@
-// =================================
 const config = require('./config');
 const Filter = require('bad-words');
-const { MessageEmbed } = require('discord.js-light');
+const fs = require('fs');
 
-// =================================
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
 module.exports.createId = function (prefix) {
     const chars = config.ids.chars;
 
@@ -15,14 +15,12 @@ module.exports.createId = function (prefix) {
     return prefix + result;
 };
 
-// =================================
 const wordFilter = new Filter();
 
 module.exports.filterText = function (text) {
     return wordFilter.clean(text);
 };
 
-// =================================
 const addZeroBefore = function (n) {
     return (n < 10 ? '0' : '') + n;
 };
@@ -49,23 +47,52 @@ module.exports.printLog = function (txt, type, shard = null) {
     func(`${pref} ${addZeroBefore(d.getHours())}:${addZeroBefore(d.getSeconds())} > ${txt}`);
 };
 
-// =================================
-module.exports.handlePermission = async function (interaction) {
-    if (interaction.ownerId === interaction.user.id) {
-        return true;
+const getMember = async (gId, mId) => {
+    const res = await fetch(`https://discord.com/api/v8/guilds/${gId}/members/${mId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bot ' + config.botToken
+        }
+    }).catch(ex => this.printLog(ex, 'ERROR'));
+
+    const body = await res.json();
+    return body;  
+};
+
+const getRoles = async (gId) => {
+    const res = await fetch(`https://discord.com/api/v8/guilds/${gId}/roles`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bot ' + config.botToken
+        }
+    }).catch(ex => this.printLog(ex, 'ERROR'));
+
+    const body = await res.json();
+    return body;    
+};
+
+module.exports.isAdmin = async function (guildId, memberId) {
+    const roleIds = (await getMember(guildId, memberId)).roles;
+    const roles = await getRoles(guildId);
+
+    for (let i = 0; i < roles.length; i++) {
+        if (roleIds.includes(roles[i].id)) {
+            const perm = parseInt(roles[i].permissions);
+            if ((perm & 0x8) == 8) {
+                return true;
+            }    
+        }
     }
 
-    const member = await interaction.member.fetch();
-    if (member.permissions.has('ADMINISTRATOR')) {
-        return true;
-    }
-
-    await interaction.reply({
-        embeds: [new MessageEmbed()
-            .setColor(config.embedColor.r)
-            .setDescription('You need to have the `ADMINISTRATOR` permission, or be the guild owner to do that.')
-        ], ephemeral: true
-    });
-    
     return false;
+};
+
+module.exports.getFiles = (path) => {
+    return new Promise(resolve => {
+        fs.readdir(path, (ex, files) => {
+            resolve(files.filter(f => f.endsWith('.js')));
+        });
+    });
 };

@@ -1,11 +1,8 @@
 // ================================
 const { Client, Options, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light');
 const config = require('./config');
-const fs = require('fs');
 const { botCache, initiate, getFromRedis } = require('./structures/cache');
 const { printLog } = require('./utils');
-
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // ================================
 const client = new Client({
@@ -104,51 +101,6 @@ client.on('interactionCreate', async (interaction) => {
         await botCache.buttons.get(interaction.customId)(interaction);
     }
 });
-
-// ================================
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const commands = [];
-
-for (const file of commandFiles) {
-    const cmdFile = require(`./commands/${file}`);
-    const cmdName = file.split('.')[0];
-
-    // Set the command
-    botCache.commands.set(cmdName, cmdFile.command);
-    // Check if there are any buttons
-    if (cmdFile.buttons != null) {
-        // Loop over the buttons
-        for (let i = 0; i < cmdFile.buttons.length; i++) {
-            // Set the (button) interaction
-            botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick);
-        }
-    }
-
-    commands.push(cmdFile.command.data.toJSON());
-}
-
-(async () => {
-    try {
-        printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids);
-
-        const url = config.devMode ?
-            `https://discord.com/api/v8/applications/${config.botId}/guilds/${config.devGuild}/commands` :
-            `https://discord.com/api/v8/applications/${config.botId}/commands`;
-
-        const res = await fetch(url, {
-            method: 'PUT',
-            body: JSON.stringify(commands),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bot ' + config.botToken
-            }
-        });
-
-        printLog(`Application (/) commands PUT response: ${res.statusText} (${res.status})`, 'INFO', client.shard.ids);
-    } catch (error) {
-        printLog(error, 'ERROR', client.shard.ids);
-    }
-})();
 
 // ================================
 // Some logging

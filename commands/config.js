@@ -4,7 +4,7 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-li
 const config = require('../config');
 const { setInRedis, getFromRedis } = require('../structures/cache');
 const { runQuery } = require('../structures/database');
-const { handlePermission } = require('../utils');
+const { isAdmin } = require('../utils');
 
 // ================================
 const data = new SlashCommandBuilder()
