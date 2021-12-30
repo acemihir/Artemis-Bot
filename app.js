@@ -2,7 +2,9 @@
 const { Client, Options, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js-light');
 const config = require('./config');
 const { botCache, initiate, getFromRedis } = require('./structures/cache');
-const { printLog } = require('./utils');
+const { printLog, getFiles } = require('./utils');
+
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // ================================
 const client = new Client({
@@ -102,11 +104,53 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-// ================================
 // Some logging
 process.on('warning', console.warn);
 process.on('unhandledRejection', console.error);
 process.on('uncaughtException', console.error);
 
-// Client login
-client.login(config.botToken);
+const app = async function () {
+    // ========== GET COMMANDS ==========
+    const cmdFiles = await getFiles('./commands');
+    const commands = [];
+
+    for (const file of cmdFiles) {
+        const cmdFile = require(`./commands/${file}`);
+        const cmdName = file.split('.')[0];
+
+        // Set the command
+        botCache.commands.set(cmdName, cmdFile.command);
+        // Check if there are any buttons
+        if (cmdFile.buttons != null) {
+            // Loop over the buttons
+            for (let i = 0; i < cmdFile.buttons.length; i++) {
+                // Set the (button) interaction
+                botCache.buttons.set(cmdFile.buttons[i].id, cmdFile.buttons[i].onClick);
+            }
+        }
+
+        commands.push(cmdFile.command.data.toJSON());
+    }
+
+    // ========== SUBMIT COMMANDS ==========
+    printLog('Started refreshing application (/) commands.', 'INFO');
+
+    const url = config.devMode ?
+        `https://discord.com/api/v8/applications/${config.botId}/guilds/${config.devGuild}/commands` :
+        `https://discord.com/api/v8/applications/${config.botId}/commands`;
+
+    const res = await fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(commands),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bot ' + config.botToken
+        }
+    }).catch(ex => printLog(ex, 'ERROR'));
+
+    printLog(`Application (/) commands PUT response: ${res.statusText} (${res.status})`, 'INFO');
+
+    await client.login(config.botToken);
+};
+
+app();
