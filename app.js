@@ -133,7 +133,7 @@ const app = async function () {
     }
 
     // ========== SUBMIT COMMANDS ==========
-    printLog('Started refreshing application (/) commands.', 'INFO');
+    printLog('Started refreshing application (/) commands.', 'INFO', client.shard.ids);
 
     const url = config.devMode ?
         `https://discord.com/api/v8/applications/${config.botId}/guilds/${config.devGuild}/commands` :
@@ -148,7 +148,7 @@ const app = async function () {
         }
     }).catch(ex => printLog(ex, 'ERROR'));
 
-    printLog(`Application (/) commands PUT response: ${res.statusText} (${res.status})`, 'INFO');
+    printLog(`Application (/) commands PUT response: ${res.statusText} (${res.status})`, 'INFO', client.shard.ids);
 
     await client.login(config.botToken);
 };
