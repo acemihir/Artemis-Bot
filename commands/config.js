@@ -12,7 +12,7 @@ const data = new SlashCommandBuilder()
     .setDescription('Configure the bot to have it fit your needs.');
 
 const execute = async function (interaction) {
-    if (!await handlePermission(interaction)) return;
+    if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
     const embed = new MessageEmbed()
         .setAuthor('Config -> Main', interaction.client.user.avatarURL())
@@ -49,7 +49,7 @@ module.exports.buttons = [
     {
         id: 'conf_channels',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             const embed = new MessageEmbed()
                 .setAuthor('Config -> Channels', interaction.client.user.avatarURL())
@@ -76,7 +76,7 @@ module.exports.buttons = [
     {
         id: 'conf_channels_sug',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             const embed = new MessageEmbed()
                 .setAuthor('Config -> Channels -> Suggestions', interaction.client.user.avatarURL())
@@ -114,7 +114,7 @@ module.exports.buttons = [
     {
         id: 'conf_channels_rep',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             const embed = new MessageEmbed()
                 .setAuthor('Config -> Channels -> Reports', interaction.client.user.avatarURL())
@@ -155,7 +155,7 @@ module.exports.buttons = [
     {
         id: 'conf_roles',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             // Create a new embed
             const embed = new MessageEmbed()
@@ -179,7 +179,7 @@ module.exports.buttons = [
     {
         id: 'conf_roles_staff',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             // Create a new embed
             const embed = new MessageEmbed()
@@ -222,7 +222,7 @@ module.exports.buttons = [
     {
         id: 'conf_behaviour',
         onClick: async function (interaction) {
-            if (!await handlePermission(interaction)) return;
+            if (!await isAdmin(interaction.guildId, interaction.member.id)) return;
 
             // Create a new embed
             const embed = new MessageEmbed()
