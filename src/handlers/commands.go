@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Suggestions/commands"
+	"github.com/jerskisnow/Suggestions/src/commands"
 )
 
 // GuildID should be empty in production

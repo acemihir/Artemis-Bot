@@ -6,7 +6,7 @@ import (
 	"os/signal"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Suggestions/handlers"
+	"github.com/jerskisnow/Suggestions/src/handlers"
 	"github.com/joho/godotenv"
 )
 
