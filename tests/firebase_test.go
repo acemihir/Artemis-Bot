@@ -31,10 +31,14 @@ func TestFirestoreGet(t *testing.T) {
 	t.Logf("Document data: %v", data)
 }
 
-func TestFirestoreNotExists(t *testing.T) {
-
+func TestFirestoreDel(t *testing.T) {
+	utils.Firebase.DelFirestore("submissions", "abcdef")
 }
 
-func TestFirestoreDel(t *testing.T) {
-
+func TestFirestoreNotExists(t *testing.T) {
+	data := utils.Firebase.GetFirestore("submissions", "abcdef")
+	if len(data) != 0 {
+		t.Fatalf("Expected data map length of 0, got %d", len(data))
+	}
+	t.Logf("Document data: %v", data)
 }

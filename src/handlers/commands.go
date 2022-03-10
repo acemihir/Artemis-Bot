@@ -22,6 +22,69 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 		{
 			Name:        "help",
 			Description: "Receive a list of all commands.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "command",
+					Description: "The command you would like to read more about.",
+					Required:    false,
+					Type:        discordgo.ApplicationCommandOptionString,
+					Choices: []*discordgo.ApplicationCommandOptionChoice{
+						{
+							Name:  "About",
+							Value: "about",
+						},
+						{
+							Name:  "Config",
+							Value: "config",
+						},
+						{
+							Name:  "Help",
+							Value: "help",
+						},
+						{
+							Name:  "Notes",
+							Value: "notes",
+						},
+						{
+							Name:  "Poll",
+							Value: "poll",
+						},
+						{
+							Name:  "Report",
+							Value: "report",
+						},
+						{
+							Name:  "Status",
+							Value: "status",
+						},
+						{
+							Name:  "Suggest",
+							Value: "suggest",
+						},
+					},
+				},
+			},
+		},
+		{
+			Name:        "notes",
+			Description: "Create & Interact with your own notes.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "create",
+					Description: "Create a personal encrypted note.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "delete",
+					Description: "Delete a personal note.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "list",
+					Description: "Obtain a list with all your personal notes.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
 		},
 		{
 			Name:        "report",
@@ -64,22 +127,20 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.ApplicationCommandData()
 
 	if data.Name == "about" {
-		commands.ExecAbout(s, i)
+		commands.AboutCommand(s, i)
 	} else if data.Name == "config" {
-		commands.ExecConfig(s, i)
+		commands.ConfigCommand(s, i)
 	} else if data.Name == "help" {
-		commands.ExecHelp(s, i)
+		commands.HelpCommand(s, i)
 	} else if data.Name == "notes" {
-		commands.ExecNotes(s, i)
+		commands.NotesCommand(s, i)
 	} else if data.Name == "poll" {
-		commands.ExecPoll(s, i)
+		commands.PollCommand(s, i)
 	} else if data.Name == "report" {
-		commands.ExecReport(s, i)
-	} else if data.Name == "setup" {
-		commands.ExecReport(s, i)
+		commands.ReportCommand(s, i)
 	} else if data.Name == "status" {
-		commands.ExecStatus(s, i)
+		commands.StatusCommand(s, i)
 	} else if data.Name == "suggest" {
-		commands.ExecSuggest(s, i)
+		commands.SuggestCommand(s, i)
 	}
 }

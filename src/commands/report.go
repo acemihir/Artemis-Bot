@@ -2,6 +2,6 @@ package commands
 
 import "github.com/bwmarrin/discordgo"
 
-func ExecReport(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func ReportCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 }

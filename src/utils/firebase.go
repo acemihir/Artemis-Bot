@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"log"
+	"strings"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -51,7 +52,11 @@ func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{})
 func (at *GoogleFirebase) GetFirestore(collection, doc string) map[string]interface{} {
 	dsnap, ex := at.Firestore.Collection(collection).Doc(doc).Get(at.Context)
 	if ex != nil {
-		log.Fatalf("Could not get from firestore: %s", ex)
+		if strings.Contains(ex.Error(), "not found") {
+			return map[string]interface{}{}
+		} else {
+			log.Fatalf("Could not get from firestore: %s", ex)
+		}
 	}
 	return dsnap.Data()
 }

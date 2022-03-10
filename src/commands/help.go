@@ -10,7 +10,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ExecHelp(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func HelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var buffer bytes.Buffer
 	buffer.WriteString("```asciidoc\n")
 	buffer.WriteString("== Help == \n[View the autocompletion for more detailed explanation.]\n\n== Commands ==\n")

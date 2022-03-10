@@ -25,3 +25,9 @@ id (string):
  - upvote_emoji (string)
  - downvote_emoji (string)
  - blacklist (string[])
+
+### Notes
+id (number):
+ - content (encrypted string)
+ - author (hashed string)
+ - creation_date (timestamp)
