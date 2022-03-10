@@ -42,8 +42,9 @@ func main() {
 		}
 	})
 
-	// Setup redis
+	// Setups
 	utils.SetupCache()
+	utils.SetupFirebase("firebase-credentials.json")
 
 	log.Println("[INFO] Starting sharding manager...")
 	shardEx := Mgr.Start()

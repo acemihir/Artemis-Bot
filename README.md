@@ -4,6 +4,7 @@
 ### Roadmap
 - [x] Fundamental bot structure
 - [x] Redis integration + tests
+- [x] Firebase + Firestore integration + tests
 - [ ] Full support for suggestions and reports.
 - [ ] Setup command
 - [ ] Full support for polls and tickets. 
