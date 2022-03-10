@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Suggestions/src/handlers"
+	"github.com/jerskisnow/Suggestions/src/utils"
 	"github.com/joho/godotenv"
 	"github.com/servusdei2018/shards"
 )
@@ -40,6 +41,9 @@ func main() {
 			handlers.LinkButton(s, i)
 		}
 	})
+
+	// Setup redis
+	utils.SetupCache()
 
 	log.Println("[INFO] Starting sharding manager...")
 	shardEx := Mgr.Start()

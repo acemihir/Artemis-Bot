@@ -1,0 +1,18 @@
+package utils
+
+import (
+	"testing"
+
+	"github.com/jerskisnow/Suggestions/src/utils"
+)
+
+func TestCreateId(t *testing.T) {
+	res := utils.CreateId("abc!", 10)
+
+	t.Logf("Custom ID: %s", res)
+
+	if len(res) != 14 {
+		t.Errorf("Expected a length of 14, got %d", len(res))
+		// t.FailNow()
+	}
+}

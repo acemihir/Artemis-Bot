@@ -65,10 +65,14 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	if data.Name == "about" {
 		commands.ExecAbout(s, i)
-	} else if data.Name == "configure" {
+	} else if data.Name == "config" {
 		commands.ExecConfig(s, i)
 	} else if data.Name == "help" {
 		commands.ExecHelp(s, i)
+	} else if data.Name == "notes" {
+		commands.ExecNotes(s, i)
+	} else if data.Name == "poll" {
+		commands.ExecPoll(s, i)
 	} else if data.Name == "report" {
 		commands.ExecReport(s, i)
 	} else if data.Name == "setup" {
