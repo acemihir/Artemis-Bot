@@ -8,27 +8,32 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Suggestions/src/handlers"
 	"github.com/joho/godotenv"
+	"github.com/servusdei2018/shards"
 )
 
-var s *discordgo.Session
+var (
+	Mgr *shards.Manager
+)
 
 func main() {
 	envEx := godotenv.Load(".env")
 	if envEx != nil {
-		log.Fatalf("Couldn't load the environment file.")
+		log.Fatalf("[ERROR] Couldn't load the environment file.")
+		return
 	}
 
-	s, botEx := discordgo.New("Bot " + os.Getenv("BOT_TOKEN"))
+	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if botEx != nil {
-		log.Fatalf("Couldn't create a session.")
+		log.Fatalf("[ERROR] Couldn't create a session.")
+		return
 	}
 
 	// Add the event handlers
-	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		log.Printf("Logged in as: %v#%v", s.State.User.Username, s.State.User.Discriminator)
+	Mgr.AddHandler(func(s *discordgo.Session, e *discordgo.Connect) {
+		log.Printf("[INFO] Shard #%v connected.\n", s.ShardID)
 	})
 
-	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	Mgr.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		if i.Type == 2 { // ApplicationCommand
 			handlers.LinkCommand(s, i)
 		} else if i.Type == 3 { // MessageComponent
@@ -36,27 +41,26 @@ func main() {
 		}
 	})
 
-	// Open the actual session
-	sesEx := s.Open()
-	if sesEx != nil {
-		log.Fatalf("Couldn't open a session.")
+	log.Println("[INFO] Starting sharding manager...")
+	shardEx := Mgr.Start()
+	if shardEx != nil {
+		log.Fatalf("[ERROR] Couldn't start the sharding manager.")
+		return
 	}
 
 	// Create commands
 	if os.Getenv("PRODUCTION") == "0" {
-		handlers.RegisterCommands(s, os.Getenv("GUILD_ID"))
+		handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))
 	} else {
-		handlers.RegisterCommands(s, "")
+		handlers.RegisterCommands(Mgr, "")
 	}
-
-	defer s.Close()
 
 	// On shutdown handles the stuff below
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
 
-	// TODO: Do something...
-
-	log.Println("Safe-Shutdown completed.")
+	log.Println("[INFO] Stopping sharding manager...")
+	Mgr.Shutdown()
+	log.Println("[SUCCESS] Safe-Shutdown completed.")
 }

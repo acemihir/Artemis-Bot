@@ -7,9 +7,10 @@ func ExecAbout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
-				&discordgo.MessageEmbed{
-					Title:       "About - Artemis",
-					Description: "Artemis is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community.",
+				{
+					Title:       "About Artemis",
+					Description: "[Artemis-Bot](https://github.com/jerskisnow/Artemis-Bot), derived from the Greek goddess of the hunt, is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community. The bot could be characterized as a multi-function/purpose bot that fits all your needs when it comes to managing interaction with your community.",
+					Color:       0x336db0,
 				},
 			},
 			Components: []discordgo.MessageComponent{
@@ -37,7 +38,7 @@ func ExecAbout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 							},
 							Label: "Contribute",
 							Style: discordgo.LinkButton,
-							URL:   "https://placeholder.com/",
+							URL:   "https://github.com/jerskisnow/Artemis-Bot/wiki/Donating",
 						},
 						discordgo.Button{
 							Emoji: discordgo.ComponentEmoji{

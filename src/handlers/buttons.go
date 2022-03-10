@@ -5,5 +5,11 @@ import (
 )
 
 func LinkButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	data := i.MessageComponentData()
 
+	if data.CustomID == "sug_upvote" {
+		// ...
+	} else if data.CustomID == "sug_downvote" {
+		// ...
+	}
 }
