@@ -18,3 +18,5 @@
 - [ ] Site/IP (ICMP) availability checker
 - [ ] Community points for actively chatting + Role store
 - [ ] Advanced user and server information
+- [ ] Meeting (reminder) system
+- [ ] Invite tracking + rewards
