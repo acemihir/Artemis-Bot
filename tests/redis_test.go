@@ -2,12 +2,13 @@ package utils
 
 import (
 	"testing"
+	"time"
 
 	"github.com/jerskisnow/Suggestions/src/utils"
 )
 
 func TestRedisSetup(t *testing.T) {
-	utils.SetupCache()
+	utils.SetupCache(time.Duration(480) * time.Minute)
 }
 
 func TestRedisSet(t *testing.T) {

@@ -31,3 +31,9 @@ id (number):
  - content (encrypted string)
  - author (hashed string)
  - creation_date (timestamp)
+
+### Caching
+Cached items will be deleted after 8 hours.
+
+Suggestions: message_id -> upvotes, downvotes
+Interactive: message_id -> expiry, participants

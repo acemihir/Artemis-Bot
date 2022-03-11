@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -10,11 +11,12 @@ import (
 type Redis struct {
 	Client  *redis.Client
 	Context context.Context
+	Expiry  time.Duration
 }
 
 var Cache *Redis
 
-func SetupCache() error {
+func SetupCache(expiryTime time.Duration) {
 	Cache = &Redis{
 		Context: context.Background(),
 		Client: redis.NewClient(&redis.Options{
@@ -22,28 +24,27 @@ func SetupCache() error {
 			Password: "",
 			DB:       0,
 		}),
+		Expiry: expiryTime,
 	}
 
 	// Perform little test
-	_, ex := Cache.Client.Ping(Cache.Context).Result()
-	if ex != nil {
-		log.Fatalln("[ERROR] Could not ping redis.")
+	_, pEx := Cache.Client.Ping(Cache.Context).Result()
+	if pEx != nil {
+		log.Fatalf("[ERROR] Could not ping redis: %s", pEx)
 	}
-
-	return ex
 }
 
 func (at *Redis) SetCache(key, val string) {
-	ex := at.Client.Set(at.Context, key, val, 0).Err()
+	ex := at.Client.Set(at.Context, key, val, at.Expiry).Err()
 	if ex != nil {
-		log.Fatalln("[ERROR] Could not set in redis.")
+		log.Fatalf("[ERROR] Could not set in redis: %s", ex)
 	}
 }
 
 func (at *Redis) ExistsCache(key string) int64 {
 	res, ex := at.Client.Exists(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalln("[ERROR] Could not check for existance in redis.")
+		log.Fatalf("[ERROR] Could not check for existance in redis: %s", ex)
 	}
 	return res
 }
@@ -51,7 +52,7 @@ func (at *Redis) ExistsCache(key string) int64 {
 func (at *Redis) GetCache(key string) string {
 	res, ex := at.Client.Get(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalln("[ERROR] Could not get from redis.")
+		log.Fatalf("[ERROR] Could not get from redis: %s", ex)
 	}
 	return res
 }
@@ -59,6 +60,6 @@ func (at *Redis) GetCache(key string) string {
 func (at *Redis) DelCache(key string) {
 	ex := at.Client.Del(at.Context, key).Err()
 	if ex != nil {
-		log.Fatalln("[ERROR] Could not delete from redis.")
+		log.Fatalf("[ERROR] Could not delete from redis: %s", ex)
 	}
 }

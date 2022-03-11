@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Suggestions/src/handlers"
@@ -42,8 +44,13 @@ func main() {
 		}
 	})
 
+	ce, ex := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
+	if ex != nil {
+		log.Fatalf("[ERROR] Could not parse cache expiry time: %s", ex)
+	}
+
 	// Setups
-	utils.SetupCache()
+	utils.SetupCache(time.Duration(ce) * time.Minute)
 	utils.SetupFirebase("firebase-credentials.json")
 
 	log.Println("[INFO] Starting sharding manager...")
