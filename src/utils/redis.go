@@ -30,21 +30,21 @@ func SetupCache(expiryTime time.Duration) {
 	// Perform little test
 	_, pEx := Cache.Client.Ping(Cache.Context).Result()
 	if pEx != nil {
-		log.Fatalf("[ERROR] Could not ping redis: %s", pEx)
+		log.Fatalf("[ERROR] Redis ping failed: %s", pEx)
 	}
 }
 
 func (at *Redis) SetCache(key, val string) {
 	ex := at.Client.Set(at.Context, key, val, at.Expiry).Err()
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not set in redis: %s", ex)
+		log.Fatalf("[ERROR] Set in redis failed: %s", ex)
 	}
 }
 
 func (at *Redis) ExistsCache(key string) int64 {
 	res, ex := at.Client.Exists(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not check for existance in redis: %s", ex)
+		log.Fatalf("[ERROR] Existance check in redis failed: %s", ex)
 	}
 	return res
 }
@@ -52,7 +52,7 @@ func (at *Redis) ExistsCache(key string) int64 {
 func (at *Redis) GetCache(key string) string {
 	res, ex := at.Client.Get(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not get from redis: %s", ex)
+		log.Fatalf("[ERROR] Get from redis failed: %s", ex)
 	}
 	return res
 }
@@ -60,6 +60,6 @@ func (at *Redis) GetCache(key string) string {
 func (at *Redis) DelCache(key string) {
 	ex := at.Client.Del(at.Context, key).Err()
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not delete from redis: %s", ex)
+		log.Fatalf("[ERROR] Delete from redis failed: %s", ex)
 	}
 }

@@ -21,15 +21,18 @@ var (
 func main() {
 	envEx := godotenv.Load(".env")
 	if envEx != nil {
-		log.Fatalf("[ERROR] Couldn't load the environment file.")
-		return
+		log.Fatalf("[ERROR] Failed loading environment file: %s", envEx)
 	}
 
 	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if botEx != nil {
-		log.Fatalf("[ERROR] Couldn't create a session.")
-		return
+		log.Fatalf("[ERROR] Session creation failed: %s", botEx)
 	}
+
+	Mgr.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
+		// TODO: Change this to: Watching the wind guide my arrows
+		s.UpdateGameStatus(0, "with bow and arrow")
+	})
 
 	// Add the event handlers
 	Mgr.AddHandler(func(s *discordgo.Session, e *discordgo.Connect) {
@@ -57,7 +60,6 @@ func main() {
 	shardEx := Mgr.Start()
 	if shardEx != nil {
 		log.Fatalf("[ERROR] Couldn't start the sharding manager.")
-		return
 	}
 
 	// Create commands
@@ -67,7 +69,7 @@ func main() {
 		handlers.RegisterCommands(Mgr, "")
 	}
 
-	// On shutdown handles the stuff below
+	// On shutdown handle the stuff below
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
