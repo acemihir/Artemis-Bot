@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Suggestions/shards"
-	"github.com/jerskisnow/Suggestions/src/handlers"
-	"github.com/jerskisnow/Suggestions/src/utils"
+	"github.com/jerskisnow/Artemis-Bot/shards"
+	"github.com/jerskisnow/Artemis-Bot/src/handlers"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -24,6 +24,16 @@ func main() {
 		log.Fatalf("[ERROR] Failed loading environment file: %s", envEx)
 	}
 
+	// ==========================================
+	ce, ex := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
+	if ex != nil {
+		log.Fatalf("[ERROR] Could not parse cache expiry time: %s", ex)
+	}
+
+	utils.SetupCache(time.Duration(ce) * time.Minute)
+	utils.SetupFirebase("firebase-credentials.json")
+
+	// ==========================================
 	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if botEx != nil {
 		log.Fatalf("[ERROR] Session creation failed: %s", botEx)
@@ -34,7 +44,6 @@ func main() {
 		s.UpdateGameStatus(0, "with bow and arrow")
 	})
 
-	// Add the event handlers
 	Mgr.AddHandler(func(s *discordgo.Session, e *discordgo.Connect) {
 		log.Printf("[INFO] Shard #%v connected.\n", s.ShardID)
 	})
@@ -47,36 +56,23 @@ func main() {
 		}
 	})
 
-	ce, ex := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
-	if ex != nil {
-		log.Fatalf("[ERROR] Could not parse cache expiry time: %s", ex)
-	}
-
-	// Setups
-	utils.SetupCache(time.Duration(ce) * time.Minute)
-	utils.SetupFirebase("firebase-credentials.json")
-
 	log.Println("[INFO] Starting sharding manager...")
 	shardEx := Mgr.Start()
 	if shardEx != nil {
 		log.Fatalf("[ERROR] Couldn't start the sharding manager.")
 	}
 
-	// Create commands
+	// ==========================================
 	if os.Getenv("PRODUCTION") == "0" {
 		handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))
 	} else {
 		handlers.RegisterCommands(Mgr, "")
 	}
 
-	// On shutdown handle the stuff below
+	// ==========================================
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
-
-	// if os.Getenv("PRODUCTION") == "0" {
-	// 	handlers.DeleteCommands(Mgr, os.Getenv("GUILD_ID"))
-	// }
 
 	log.Println("[INFO] Stopping sharding manager...")
 	Mgr.Shutdown()

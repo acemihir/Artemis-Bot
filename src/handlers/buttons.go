@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Suggestions/src/commands"
+	"github.com/jerskisnow/Artemis-Bot/src/commands"
 )
 
 func LinkButton(s *discordgo.Session, i *discordgo.InteractionCreate) {

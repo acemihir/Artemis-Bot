@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/jerskisnow/Suggestions/src/utils"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func TestFirebaseSetup(t *testing.T) {

@@ -1,3 +1,6 @@
+// Edited version of "shards" by "servusdei2018":
+// Repository: https://github.com/servusdei2018/shards
+// License: https://github.com/servusdei2018/shards/blob/master/LICENSE.md
 package shards
 
 import (
@@ -9,29 +12,19 @@ import (
 )
 
 const (
-	// TIMELIMIT specifies how long to pause between connecting shards.
 	TIMELIMIT = time.Second * 5
-	// VERSION specifies the shards module version. Follows semantic versioning (semver.org).
-	VERSION = "1.2.2"
+	VERSION   = "1.2.2"
 )
 
-// A Shard represents a shard.
 type Shard struct {
 	sync.RWMutex
-
-	// The Discord session handling this Shard.
-	Session *discordgo.Session
-	// This Shard's ID.
-	ID int
-	// Total Shard count.
+	Session    *discordgo.Session
+	ID         int
 	ShardCount int
-
-	// Event handlers.
-	handlers []interface{}
+	handlers   []interface{}
 }
 
 // AddHandler registers an event handler for a Shard.
-//
 // Shouldn't be called after Init or results in undefined behavior.
 func (s *Shard) AddHandler(handler interface{}) {
 	s.Lock()
@@ -41,7 +34,6 @@ func (s *Shard) AddHandler(handler interface{}) {
 }
 
 // ApplicationCommandCreate registers an application command for a Shard.
-//
 // Shouldn't be called before Initialization.
 func (s *Shard) ApplicationCommandCreate(guildID string, cmd *discordgo.ApplicationCommand) error {
 	s.Lock()
@@ -83,13 +75,11 @@ func (s *Shard) GuildCount() (count int) {
 	return
 }
 
-// Init initializes a shard with a bot token, its Shard ID, the total
-// amount of shards, and a Discord intent.
+// Init initializes a shard with a bot token, its Shard ID, the total amount of shards, and a Discord intent.
 func (s *Shard) Init(token string, ID, ShardCount int, intent discordgo.Intent) (err error) {
 	s.Lock()
 	defer s.Unlock()
 
-	// Apply sharding configuration.
 	s.ID = ID
 	s.ShardCount = ShardCount
 
@@ -99,11 +89,8 @@ func (s *Shard) Init(token string, ID, ShardCount int, intent discordgo.Intent) 
 		return
 	}
 
-	// Shard the session.
 	s.Session.ShardCount = s.ShardCount
 	s.Session.ShardID = s.ID
-
-	// Identify our intent.
 	s.Session.Identify.Intents = intent
 
 	// Add handlers to the session.
@@ -111,7 +98,6 @@ func (s *Shard) Init(token string, ID, ShardCount int, intent discordgo.Intent) 
 		s.Session.AddHandler(handler)
 	}
 
-	// Connect the shard.
 	err = s.Session.Open()
 
 	return
@@ -122,7 +108,6 @@ func (s *Shard) Stop() (err error) {
 	s.Lock()
 	defer s.Unlock()
 
-	// Close the session.
 	err = s.Session.Close()
 
 	return

@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Suggestions/shards"
-	"github.com/jerskisnow/Suggestions/src/commands"
+	"github.com/jerskisnow/Artemis-Bot/shards"
+	"github.com/jerskisnow/Artemis-Bot/src/commands"
 )
 
 // GuildID should be empty in production
@@ -113,7 +113,11 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 		},
 	}
 
-	log.Println("[INFO] Creating commands.")
+	n, ex := strconv.ParseInt(guildID, 10, 64)
+	if ex != nil {
+		log.Fatalf("[ERROR] Could not parse GuildID to int64.")
+	}
+	log.Printf("[INFO-%d] Creating commands.", Mgr.SessionForGuild(n).ShardID)
 
 	for _, v := range cmds {
 		Mgr.ApplicationCommandCreate(guildID, v)

@@ -1,3 +1,6 @@
+// Edited version of "shards" by "servusdei2018":
+// Repository: https://github.com/servusdei2018/shards
+// License: https://github.com/servusdei2018/shards/blob/master/LICENSE.md
 package shards
 
 import (
@@ -8,24 +11,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Manager facilitates the management of Shards.
 type Manager struct {
 	sync.RWMutex
-
-	// Discord gateway.
-	Gateway *discordgo.Session
-	// Discord intent.
-	Intent discordgo.Intent
-	// Shards managed by this Manager.
-	Shards []*Shard
-	// Total Shard count.
+	Gateway    *discordgo.Session
+	Intent     discordgo.Intent
+	Shards     []*Shard
 	ShardCount int
-
-	// Event handlers.
-	handlers []interface{}
-
-	// Discord bot token.
-	token string
+	handlers   []interface{}
+	token      string
 }
 
 // AddHandler registers an event handler for all Shards.
@@ -51,7 +44,8 @@ func (m *Manager) ApplicationCommandCreate(guildID string, cmd *discordgo.Applic
 			log.Fatalf("[ERROR] Failed to register command, %v", ex)
 		}
 	}
-	log.Printf("[INFO] Registered '/%v'", cmd.Name)
+
+	// log.Printf("[INFO] Registered '/%v'", cmd.Name)
 }
 
 func (m *Manager) ApplicationCommandDelete(guildID string, cmd *discordgo.ApplicationCommand) {
@@ -66,8 +60,7 @@ func (m *Manager) ApplicationCommandDelete(guildID string, cmd *discordgo.Applic
 	}
 }
 
-// GuildCount returns the amount of guilds that a Manager's Shards are
-// handling.
+// GuildCount returns the amount of guilds that a Manager's Shards are handling.
 func (m *Manager) GuildCount() (count int) {
 	m.RLock()
 	defer m.RUnlock()
@@ -92,6 +85,9 @@ func New(token string) (mgr *Manager, err error) {
 
 	// Initialize the gateway.
 	mgr.Gateway, err = discordgo.New(token)
+	if err != nil {
+		return
+	}
 
 	// Set recommended shard count.
 	resp, err := mgr.Gateway.GatewayBot()
@@ -126,16 +122,12 @@ func (m *Manager) RegisterIntent(intent discordgo.Intent) {
 	m.Intent = intent
 }
 
-// SessionForDM returns the proper session for sending and receiving
-// DM's.
+// SessionForDM returns the proper session for sending and receiving DM's.
 func (m *Manager) SessionForDM() *discordgo.Session {
 	m.RLock()
 	defer m.RUnlock()
 
-	// Per Discord documentation, Shard 0 is the only shard which can
-	// send and receive DM's.
-	//
-	// See https://discord.com/developers/docs/topics/gateway#sharding
+	// Shard 0 is the only shard which can send and receive DM's.
 	return m.Shards[0].Session
 }
 
@@ -144,15 +136,11 @@ func (m *Manager) SessionForGuild(guildID int64) *discordgo.Session {
 	m.RLock()
 	defer m.RUnlock()
 
-	// Formula to determine which shard handles a guild, from Discord
-	// docs.
-	//
-	// See https://discord.com/developers/docs/topics/gateway#sharding
+	// Formula to determine which shard handles a guild, from Discord docs.
 	return m.Shards[(guildID>>22)%int64(m.ShardCount)].Session
 }
 
-// Restart restarts the Manager, and rescales if necessary, all with
-// zero downtime.
+// Restart restarts the Manager, and rescales if necessary, all with zero downtime.
 func (m *Manager) Restart() (err error) {
 	// Lock the old Manager for reading.
 	m.RLock()
@@ -234,7 +222,6 @@ func (m *Manager) Shutdown() (err error) {
 	m.Lock()
 	defer m.Unlock()
 
-	// Stop all shards.
 	for _, shard := range m.Shards {
 		if err = shard.Stop(); err != nil {
 			return

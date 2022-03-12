@@ -1,4 +1,4 @@
-module github.com/jerskisnow/Suggestions
+module github.com/jerskisnow/Artemis-Bot
 
 go 1.17
 

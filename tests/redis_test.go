@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jerskisnow/Suggestions/src/utils"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func TestRedisSetup(t *testing.T) {
