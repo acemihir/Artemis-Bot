@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -28,23 +27,23 @@ func SetupCache(expiryTime time.Duration) {
 	}
 
 	// Perform little test
-	_, pEx := Cache.Client.Ping(Cache.Context).Result()
-	if pEx != nil {
-		log.Fatalf("[ERROR] Redis ping failed: %s", pEx)
+	_, ex := Cache.Client.Ping(Cache.Context).Result()
+	if ex != nil {
+		Cout("[ERROR] Redis ping failed: %v", Red, ex)
 	}
 }
 
 func (at *Redis) SetCache(key, val string) {
 	ex := at.Client.Set(at.Context, key, val, at.Expiry).Err()
 	if ex != nil {
-		log.Fatalf("[ERROR] Set in redis failed: %s", ex)
+		Cout("[ERROR] Set in redis failed: %v", Red, ex)
 	}
 }
 
 func (at *Redis) ExistsCache(key string) int64 {
 	res, ex := at.Client.Exists(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalf("[ERROR] Existance check in redis failed: %s", ex)
+		Cout("[ERROR] Existance check in redis failed: %v", Red, ex)
 	}
 	return res
 }
@@ -52,7 +51,7 @@ func (at *Redis) ExistsCache(key string) int64 {
 func (at *Redis) GetCache(key string) string {
 	res, ex := at.Client.Get(at.Context, key).Result()
 	if ex != nil {
-		log.Fatalf("[ERROR] Get from redis failed: %s", ex)
+		Cout("[ERROR] Get from redis failed: %v", Red, ex)
 	}
 	return res
 }
@@ -60,6 +59,6 @@ func (at *Redis) GetCache(key string) string {
 func (at *Redis) DelCache(key string) {
 	ex := at.Client.Del(at.Context, key).Err()
 	if ex != nil {
-		log.Fatalf("[ERROR] Delete from redis failed: %s", ex)
+		Cout("[ERROR] Delete from redis failed: %v", Red, ex)
 	}
 }

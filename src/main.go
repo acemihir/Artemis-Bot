@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"strconv"
@@ -19,15 +18,17 @@ var (
 )
 
 func main() {
+	utils.Cout("[INFO] Start sequence initiated.\n", utils.Blue)
+
 	envEx := godotenv.Load(".env")
 	if envEx != nil {
-		log.Fatalf("[ERROR] Failed loading environment file: %s", envEx)
+		utils.Cout("[ERROR] Failed loading environment file: %v", utils.Red, envEx)
 	}
 
 	// ==========================================
-	ce, ex := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
-	if ex != nil {
-		log.Fatalf("[ERROR] Could not parse cache expiry time: %s", ex)
+	ce, cacheEx := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
+	if cacheEx != nil {
+		utils.Cout("[ERROR] Could not parse cache expiry time: %v", utils.Red, cacheEx)
 	}
 
 	utils.SetupCache(time.Duration(ce) * time.Minute)
@@ -36,16 +37,21 @@ func main() {
 	// ==========================================
 	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if botEx != nil {
-		log.Fatalf("[ERROR] Session creation failed: %s", botEx)
+		utils.Cout("[ERROR] Session creation failed: %v", utils.Red, botEx)
 	}
 
 	Mgr.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		// TODO: Change this to: Watching the wind guide my arrows
-		s.UpdateGameStatus(0, "with bow and arrow")
+		s.UpdateStatusComplex(discordgo.UpdateStatusData{
+			Activities: []*discordgo.Activity{{
+				Name: "the wind guide my arrows",
+				Type: discordgo.ActivityTypeWatching,
+				URL:  "",
+			}},
+		})
 	})
 
 	Mgr.AddHandler(func(s *discordgo.Session, e *discordgo.Connect) {
-		log.Printf("[INFO] Shard #%v connected.\n", s.ShardID)
+		utils.Cout("[INFO][SHARD-%d] Shard connected.", utils.Cyan, s.ShardID)
 	})
 
 	Mgr.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -56,10 +62,10 @@ func main() {
 		}
 	})
 
-	log.Println("[INFO] Starting sharding manager...")
+	utils.Cout("[INFO] Starting sharding manager.", utils.Cyan)
 	shardEx := Mgr.Start()
 	if shardEx != nil {
-		log.Fatalf("[ERROR] Couldn't start the sharding manager.")
+		utils.Cout("[ERROR] Couldn't start the sharding manager: %v", utils.Red, shardEx)
 	}
 
 	// ==========================================
@@ -69,12 +75,14 @@ func main() {
 		handlers.RegisterCommands(Mgr, "")
 	}
 
+	utils.Cout("\n[SUCCESS] Artemis-Bot is now fully operational.", utils.Green)
+
 	// ==========================================
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
 
-	log.Println("[INFO] Stopping sharding manager...")
+	utils.Cout("[INFO] Shutdown sequence initiated.", utils.Blue)
 	Mgr.Shutdown()
-	log.Println("[SUCCESS] Safe-Shutdown completed.")
+	utils.Cout("\n[SUCCESS] Shutdown sequence completed.", utils.Green)
 }

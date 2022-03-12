@@ -4,11 +4,11 @@
 package shards
 
 import (
-	"log"
 	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 type Manager struct {
@@ -41,11 +41,11 @@ func (m *Manager) ApplicationCommandCreate(guildID string, cmd *discordgo.Applic
 	for _, shard := range m.Shards {
 		ex := shard.ApplicationCommandCreate(guildID, cmd)
 		if ex != nil {
-			log.Fatalf("[ERROR] Failed to register command, %v", ex)
+			utils.Cout("[ERROR][SHARD-%d] Failed to register command: %v", utils.Red, shard.ID, ex)
 		}
 	}
 
-	// log.Printf("[INFO] Registered '/%v'", cmd.Name)
+	utils.Cout(" --> Registered '/%s'.", utils.Cyan, cmd.Name)
 }
 
 func (m *Manager) ApplicationCommandDelete(guildID string, cmd *discordgo.ApplicationCommand) {
@@ -55,7 +55,7 @@ func (m *Manager) ApplicationCommandDelete(guildID string, cmd *discordgo.Applic
 	for _, shard := range m.Shards {
 		ex := shard.ApplicationCommandDelete(guildID, cmd)
 		if ex != nil {
-			log.Fatalf("[ERROR] Failed to delete command, %v", ex)
+			utils.Cout("[ERROR][SHARD-%d] Failed to delete command: %v", utils.Red, shard.ID, ex)
 		}
 	}
 }
@@ -227,5 +227,7 @@ func (m *Manager) Shutdown() (err error) {
 			return
 		}
 	}
+
+	utils.Cout("[INFO] Sharding manager has been shut down.", utils.Cyan)
 	return
 }

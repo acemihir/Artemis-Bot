@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"log"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Artemis-Bot/shards"
 	"github.com/jerskisnow/Artemis-Bot/src/commands"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 // GuildID should be empty in production
@@ -115,26 +115,28 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 
 	n, ex := strconv.ParseInt(guildID, 10, 64)
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not parse GuildID to int64.")
+		utils.Cout("[ERROR] Could not parse GuildID to int64: %v", utils.Red, ex)
 	}
-	log.Printf("[INFO-%d] Creating commands.", Mgr.SessionForGuild(n).ShardID)
+
+	shardID := Mgr.SessionForGuild(n).ShardID
 
 	for _, v := range cmds {
 		Mgr.ApplicationCommandCreate(guildID, v)
 	}
-	log.Println("[INFO] Finished registering all commands.")
+
+	utils.Cout("[INFO][SHARD-%d] Finished registering all commands.", utils.Cyan, shardID)
 }
 
 func DeleteCommands(Mgr *shards.Manager, guildID string) {
 	n, ex := strconv.ParseInt(guildID, 10, 64)
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not parse GuildID to int64. (DeleteCommands)")
+		utils.Cout("[ERROR] Could not parse GuildID to int64: %v", utils.Red, ex)
 	}
 
 	s := Mgr.SessionForGuild(n)
 	cmds, ex := s.ApplicationCommands(s.State.User.ID, guildID)
 	if ex != nil {
-		log.Fatalf("[ERROR] Could not fetch guild commands. (DeleteCommands)")
+		utils.Cout("[ERROR] Could not fetch guild commands: %v", utils.Red, ex)
 	}
 
 	for _, v := range cmds {

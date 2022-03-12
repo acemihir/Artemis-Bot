@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"cloud.google.com/go/firestore"
@@ -25,13 +24,13 @@ func SetupFirebase(file string) {
 	app, ex := firebase.NewApp(ctx, nil, sa)
 
 	if ex != nil {
-		log.Fatalf("[ERROR] Firebase app instantiation failed: %s", ex)
+		Cout("[ERROR] Firebase app instantiation failed: %s", Red, ex)
 	}
 
 	// Setup firestore
 	fsclient, ex := app.Firestore(ctx)
 	if ex != nil {
-		log.Fatalf("[ERROR] Firestore app instantiation failed: %s", ex)
+		Cout("[ERROR] Firestore app instantiation failed: %s", Red, ex)
 	}
 
 	Firebase = &GoogleFirebase{
@@ -44,7 +43,7 @@ func SetupFirebase(file string) {
 func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{}) {
 	_, ex := at.Firestore.Collection(collection).Doc(doc).Set(at.Context, data)
 	if ex != nil {
-		log.Fatalf("[ERROR] Set in firestore failed: %s", ex)
+		Cout("[ERROR] Set in firestore failed: %s", Red, ex)
 	}
 }
 
@@ -55,7 +54,7 @@ func (at *GoogleFirebase) GetFirestore(collection, doc string) map[string]interf
 		if strings.Contains(ex.Error(), "not found") {
 			return map[string]interface{}{}
 		} else {
-			log.Fatalf("[ERROR] Get from firestore failed: %s", ex)
+			Cout("[ERROR] Get from firestore failed: %s", Red, ex)
 		}
 	}
 	return dsnap.Data()
@@ -64,6 +63,6 @@ func (at *GoogleFirebase) GetFirestore(collection, doc string) map[string]interf
 func (at *GoogleFirebase) DelFirestore(collection, doc string) {
 	_, ex := at.Firestore.Collection(collection).Doc(doc).Delete(at.Context)
 	if ex != nil {
-		log.Fatalf("[ERROR] Delete from firestored failed: %s", ex)
+		Cout("[ERROR] Delete from firestored failed: %s", Red, ex)
 	}
 }

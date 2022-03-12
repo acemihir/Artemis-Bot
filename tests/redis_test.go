@@ -18,7 +18,7 @@ func TestRedisSet(t *testing.T) {
 func TestRedisExists(t *testing.T) {
 	res := utils.Cache.ExistsCache("test")
 	if res == 0 {
-		t.Fatal("Entry was not found.")
+		t.Fatal("Entry was not found")
 	}
 }
 
@@ -26,7 +26,7 @@ func TestRedisGet(t *testing.T) {
 	res := utils.Cache.GetCache("test")
 
 	if res != "some value" {
-		t.Fatal("Incorrect value returned.")
+		t.Fatal("Incorrect value returned")
 	}
 }
 
@@ -35,6 +35,6 @@ func TestRedisDel(t *testing.T) {
 
 	res := utils.Cache.ExistsCache("test")
 	if res == 1 {
-		t.Fatal("Entry was not deleted.")
+		t.Fatal("Entry was not deleted")
 	}
 }

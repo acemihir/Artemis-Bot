@@ -3,11 +3,11 @@ package commands
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func HelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -25,7 +25,7 @@ func HelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	if ex != nil {
-		log.Fatalln("[ERROR] Failed to fetch application commands. (/help)")
+		utils.Cout("[ERROR][CMD-HELP] Failed to fetch application commands: %v", utils.Red, ex)
 		return
 	}
 
@@ -34,7 +34,7 @@ func HelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 		spacing, ex := strconv.Atoi(os.Getenv("HELP_SPACING_BASE"))
 		if ex != nil {
-			log.Fatalln("[ERROR] Could not parse HELP_SPACING_BASE. (/help)")
+			utils.Cout("[ERROR][CMD-HELP] Could not parse HELP_SPACING_BASE: %v", utils.Red, ex)
 		}
 		spacing -= len(v.Name)
 
