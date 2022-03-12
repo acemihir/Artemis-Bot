@@ -12,7 +12,6 @@ func TestCreateId(t *testing.T) {
 	t.Logf("Custom ID: %s", res)
 
 	if len(res) != 14 {
-		t.Errorf("Expected a length of 14, got %d", len(res))
-		// t.FailNow()
+		t.Fatalf("Expected a length of 14, got %d", len(res))
 	}
 }

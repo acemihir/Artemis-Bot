@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Suggestions/shards"
 	"github.com/jerskisnow/Suggestions/src/commands"
-	"github.com/servusdei2018/shards"
 )
 
 // GuildID should be empty in production
@@ -112,13 +113,28 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 		},
 	}
 
-	log.Println("Creating commands.")
+	log.Println("[INFO] Creating commands.")
 
 	for _, v := range cmds {
-		ex := Mgr.ApplicationCommandCreate(guildID, v)
-		if ex != nil {
-			log.Panicf("Cannot create '%v' command: %v", v.Name, ex)
-		}
+		Mgr.ApplicationCommandCreate(guildID, v)
+	}
+	log.Println("[INFO] Finished registering all commands.")
+}
+
+func DeleteCommands(Mgr *shards.Manager, guildID string) {
+	n, ex := strconv.ParseInt(guildID, 10, 64)
+	if ex != nil {
+		log.Fatalf("[ERROR] Could not parse GuildID to int64. (DeleteCommands)")
+	}
+
+	s := Mgr.SessionForGuild(n)
+	cmds, ex := s.ApplicationCommands(s.State.User.ID, guildID)
+	if ex != nil {
+		log.Fatalf("[ERROR] Could not fetch guild commands. (DeleteCommands)")
+	}
+
+	for _, v := range cmds {
+		Mgr.ApplicationCommandDelete(guildID, v)
 	}
 }
 

@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Suggestions/shards"
 	"github.com/jerskisnow/Suggestions/src/handlers"
 	"github.com/jerskisnow/Suggestions/src/utils"
 	"github.com/joho/godotenv"
-	"github.com/servusdei2018/shards"
 )
 
 var (
@@ -73,6 +73,10 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 	<-stop
+
+	// if os.Getenv("PRODUCTION") == "0" {
+	// 	handlers.DeleteCommands(Mgr, os.Getenv("GUILD_ID"))
+	// }
 
 	log.Println("[INFO] Stopping sharding manager...")
 	Mgr.Shutdown()

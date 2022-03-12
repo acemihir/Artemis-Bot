@@ -6,7 +6,6 @@ require (
 	github.com/bwmarrin/discordgo v0.24.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/joho/godotenv v1.4.0
-	github.com/servusdei2018/shards v1.2.3
 )
 
 require (
