@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/firestore"
@@ -22,15 +23,16 @@ func SetupFirebase(file string) {
 	sa := option.WithCredentialsFile(file)
 
 	app, ex := firebase.NewApp(ctx, nil, sa)
-
 	if ex != nil {
 		Cout("[ERROR] Firebase app instantiation failed: %s", Red, ex)
+		os.Exit(1)
 	}
 
 	// Setup firestore
 	fsclient, ex := app.Firestore(ctx)
 	if ex != nil {
 		Cout("[ERROR] Firestore app instantiation failed: %s", Red, ex)
+		os.Exit(1)
 	}
 
 	Firebase = &GoogleFirebase{
@@ -40,29 +42,25 @@ func SetupFirebase(file string) {
 	}
 }
 
-func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{}) {
+func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{}) error {
 	_, ex := at.Firestore.Collection(collection).Doc(doc).Set(at.Context, data)
-	if ex != nil {
-		Cout("[ERROR] Set in firestore failed: %s", Red, ex)
-	}
+	return ex
 }
 
 // Will return empty when no data is stored
-func (at *GoogleFirebase) GetFirestore(collection, doc string) map[string]interface{} {
+func (at *GoogleFirebase) GetFirestore(collection, doc string) (map[string]interface{}, error) {
 	dsnap, ex := at.Firestore.Collection(collection).Doc(doc).Get(at.Context)
 	if ex != nil {
 		if strings.Contains(ex.Error(), "not found") {
-			return map[string]interface{}{}
+			return map[string]interface{}{}, nil
 		} else {
-			Cout("[ERROR] Get from firestore failed: %s", Red, ex)
+			return map[string]interface{}{}, ex
 		}
 	}
-	return dsnap.Data()
+	return dsnap.Data(), nil
 }
 
-func (at *GoogleFirebase) DelFirestore(collection, doc string) {
+func (at *GoogleFirebase) DelFirestore(collection, doc string) error {
 	_, ex := at.Firestore.Collection(collection).Doc(doc).Delete(at.Context)
-	if ex != nil {
-		Cout("[ERROR] Delete from firestored failed: %s", Red, ex)
-	}
+	return ex
 }
