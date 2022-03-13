@@ -90,26 +90,10 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 		{
 			Name:        "report",
 			Description: "Create a report.",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Name:        "description",
-					Description: "A brief description of your report.",
-					Required:    true,
-					Type:        discordgo.ApplicationCommandOptionString,
-				},
-			},
 		},
 		{
 			Name:        "suggest",
 			Description: "Create a suggestion.",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Name:        "description",
-					Description: "A brief description of your suggestion.",
-					Required:    true,
-					Type:        discordgo.ApplicationCommandOptionString,
-				},
-			},
 		},
 	}
 

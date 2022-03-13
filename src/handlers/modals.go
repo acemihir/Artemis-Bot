@@ -13,5 +13,7 @@ func LinkModals(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		commands.NotesModal(s, i)
 	case "modals_suggestion":
 		commands.SuggestionModal(s, i)
+	case "modals_report":
+		commands.ReportCommand(s, i)
 	}
 }

@@ -1,21 +1,21 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
-type ModalSuggestionData struct {
+type modalSuggestionData struct {
 	sug_channel    string
 	upvote_emoji   string
 	downvote_emoji string
 }
 
-var modal_data = make(map[string]ModalSuggestionData)
+var modal_data = make(map[string]modalSuggestionData)
 
 func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
@@ -77,7 +77,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		downvote_emoji = res["downvote_emoji"].(string)
 	}
 
-	modal_data[i.Member.User.ID] = ModalSuggestionData{
+	modal_data[i.Member.User.ID] = modalSuggestionData{
 		sug_channel:    res["sug_channel"].(string),
 		upvote_emoji:   upvote_emoji,
 		downvote_emoji: downvote_emoji,
@@ -201,8 +201,49 @@ func voteError(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
+func cannotVoteTwice(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Description: "You cannot vote twice on the same entry.",
+				Color:       utils.ErrorEmbedColour,
+			},
+		},
+		Flags: 1 << 6,
+	})
+}
+
 // ===========================================
-// TODO: Check if the user already voted
+type votes struct {
+	Upvotes   []string
+	Downvotes []string
+}
+
+func countAndMutate(array *[]string, userid string, removeFound bool) int {
+	var voteCount int = 0
+	for i, v := range *array {
+		if v == userid {
+			if removeFound {
+				// Remove from array
+				tmp := *array
+				*array = append(tmp[:i], tmp[i+1:]...)
+				continue
+			} else {
+				return -1
+			}
+		}
+		voteCount++
+	}
+
+	if !removeFound {
+		tmp := *array
+		*array = append(tmp, userid)
+		voteCount++
+	}
+
+	return voteCount
+}
+
 func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredMessageUpdate,
@@ -212,26 +253,29 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	desc_array := strings.Split(embed.Description, "\n")
 	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
 
-	b, ex := utils.Cache.ExistsCache(id)
+	in_cache, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
 		voteError(s, i)
 		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
 		return
 	}
 
-	var upvotes string = "0"
-	var downvotes string = "0"
+	vote_data := votes{}
 
-	if b == 0 {
-		ex = utils.Cache.SetCache(id, "1:0")
+	// Check if the data is not in cache
+	if in_cache == 0 {
+		// Fetch the data from firestore
+		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from firestore failed: %v", utils.Red, ex)
 			return
 		}
-		upvotes = "1"
+
+		vote_data.Upvotes = res["upvotes"].([]string)
+		vote_data.Downvotes = res["downvotes"].([]string)
 	} else {
-		// Get from cache
+		// Fetch the data from redis
 		res, ex := utils.Cache.GetCache(id)
 		if ex != nil {
 			voteError(s, i)
@@ -239,32 +283,24 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			return
 		}
 
-		// Split the voting data into an array
-		vote_array := strings.Split(res, ":")
-		// Parse the voting data to an integer
-		vote_n, ex := strconv.Atoi(vote_array[0])
-		if ex != nil {
-			voteError(s, i)
-			utils.Cout("[ERROR] Parse votecount to int failed: %v", utils.Red, ex)
-			return
-		}
-
-		// Incremeant the voting data
-		vote_n++
-
-		upvotes = strconv.Itoa(vote_n)
-		downvotes = vote_array[1]
-
-		ex = utils.Cache.SetCache(id, upvotes+":"+downvotes)
-		if ex != nil {
-			voteError(s, i)
-			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
-			return
-		}
+		// Unmarshal the data into vote_data
+		json.Unmarshal([]byte(res), &vote_data)
 	}
 
-	desc_array[len(desc_array)-1] = fmt.Sprintf("*%s - upvotes | %s - downvotes*", upvotes, downvotes)
+	upvote_count := countAndMutate(&vote_data.Upvotes, i.Member.User.ID, false)
+	if upvote_count == -1 {
+		cannotVoteTwice(s, i)
+		return
+	}
+	downvote_count := countAndMutate(&vote_data.Downvotes, i.Member.User.ID, true)
+
+	desc_array[len(desc_array)-1] = fmt.Sprintf("*%d - upvotes | %d - downvotes*", upvote_count, downvote_count)
 	embed.Description = strings.Join(desc_array, "\n")
+
+	res, _ := json.Marshal(vote_data)
+	utils.Cache.SetCache(id, string(res))
+
+	fmt.Println(string(res))
 
 	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 		Embeds: []*discordgo.MessageEmbed{
@@ -273,7 +309,6 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-// TODO: Check if the user already voted
 func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredMessageUpdate,
@@ -283,26 +318,29 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	desc_array := strings.Split(embed.Description, "\n")
 	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
 
-	b, ex := utils.Cache.ExistsCache(id)
+	in_cache, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
 		voteError(s, i)
 		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
 		return
 	}
 
-	var upvotes string = "0"
-	var downvotes string = "0"
+	vote_data := votes{}
 
-	if b == 0 {
-		ex = utils.Cache.SetCache(id, "0:1")
+	// Check if the data is not in cache
+	if in_cache == 0 {
+		// Fetch the data from firestore
+		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from firestore failed: %v", utils.Red, ex)
 			return
 		}
-		downvotes = "1"
+
+		vote_data.Upvotes = res["upvotes"].([]string)
+		vote_data.Downvotes = res["downvotes"].([]string)
 	} else {
-		// Get from cache
+		// Fetch the data from redis
 		res, ex := utils.Cache.GetCache(id)
 		if ex != nil {
 			voteError(s, i)
@@ -310,32 +348,24 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			return
 		}
 
-		// Split the voting data into an array
-		vote_array := strings.Split(res, ":")
-		// Parse the voting data to an integer
-		vote_n, ex := strconv.Atoi(vote_array[1])
-		if ex != nil {
-			voteError(s, i)
-			utils.Cout("[ERROR] Parse votecount to int failed: %v", utils.Red, ex)
-			return
-		}
-
-		// Incremeant the voting data
-		vote_n++
-
-		upvotes = vote_array[0]
-		downvotes = strconv.Itoa(vote_n)
-
-		ex = utils.Cache.SetCache(id, upvotes+":"+downvotes)
-		if ex != nil {
-			voteError(s, i)
-			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
-			return
-		}
+		// Unmarshal the data into vote_data
+		json.Unmarshal([]byte(res), &vote_data)
 	}
 
-	desc_array[len(desc_array)-1] = fmt.Sprintf("*%s - upvotes | %s - downvotes*", upvotes, downvotes)
+	downvote_count := countAndMutate(&vote_data.Downvotes, i.Member.User.ID, false)
+	if downvote_count == -1 {
+		cannotVoteTwice(s, i)
+		return
+	}
+	upvote_count := countAndMutate(&vote_data.Upvotes, i.Member.User.ID, true)
+
+	desc_array[len(desc_array)-1] = fmt.Sprintf("*%d - upvotes | %d - downvotes*", upvote_count, downvote_count)
 	embed.Description = strings.Join(desc_array, "\n")
+
+	res, _ := json.Marshal(vote_data)
+	utils.Cache.SetCache(id, string(res))
+
+	fmt.Println(string(res))
 
 	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 		Embeds: []*discordgo.MessageEmbed{
