@@ -55,10 +55,12 @@ func main() {
 	})
 
 	Mgr.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		if i.Type == 2 { // ApplicationCommand
+		if i.Type == discordgo.InteractionApplicationCommand {
 			handlers.LinkCommand(s, i)
-		} else if i.Type == 3 { // MessageComponent
+		} else if i.Type == discordgo.InteractionMessageComponent {
 			handlers.LinkButton(s, i)
+		} else if i.Type == discordgo.InteractionModalSubmit {
+			handlers.LinkModals(s, i)
 		}
 	})
 

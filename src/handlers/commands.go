@@ -155,7 +155,16 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	} else if data.Name == "help" {
 		commands.HelpCommand(s, i)
 	} else if data.Name == "notes" {
-		commands.NotesCommand(s, i)
+		sbcmd := i.ApplicationCommandData().Options[0].Name
+
+		switch sbcmd {
+		case "create":
+			commands.NotesCreateCommand(s, i)
+		case "delete":
+			commands.NotesDeleteCommand(s, i)
+		case "list":
+			commands.NotesListCommand(s, i)
+		}
 	} else if data.Name == "poll" {
 		commands.PollCommand(s, i)
 	} else if data.Name == "report" {

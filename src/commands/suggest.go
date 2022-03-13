@@ -9,11 +9,15 @@ import (
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
-func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
-	})
+type ModalSuggestionData struct {
+	sug_channel    string
+	upvote_emoji   string
+	downvote_emoji string
+}
 
+var modal_data = make(map[string]ModalSuggestionData)
+
+func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
 	if ex != nil {
 		utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
@@ -22,20 +26,47 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	if len(res) == 0 || res["sug_channel"] == nil {
-		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       "Artemis - Suggest",
-					Description: "Please configure a suggestion channel first. This can be done via the ``/config`` command.",
-					Color:       utils.WarnEmbedColour,
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Artemis - Suggest",
+						Description: "Please configure a suggestion channel first. This can be done via the ``/config`` command.",
+						Color:       utils.WarnEmbedColour,
+					},
 				},
 			},
 		})
 		return
 	}
 
-	desc := i.ApplicationCommandData().Options[0].StringValue()
-	id := utils.CreateId("s_", 6)
+	ex = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseModal,
+		Data: &discordgo.InteractionResponseData{
+			CustomID: "modals_suggestion",
+			Title:    "Suggestion - Create",
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.TextInput{
+							CustomID:    "suggestion",
+							Label:       "A brief description of your suggestion.",
+							Style:       discordgo.TextInputParagraph,
+							Placeholder: "Add a brand new meme channel.",
+							Required:    true,
+							MaxLength:   300,
+							MinLength:   3,
+						},
+					},
+				},
+			},
+		},
+	})
+	if ex != nil {
+		utils.Cout("[ERROR] Could not open up the modal: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+	}
 
 	upvote_emoji := "⬆️"
 	if res["upvote_emoji"] != nil {
@@ -46,7 +77,28 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		downvote_emoji = res["downvote_emoji"].(string)
 	}
 
-	msg, ex := s.ChannelMessageSendComplex(res["sug_channel"].(string), &discordgo.MessageSend{
+	modal_data[i.Member.User.ID] = ModalSuggestionData{
+		sug_channel:    res["sug_channel"].(string),
+		upvote_emoji:   upvote_emoji,
+		downvote_emoji: downvote_emoji,
+	}
+}
+
+func SuggestionModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	desc := i.ModalSubmitData().Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+	})
+
+	// Store the given data
+	data := modal_data[i.Member.User.ID]
+	// Remove the data from the map
+	delete(modal_data, i.Member.User.ID)
+
+	id := utils.CreateId("s_", 6)
+
+	msg, ex := s.ChannelMessageSendComplex(data.sug_channel, &discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Author: &discordgo.MessageEmbedAuthor{
@@ -63,7 +115,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					discordgo.Button{
 						CustomID: "sug_upvote",
 						Emoji: discordgo.ComponentEmoji{
-							Name: upvote_emoji,
+							Name: data.upvote_emoji,
 						},
 						Label: "Upvote",
 						Style: discordgo.SuccessButton,
@@ -71,7 +123,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					discordgo.Button{
 						CustomID: "sug_downvote",
 						Emoji: discordgo.ComponentEmoji{
-							Name: downvote_emoji,
+							Name: data.downvote_emoji,
 						},
 						Label: "Downvote",
 						Style: discordgo.SuccessButton,
@@ -123,94 +175,171 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	embed := i.Message.Embeds[0]
-	desc_array := strings.Split(embed.Description, "\n")
-	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
-
-	b, ex := utils.Cache.ExistsCache(id)
-	if ex != nil {
-		// TODO
-	}
-
-	if b == 0 {
-		// Set in cache
-		ex = utils.Cache.SetCache(id, "1:0")
-		if ex != nil {
-			// TODO
-		}
-	} else {
-		// Get from cache
-		res, ex := utils.Cache.GetCache(id)
-		if ex != nil {
-			// TODO
-		}
-
-		vote_array := strings.Split(res, ":")
-
-		vote_n, ex := strconv.Atoi(vote_array[0])
-		if ex != nil {
-			// TODO
-		}
-
-		vote_n++
-		ex = utils.Cache.SetCache(id, strconv.Itoa(vote_n)+":"+vote_array[1])
-		if ex != nil {
-			// TODO
-		}
-	}
-
-	// TODO: Update the mesasge
-
-	// desc_array[len(desc_array) - 1] = "*0 - upvotes | 0 - downvotes*"
-
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseUpdateMessage,
+func voteError(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Description: "Oops! A wild error seems to have occured.\n\nPlease try again later, if this error is persistent please report it in our Support discord.",
+				Color:       utils.ErrorEmbedColour,
+			},
+		},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Emoji: discordgo.ComponentEmoji{
+							Name: "👥",
+						},
+						Label: "Support",
+						Style: discordgo.LinkButton,
+						URL:   "https://discord.gg/3SYg3M5",
+					},
+				},
+			},
+		},
+		Flags: 1 << 6,
 	})
 }
 
-func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// ===========================================
+// TODO: Check if the user already voted
+func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseDeferredMessageUpdate,
+	})
+
 	embed := i.Message.Embeds[0]
 	desc_array := strings.Split(embed.Description, "\n")
 	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
 
 	b, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
-		// TODO
+		voteError(s, i)
+		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
+		return
 	}
 
+	var upvotes string = "0"
+	var downvotes string = "0"
+
 	if b == 0 {
-		// Set in cache
-		ex = utils.Cache.SetCache(id, "0:1")
+		ex = utils.Cache.SetCache(id, "1:0")
 		if ex != nil {
-			// TODO
+			voteError(s, i)
+			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			return
 		}
+		upvotes = "1"
 	} else {
 		// Get from cache
 		res, ex := utils.Cache.GetCache(id)
 		if ex != nil {
-			// TODO
+			voteError(s, i)
+			utils.Cout("[ERROR] Get from redis failed: %v", utils.Red, ex)
+			return
 		}
 
+		// Split the voting data into an array
 		vote_array := strings.Split(res, ":")
-
-		vote_n, ex := strconv.Atoi(vote_array[1])
+		// Parse the voting data to an integer
+		vote_n, ex := strconv.Atoi(vote_array[0])
 		if ex != nil {
-			// TODO
+			voteError(s, i)
+			utils.Cout("[ERROR] Parse votecount to int failed: %v", utils.Red, ex)
+			return
 		}
 
+		// Incremeant the voting data
 		vote_n++
-		ex = utils.Cache.SetCache(id, vote_array[0]+":"+strconv.Itoa(vote_n))
+
+		upvotes = strconv.Itoa(vote_n)
+		downvotes = vote_array[1]
+
+		ex = utils.Cache.SetCache(id, upvotes+":"+downvotes)
 		if ex != nil {
-			// TODO
+			voteError(s, i)
+			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			return
 		}
 	}
 
-	// TODO: Update the mesasge
+	desc_array[len(desc_array)-1] = fmt.Sprintf("*%s - upvotes | %s - downvotes*", upvotes, downvotes)
+	embed.Description = strings.Join(desc_array, "\n")
 
-	// desc_array[len(desc_array) - 1] = "*0 - upvotes | 0 - downvotes*"
+	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
+		Embeds: []*discordgo.MessageEmbed{
+			embed,
+		},
+	})
+}
 
+// TODO: Check if the user already voted
+func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseUpdateMessage,
+		Type: discordgo.InteractionResponseDeferredMessageUpdate,
+	})
+
+	embed := i.Message.Embeds[0]
+	desc_array := strings.Split(embed.Description, "\n")
+	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
+
+	b, ex := utils.Cache.ExistsCache(id)
+	if ex != nil {
+		voteError(s, i)
+		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
+		return
+	}
+
+	var upvotes string = "0"
+	var downvotes string = "0"
+
+	if b == 0 {
+		ex = utils.Cache.SetCache(id, "0:1")
+		if ex != nil {
+			voteError(s, i)
+			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			return
+		}
+		downvotes = "1"
+	} else {
+		// Get from cache
+		res, ex := utils.Cache.GetCache(id)
+		if ex != nil {
+			voteError(s, i)
+			utils.Cout("[ERROR] Get from redis failed: %v", utils.Red, ex)
+			return
+		}
+
+		// Split the voting data into an array
+		vote_array := strings.Split(res, ":")
+		// Parse the voting data to an integer
+		vote_n, ex := strconv.Atoi(vote_array[1])
+		if ex != nil {
+			voteError(s, i)
+			utils.Cout("[ERROR] Parse votecount to int failed: %v", utils.Red, ex)
+			return
+		}
+
+		// Incremeant the voting data
+		vote_n++
+
+		upvotes = vote_array[0]
+		downvotes = strconv.Itoa(vote_n)
+
+		ex = utils.Cache.SetCache(id, upvotes+":"+downvotes)
+		if ex != nil {
+			voteError(s, i)
+			utils.Cout("[ERROR] Set in redis failed: %v", utils.Red, ex)
+			return
+		}
+	}
+
+	desc_array[len(desc_array)-1] = fmt.Sprintf("*%s - upvotes | %s - downvotes*", upvotes, downvotes)
+	embed.Description = strings.Join(desc_array, "\n")
+
+	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
+		Embeds: []*discordgo.MessageEmbed{
+			embed,
+		},
 	})
 }
