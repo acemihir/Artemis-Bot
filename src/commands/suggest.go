@@ -300,8 +300,6 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	res, _ := json.Marshal(vote_data)
 	utils.Cache.SetCache(id, string(res))
 
-	fmt.Println(string(res))
-
 	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 		Embeds: []*discordgo.MessageEmbed{
 			embed,
