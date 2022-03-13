@@ -274,7 +274,7 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	in_cache, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
 		voteError(s, i)
-		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
+		utils.Cout("[ERROR] Exists in Redis failed: %v", utils.Red, ex)
 		return
 	}
 
@@ -282,11 +282,11 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Check if the data is not in cache
 	if in_cache == 0 {
-		// Fetch the data from firestore
+		// Fetch the data from Firestore
 		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Get from firestore failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
 			return
 		}
 
@@ -305,7 +305,7 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		res, ex := utils.Cache.GetCache(id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Get from redis failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from Redis failed: %v", utils.Red, ex)
 			return
 		}
 
@@ -354,7 +354,7 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	in_cache, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
 		voteError(s, i)
-		utils.Cout("[ERROR] Exists in redis failed: %v", utils.Red, ex)
+		utils.Cout("[ERROR] Exists in Redis failed: %v", utils.Red, ex)
 		return
 	}
 
@@ -362,11 +362,11 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Check if the data is not in cache
 	if in_cache == 0 {
-		// Fetch the data from firestore
+		// Fetch the data from Firestore
 		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Get from firestore failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
 			return
 		}
 
@@ -385,7 +385,7 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		res, ex := utils.Cache.GetCache(id)
 		if ex != nil {
 			voteError(s, i)
-			utils.Cout("[ERROR] Get from redis failed: %v", utils.Red, ex)
+			utils.Cout("[ERROR] Get from Redis failed: %v", utils.Red, ex)
 			return
 		}
 

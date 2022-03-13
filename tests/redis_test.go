@@ -14,14 +14,14 @@ func TestRedisSetup(t *testing.T) {
 func TestRedisSet(t *testing.T) {
 	ex := utils.Cache.SetCache("test", "some value")
 	if ex != nil {
-		t.Fatalf("Set in redis failed: %v", ex)
+		t.Fatalf("Set in Redis failed: %v", ex)
 	}
 }
 
 func TestRedisExists(t *testing.T) {
 	res, ex := utils.Cache.ExistsCache("test")
 	if ex != nil {
-		t.Fatalf("Exists in redis failed: %v", ex)
+		t.Fatalf("Exists in Redis failed: %v", ex)
 	}
 	if res == 0 {
 		t.Fatal("Entry was not found")
@@ -31,7 +31,7 @@ func TestRedisExists(t *testing.T) {
 func TestRedisGet(t *testing.T) {
 	res, ex := utils.Cache.GetCache("test")
 	if ex != nil {
-		t.Fatalf("Get from redis failed: %v", ex)
+		t.Fatalf("Get from Redis failed: %v", ex)
 	}
 
 	if res != "some value" {
@@ -44,7 +44,7 @@ func TestRedisDel(t *testing.T) {
 
 	res, ex := utils.Cache.ExistsCache("test")
 	if ex != nil {
-		t.Fatalf("Delete from redis failed: %v", ex)
+		t.Fatalf("Delete from Redis failed: %v", ex)
 	}
 	if res == 1 {
 		t.Fatal("Entry was not deleted")

@@ -28,7 +28,7 @@ func SetupFirebase(file string) {
 		os.Exit(1)
 	}
 
-	// Setup firestore
+	// Setup Firestore
 	fsclient, ex := app.Firestore(ctx)
 	if ex != nil {
 		Cout("[ERROR] Firestore app instantiation failed: %s", Red, ex)
