@@ -20,7 +20,7 @@ func NotesCreateCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 							CustomID:    "note",
 							Label:       "Your note",
 							Style:       discordgo.TextInputParagraph,
-							Placeholder: "Go to the store and buy some apples.",
+							Placeholder: "Buy some strawberries at the store.",
 							Required:    true,
 							MaxLength:   300,
 							MinLength:   3,
