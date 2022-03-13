@@ -69,10 +69,12 @@ func main() {
 	}
 
 	// ==========================================
-	if os.Getenv("PRODUCTION") == "0" {
-		handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))
-	} else {
-		handlers.RegisterCommands(Mgr, "")
+	if os.Getenv("REGISTER_COMMANDS") == "1" {
+		if os.Getenv("PRODUCTION") == "0" {
+			handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))
+		} else {
+			handlers.RegisterCommands(Mgr, "")
+		}
 	}
 
 	utils.Cout("\n[SUCCESS] Artemis-Bot is now fully operational.", utils.Green)

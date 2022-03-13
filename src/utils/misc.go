@@ -16,6 +16,11 @@ const (
 	Cyan   = "\033[36m"
 	Gray   = "\033[37m"
 	White  = "\033[97m"
+
+	ErrorEmbedColour   = 0xff4a4a
+	WarnEmbedColour    = 0xffcb47
+	DefaultEmbedColour = 0x614832
+	PlainEmbedColour   = 0x2f3136
 )
 
 func Cout(text string, colour string, params ...interface{}) {
@@ -33,7 +38,7 @@ func ErrorResponse(s *discordgo.Session, i *discordgo.Interaction) {
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Description: "Oops! A wild error seems to have occured.\n\nPlease try again later, if this error is persistent please report it in our Support discord.",
-					Color:       0xff4a4a,
+					Color:       ErrorEmbedColour,
 				},
 			},
 			Components: []discordgo.MessageComponent{

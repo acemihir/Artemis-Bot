@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -8,15 +9,11 @@ import (
 )
 
 func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// desc := i.ApplicationCommandData().Options[0].StringValue()
-
-	// Defer the message while we handle everything
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{},
 	})
 
-	// Fetch data from firestorm
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
 	if ex != nil {
 		utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
@@ -25,52 +22,73 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	if len(res) == 0 || res["sug_channel"] == nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Embeds: []*discordgo.MessageEmbed{
-					{
-						Title:       "Artemis - Suggest",
-						Description: "Please configure a suggestion channel first. This can be done via the ``/config`` command.",
-						Color:       0xffcb47,
-					},
+		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Suggest",
+					Description: "Please configure a suggestion channel first. This can be done via the ``/config`` command.",
+					Color:       utils.WarnEmbedColour,
 				},
 			},
 		})
 		return
 	}
 
-	// c, ex := s.Channel(res["sug_channel"])
-	// if ex != nil {
-	// 	utils.Cout("[ERROR] Failed to get channel: %v", utils.Red, ex)
-	// 	utils.ErrorResponse(s, i.Interaction)
-	// }
+	desc := i.ApplicationCommandData().Options[0].StringValue()
+	id := utils.CreateId("s_", 6)
 
-	// TODO: Fix description
+	upvote_emoji := "⬆️"
+	if res["upvote_emoji"] != nil {
+		upvote_emoji = res["upvote_emoji"].(string)
+	}
+	downvote_emoji := "⬇️"
+	if res["downvote_emoji"] != nil {
+		downvote_emoji = res["downvote_emoji"].(string)
+	}
+
 	msg, ex := s.ChannelMessageSendComplex(res["sug_channel"].(string), &discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Author: &discordgo.MessageEmbedAuthor{
-					IconURL: i.User.AvatarURL(""),
-					Name:    i.User.Username + "#" + i.User.Discriminator,
+					IconURL: i.Member.AvatarURL(""),
+					Name:    i.Member.User.Username + "#" + i.Member.User.Discriminator,
 				},
-				Description: "TODO",
-				Color:       0x614832,
+				Description: fmt.Sprintf("**Description:** %s\n\n**Status:** Open\n**ID:** %s\n\n*0 - upvotes | 0 - downvotes*", desc, id),
+				Color:       utils.PlainEmbedColour,
+			},
+		},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						CustomID: "sug_upvote",
+						Emoji: discordgo.ComponentEmoji{
+							Name: upvote_emoji,
+						},
+						Label: "Upvote",
+						Style: discordgo.SuccessButton,
+					},
+					discordgo.Button{
+						CustomID: "sug_downvote",
+						Emoji: discordgo.ComponentEmoji{
+							Name: downvote_emoji,
+						},
+						Label: "Downvote",
+						Style: discordgo.SuccessButton,
+					},
+				},
 			},
 		},
 	})
 
 	if ex != nil {
 		if strings.Contains(ex.Error(), "Unknown Channel") {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Embeds: []*discordgo.MessageEmbed{
-						{
-							Title:       "Artemis - Suggest",
-							Description: "Make sure the configured suggestions channel still exists and if I have permissions to send message in it. This can be done via the ``/config`` command.",
-							Color:       0xffcb47,
-						},
+			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Artemis - Suggest",
+						Description: "Make sure the configured suggestions channel still exists and if I have permissions to send message in it. This can be done via the ``/config`` command.",
+						Color:       utils.WarnEmbedColour,
 					},
 				},
 			})
@@ -81,13 +99,44 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	// TODO Send message that the suggestion has been submitted
+	ex = utils.Firebase.SetFirestore("submissions", id, map[string]interface{}{
+		// "guild_id":   i.GuildID,
+		"channel_id": msg.ChannelID,
+		"message_id": msg.ID,
+		"upvotes":    0,
+		"downvotes":  0,
+	})
+	if ex != nil {
+		utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
+
+	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Title:       "Artemis - Suggest",
+				Description: "You're suggestion has been submitted!",
+				Color:       utils.DefaultEmbedColour,
+			},
+		},
+	})
 }
 
 func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// ...
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseUpdateMessage,
+		Data: &discordgo.InteractionResponseData{},
+	})
+
+	// TODO: Implement the actual logic here
 }
 
 func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// ...
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseUpdateMessage,
+		Data: &discordgo.InteractionResponseData{},
+	})
+
+	// TODO: Implement the actual logic here
 }
