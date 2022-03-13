@@ -12,13 +12,13 @@ func NotesCreateCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Type: discordgo.InteractionResponseModal,
 		Data: &discordgo.InteractionResponseData{
 			CustomID: "modals_notes",
-			Title:    "Notes - Create",
+			Title:    "Create a note",
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.TextInput{
 							CustomID:    "note",
-							Label:       "Enter the note you would like to save.",
+							Label:       "Your note",
 							Style:       discordgo.TextInputParagraph,
 							Placeholder: "Go to the store and buy some apples.",
 							Required:    true,

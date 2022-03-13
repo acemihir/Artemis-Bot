@@ -35,6 +35,7 @@ func main() {
 
 	utils.SetupCache(time.Duration(ce) * time.Minute)
 	utils.SetupFirebase("firebase-credentials.json")
+	handlers.RegisterTasks()
 
 	// ==========================================
 	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
@@ -99,5 +100,8 @@ func main() {
 
 	utils.Cout("[INFO] Shutdown sequence initiated.", utils.Blue)
 	Mgr.Shutdown()
+	if os.Getenv("PRODUCTION") == "1" {
+		handlers.ShutdownTasks()
+	}
 	utils.Cout("\n[SUCCESS] Shutdown sequence completed.", utils.Green)
 }

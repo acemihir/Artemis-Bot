@@ -9,9 +9,9 @@ import (
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
-type votes struct {
-	Upvotes   []string
-	Downvotes []string
+type SuggestionVotes struct {
+	Upvotes   []interface{}
+	Downvotes []interface{}
 }
 
 type modalSuggestionData struct {
@@ -56,7 +56,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					Components: []discordgo.MessageComponent{
 						discordgo.TextInput{
 							CustomID:    "suggestion",
-							Label:       "A brief description of your suggestion.",
+							Label:       "Your suggestion",
 							Style:       discordgo.TextInputParagraph,
 							Placeholder: "Add a brand new meme channel.",
 							Required:    true,
@@ -237,10 +237,10 @@ func cannotVoteTwice(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-func countAndMutate(array *[]string, userid string, removeFound bool) int {
+func countAndMutate(array *[]interface{}, userid string, removeFound bool) int {
 	var voteCount int = 0
 	for i, v := range *array {
-		if v == userid {
+		if v.(string) == userid {
 			if removeFound {
 				// Remove from array
 				tmp := *array
@@ -278,7 +278,7 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	vote_data := votes{}
+	vote_data := SuggestionVotes{}
 
 	// Check if the data is not in cache
 	if in_cache == 0 {
@@ -291,14 +291,14 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 
 		if res["upvotes"] == nil {
-			vote_data.Upvotes = []string{}
+			vote_data.Upvotes = []interface{}{}
 		} else {
-			vote_data.Upvotes = res["upvotes"].([]string)
+			vote_data.Upvotes = res["upvotes"].([]interface{})
 		}
 		if res["downvotes"] == nil {
-			vote_data.Downvotes = []string{}
+			vote_data.Downvotes = []interface{}{}
 		} else {
-			vote_data.Downvotes = res["downvotes"].([]string)
+			vote_data.Downvotes = res["downvotes"].([]interface{})
 		}
 	} else {
 		// Fetch the data from redis
@@ -320,7 +320,16 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 	downvote_count := countAndMutate(&vote_data.Downvotes, i.Member.User.ID, true)
 
-	desc_array[len(desc_array)-1] = fmt.Sprintf("*%d - upvotes | %d - downvotes*", upvote_count, downvote_count)
+	upvotes_string := "upvotes"
+	if upvote_count == 1 {
+		upvotes_string = "upvote"
+	}
+	downvotes_string := "downvotes"
+	if downvote_count == 1 {
+		downvotes_string = "downvote"
+	}
+
+	desc_array[len(desc_array)-1] = fmt.Sprintf("*%d - %s | %d - %s*", upvote_count, upvotes_string, downvote_count, downvotes_string)
 	embed.Description = strings.Join(desc_array, "\n")
 
 	res, _ := json.Marshal(vote_data)
@@ -349,7 +358,7 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	vote_data := votes{}
+	vote_data := SuggestionVotes{}
 
 	// Check if the data is not in cache
 	if in_cache == 0 {
@@ -362,14 +371,14 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 
 		if res["upvotes"] == nil {
-			vote_data.Upvotes = []string{}
+			vote_data.Upvotes = []interface{}{}
 		} else {
-			vote_data.Upvotes = res["upvotes"].([]string)
+			vote_data.Upvotes = res["upvotes"].([]interface{})
 		}
 		if res["downvotes"] == nil {
-			vote_data.Downvotes = []string{}
+			vote_data.Downvotes = []interface{}{}
 		} else {
-			vote_data.Downvotes = res["downvotes"].([]string)
+			vote_data.Downvotes = res["downvotes"].([]interface{})
 		}
 	} else {
 		// Fetch the data from redis

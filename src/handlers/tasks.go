@@ -1,19 +1,21 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
 	"os"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-co-op/gocron"
+	"github.com/jerskisnow/Artemis-Bot/src/commands"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func FlushSuggestions() {
 	var cursor uint64
 	for {
-		keys, cursor, ex := utils.Cache.Client.Scan(utils.Cache.Context, cursor, "prefix:s_", 0).Result()
+		keys, cursor, ex := utils.Cache.Client.Scan(utils.Cache.Context, cursor, "*s_*", 0).Result()
 		if ex != nil {
 			utils.Cout("[ERROR] Failed to scan Redis: %v", utils.Red, ex)
 			os.Exit(1) // Exit before more unflashable data will be collected
@@ -32,37 +34,60 @@ func FlushSuggestions() {
 				continue
 			}
 
-			// TODO: Parse JSON
+			vote_data := commands.SuggestionVotes{}
+			ex = json.Unmarshal([]byte(v), &vote_data)
+			if ex != nil {
+				utils.Cout("[ERROR] Could not parse JSON: %v", utils.Red, ex)
+				os.Exit(1) // Exit before more unsavable data will be collected
+			}
+
+			// fmt.Println(vote_data)
 
 			_, ex = utils.Firebase.Firestore.Collection("submissions").Doc(k).Update(utils.Firebase.Context, []firestore.Update{
 				{
 					Path:  "upvotes",
-					Value: upvote_array,
+					Value: vote_data.Upvotes,
 				},
 				{
 					Path:  "downvotes",
-					Value: downvote_array,
+					Value: vote_data.Downvotes,
 				},
 			})
 			if ex != nil {
-				utils.Cout("[ERROR] Could not update in Firestore: %v", utils.Red, ex)
-				os.Exit(1) // Exit before more unsavable data will be collected
+				if strings.Contains(ex.Error(), "No document to update") {
+					utils.Cout("[WARN] Firestore updated failed, entry not present.", utils.Yellow)
+				} else {
+					utils.Cout("[ERROR] Could not update in Firestore: %v", utils.Red, ex)
+					os.Exit(1) // Exit before more unsavable data will be collected
+				}
 			}
-
-			// Get values
-			fmt.Println("key", k)
 		}
 
 		if cursor == 0 {
 			break
 		}
 	}
+
+	utils.Cout("[INFO] Suggestions have been flushed.", utils.Cyan)
 }
 
+var scheduler *gocron.Scheduler
+
 func RegisterTasks() {
-	s := gocron.NewScheduler(time.UTC)
+	scheduler = gocron.NewScheduler(time.UTC)
 
-	s.Every(5).Hours().Do(FlushSuggestions)
+	if os.Getenv("PRODUCTION") == "0" {
+		scheduler.Every(8).Minutes().Do(FlushSuggestions)
+		utils.Cout("[INFO] Suggestions will be flushed every 8 minutes.", utils.Cyan)
+	} else {
+		scheduler.Every(5).Hours().Do(FlushSuggestions)
+		utils.Cout("[INFO] Suggestions will be flushed every 5 hours.", utils.Cyan)
+	}
 
-	s.StartAsync()
+	scheduler.StartAsync()
+}
+
+func ShutdownTasks() {
+	scheduler.RunAllWithDelay(time.Duration(30) * time.Second)
+	scheduler.Clear() // Cleanup
 }
