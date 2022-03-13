@@ -72,8 +72,6 @@ func ReportCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// "guild_id":   i.GuildID,
 		"channel_id": msg.ChannelID,
 		"message_id": msg.ID,
-		"upvotes":    0,
-		"downvotes":  0,
 	})
 	if ex != nil {
 		utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
