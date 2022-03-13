@@ -9,6 +9,11 @@ import (
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
+type votes struct {
+	Upvotes   []string
+	Downvotes []string
+}
+
 type modalSuggestionData struct {
 	sug_channel    string
 	upvote_emoji   string
@@ -155,11 +160,30 @@ func SuggestionModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// "guild_id":   i.GuildID,
 		"channel_id": msg.ChannelID,
 		"message_id": msg.ID,
-		"upvotes":    0,
-		"downvotes":  0,
+		"upvotes":    []string{},
+		"downvotes":  []string{},
 	})
 	if ex != nil {
 		utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
+
+	// vote_data := votes{
+	// 	Upvotes:   []string{},
+	// 	Downvotes: []string{},
+	// }
+	// res, ex := json.Marshal(vote_data)
+	// if ex != nil {
+	// 	utils.Cout("[ERROR] Could not parse votes to JSON: %v", utils.Red, ex)
+	// 	utils.ErrorResponse(s, i.Interaction)
+	// 	return
+	// }
+
+	// Add upvotes & downvotes to the cache because most people vote on their own suggestion anyway
+	ex = utils.Cache.SetCache(id, "{\"Upvotes\":[],\"Downvotes\":[]}")
+	if ex != nil {
+		utils.Cout("[ERROR] Could not set in Redis: %v", utils.Red, ex)
 		utils.ErrorResponse(s, i.Interaction)
 		return
 	}
@@ -211,12 +235,6 @@ func cannotVoteTwice(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 		Flags: 1 << 6,
 	})
-}
-
-// ===========================================
-type votes struct {
-	Upvotes   []string
-	Downvotes []string
 }
 
 func countAndMutate(array *[]string, userid string, removeFound bool) int {
@@ -272,8 +290,16 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			return
 		}
 
-		vote_data.Upvotes = res["upvotes"].([]string)
-		vote_data.Downvotes = res["downvotes"].([]string)
+		if res["upvotes"] == nil {
+			vote_data.Upvotes = []string{}
+		} else {
+			vote_data.Upvotes = res["upvotes"].([]string)
+		}
+		if res["downvotes"] == nil {
+			vote_data.Downvotes = []string{}
+		} else {
+			vote_data.Downvotes = res["downvotes"].([]string)
+		}
 	} else {
 		// Fetch the data from redis
 		res, ex := utils.Cache.GetCache(id)
@@ -335,8 +361,16 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			return
 		}
 
-		vote_data.Upvotes = res["upvotes"].([]string)
-		vote_data.Downvotes = res["downvotes"].([]string)
+		if res["upvotes"] == nil {
+			vote_data.Upvotes = []string{}
+		} else {
+			vote_data.Upvotes = res["upvotes"].([]string)
+		}
+		if res["downvotes"] == nil {
+			vote_data.Downvotes = []string{}
+		} else {
+			vote_data.Downvotes = res["downvotes"].([]string)
+		}
 	} else {
 		// Fetch the data from redis
 		res, ex := utils.Cache.GetCache(id)
@@ -362,8 +396,6 @@ func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	res, _ := json.Marshal(vote_data)
 	utils.Cache.SetCache(id, string(res))
-
-	fmt.Println(string(res))
 
 	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 		Embeds: []*discordgo.MessageEmbed{
