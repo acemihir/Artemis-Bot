@@ -113,6 +113,18 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 			Description: "Create a report.",
 		},
 		{
+			Name:        "status",
+			Description: "Alter the status of a submission.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "id",
+					Description: "The ID of the submission.",
+					Required:    true,
+					Type:        discordgo.ApplicationCommandOptionString,
+				},
+			},
+		},
+		{
 			Name:        "suggest",
 			Description: "Create a suggestion.",
 		},
