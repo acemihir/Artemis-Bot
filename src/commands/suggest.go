@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,7 +12,6 @@ import (
 func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{},
 	})
 
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
@@ -124,19 +124,93 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	embed := i.Message.Embeds[0]
+	desc_array := strings.Split(embed.Description, "\n")
+	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
+
+	b, ex := utils.Cache.ExistsCache(id)
+	if ex != nil {
+		// TODO
+	}
+
+	if b == 0 {
+		// Set in cache
+		ex = utils.Cache.SetCache(id, "1:0")
+		if ex != nil {
+			// TODO
+		}
+	} else {
+		// Get from cache
+		res, ex := utils.Cache.GetCache(id)
+		if ex != nil {
+			// TODO
+		}
+
+		vote_array := strings.Split(res, ":")
+
+		vote_n, ex := strconv.Atoi(vote_array[0])
+		if ex != nil {
+			// TODO
+		}
+
+		vote_n++
+		ex = utils.Cache.SetCache(id, strconv.Itoa(vote_n)+":"+vote_array[1])
+		if ex != nil {
+			// TODO
+		}
+	}
+
+	// TODO: Update the mesasge
+
+	// desc_array[len(desc_array) - 1] = "*0 - upvotes | 0 - downvotes*"
+
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseUpdateMessage,
-		Data: &discordgo.InteractionResponseData{},
 	})
-
-	// TODO: Implement the actual logic here
 }
 
 func DownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	embed := i.Message.Embeds[0]
+	desc_array := strings.Split(embed.Description, "\n")
+	id := strings.Split(desc_array[len(desc_array)-3], " ")[1]
+
+	b, ex := utils.Cache.ExistsCache(id)
+	if ex != nil {
+		// TODO
+	}
+
+	if b == 0 {
+		// Set in cache
+		ex = utils.Cache.SetCache(id, "0:1")
+		if ex != nil {
+			// TODO
+		}
+	} else {
+		// Get from cache
+		res, ex := utils.Cache.GetCache(id)
+		if ex != nil {
+			// TODO
+		}
+
+		vote_array := strings.Split(res, ":")
+
+		vote_n, ex := strconv.Atoi(vote_array[1])
+		if ex != nil {
+			// TODO
+		}
+
+		vote_n++
+		ex = utils.Cache.SetCache(id, vote_array[0]+":"+strconv.Itoa(vote_n))
+		if ex != nil {
+			// TODO
+		}
+	}
+
+	// TODO: Update the mesasge
+
+	// desc_array[len(desc_array) - 1] = "*0 - upvotes | 0 - downvotes*"
+
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseUpdateMessage,
-		Data: &discordgo.InteractionResponseData{},
 	})
-
-	// TODO: Implement the actual logic here
 }

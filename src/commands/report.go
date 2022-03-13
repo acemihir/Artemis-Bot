@@ -11,7 +11,6 @@ import (
 func ReportCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{},
 	})
 
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
