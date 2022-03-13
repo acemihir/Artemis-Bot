@@ -5,10 +5,13 @@
 - [x] Fundamental bot structure
 - [x] Redis integration + tests
 - [x] Firebase + Firestore integration + tests
-- [ ] Full support for suggestions and reports
-- [ ] Full support for polls and tickets.
-- [ ] User notes
-- [ ] Giveaweays
+- [x] Add suggest and report commands
+- [x] Implement first layer of cache flushing
+- [ ] Add setstatus command
+- [ ] Add config command
+- [ ] Implement user notes
+- [ ] Full support for polls and tickets
+- [ ] Giveaways
 - [ ] Anti-Advertisement implementation
 - [ ] Anti-Spam implementation
 - [ ] Welcome message including CAPTCHA
