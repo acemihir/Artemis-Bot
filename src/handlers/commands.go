@@ -88,6 +88,27 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 			},
 		},
 		{
+			Name:        "poll",
+			Description: "Create & Interact with the polls.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "create",
+					Description: "Create a personal encrypted note.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "end",
+					Description: "Force end a poll.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "list",
+					Description: "List all active polls.",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
+		},
+		{
 			Name:        "report",
 			Description: "Create a report.",
 		},
@@ -97,27 +118,27 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 		},
 	}
 
-	n, ex := strconv.ParseInt(guildID, 10, 64)
-	if ex != nil {
-		utils.Cout("[ERROR] Could not parse GuildID to int64: %v", utils.Red, ex)
-	}
-
-	shardID := Mgr.SessionForGuild(n).ShardID
-
 	for _, v := range cmds {
 		Mgr.ApplicationCommandCreate(guildID, v)
 	}
-
-	utils.Cout("[INFO][SHARD-%d] Finished registering all commands.", utils.Cyan, shardID)
 }
 
 func DeleteCommands(Mgr *shards.Manager, guildID string) {
-	n, ex := strconv.ParseInt(guildID, 10, 64)
-	if ex != nil {
-		utils.Cout("[ERROR] Could not parse GuildID to int64: %v", utils.Red, ex)
+	var s *discordgo.Session
+
+	if guildID == "" {
+		// Get the first shard, just getting used for getting the global commands
+		s = Mgr.Shards[0].Session
+	} else {
+		// Get shard for guild
+		n, ex := strconv.ParseInt(guildID, 10, 64)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not parse GuildID to int64: %v", utils.Red, ex)
+		}
+
+		s = Mgr.SessionForGuild(n)
 	}
 
-	s := Mgr.SessionForGuild(n)
 	cmds, ex := s.ApplicationCommands(s.State.User.ID, guildID)
 	if ex != nil {
 		utils.Cout("[ERROR] Could not fetch guild commands: %v", utils.Red, ex)
@@ -132,15 +153,15 @@ func DeleteCommands(Mgr *shards.Manager, guildID string) {
 func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.ApplicationCommandData()
 
-	if data.Name == "about" {
+	switch data.Name {
+	case "about":
 		commands.AboutCommand(s, i)
-	} else if data.Name == "config" {
+	case "config":
 		commands.ConfigCommand(s, i)
-	} else if data.Name == "help" {
+	case "help":
 		commands.HelpCommand(s, i)
-	} else if data.Name == "notes" {
+	case "notes":
 		sbcmd := i.ApplicationCommandData().Options[0].Name
-
 		switch sbcmd {
 		case "create":
 			commands.NotesCreateCommand(s, i)
@@ -149,13 +170,21 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		case "list":
 			commands.NotesListCommand(s, i)
 		}
-	} else if data.Name == "poll" {
-		commands.PollCommand(s, i)
-	} else if data.Name == "report" {
+	case "poll":
+		sbcmd := i.ApplicationCommandData().Options[0].Name
+		switch sbcmd {
+		case "create":
+			commands.PollCreateCommand(s, i)
+		case "end":
+			commands.PollEndCommand(s, i)
+		case "list":
+			commands.PollListCommand(s, i)
+		}
+	case "report":
 		commands.ReportCommand(s, i)
-	} else if data.Name == "status" {
+	case "status":
 		commands.StatusCommand(s, i)
-	} else if data.Name == "suggest" {
+	case "suggest":
 		commands.SuggestCommand(s, i)
 	}
 }

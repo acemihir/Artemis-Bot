@@ -2,6 +2,14 @@ package commands
 
 import "github.com/bwmarrin/discordgo"
 
-func PollCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func PollCreateCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+}
+
+func PollEndCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+}
+
+func PollListCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 }

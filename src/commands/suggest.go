@@ -15,7 +15,7 @@ type modalSuggestionData struct {
 	downvote_emoji string
 }
 
-var modal_data = make(map[string]modalSuggestionData)
+var sug_modal_data = make(map[string]modalSuggestionData)
 
 func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	res, ex := utils.Firebase.GetFirestore("guilds", i.GuildID)
@@ -45,7 +45,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Type: discordgo.InteractionResponseModal,
 		Data: &discordgo.InteractionResponseData{
 			CustomID: "modals_suggestion",
-			Title:    "Suggestion - Create",
+			Title:    "Create a suggestion",
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
@@ -77,7 +77,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		downvote_emoji = res["downvote_emoji"].(string)
 	}
 
-	modal_data[i.Member.User.ID] = modalSuggestionData{
+	sug_modal_data[i.Member.User.ID] = modalSuggestionData{
 		sug_channel:    res["sug_channel"].(string),
 		upvote_emoji:   upvote_emoji,
 		downvote_emoji: downvote_emoji,
@@ -92,9 +92,9 @@ func SuggestionModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 
 	// Store the given data
-	data := modal_data[i.Member.User.ID]
+	data := sug_modal_data[i.Member.User.ID]
 	// Remove the data from the map
-	delete(modal_data, i.Member.User.ID)
+	delete(sug_modal_data, i.Member.User.ID)
 
 	id := utils.CreateId("s_", 6)
 

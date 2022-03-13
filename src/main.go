@@ -71,6 +71,13 @@ func main() {
 	}
 
 	// ==========================================
+	if os.Getenv("DELETE_COMMANDS") == "1" {
+		if os.Getenv("PRODUCTION") == "0" {
+			handlers.DeleteCommands(Mgr, os.Getenv("GUILD_ID"))
+		} else {
+			handlers.DeleteCommands(Mgr, "")
+		}
+	}
 	if os.Getenv("REGISTER_COMMANDS") == "1" {
 		if os.Getenv("PRODUCTION") == "0" {
 			handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))

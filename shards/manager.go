@@ -58,6 +58,8 @@ func (m *Manager) ApplicationCommandDelete(guildID string, cmd *discordgo.Applic
 			utils.Cout("[ERROR][SHARD-%d] Failed to delete command: %v", utils.Red, shard.ID, ex)
 		}
 	}
+
+	utils.Cout(" --> Deleted '/%s'.", utils.Cyan, cmd.Name)
 }
 
 // GuildCount returns the amount of guilds that a Manager's Shards are handling.
