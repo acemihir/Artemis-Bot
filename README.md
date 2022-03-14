@@ -7,7 +7,7 @@
 - [x] Firebase + Firestore integration + tests
 - [x] Add suggest and report commands
 - [x] Implement first layer of cache flushing
-- [ ] Add setstatus command
+- [x] Implement status command for changing submission statusses
 - [ ] Add config command
 - [ ] Implement user notes
 - [ ] Full support for polls and tickets

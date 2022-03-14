@@ -33,6 +33,7 @@ func NotesCreateCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if ex != nil {
 		utils.Cout("[ERROR] Could not open up the modal: %v", utils.Red, ex)
 		utils.ErrorResponse(s, i.Interaction)
+		return
 	}
 }
 

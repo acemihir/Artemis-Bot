@@ -21,6 +21,10 @@ const (
 	WarnEmbedColour    = 0xffcb47
 	DefaultEmbedColour = 0x614832
 	PlainEmbedColour   = 0x2f3136
+
+	GreenEmbedColour  = 0x97ff78
+	YellowEmbedColour = 0xffed78
+	RedEmbedColour    = 0xfc5d5d
 )
 
 func Cout(text string, colour string, params ...interface{}) {
@@ -58,3 +62,5 @@ func ErrorResponse(s *discordgo.Session, i *discordgo.Interaction) {
 		},
 	})
 }
+
+func ErrorFollowup()

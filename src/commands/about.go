@@ -9,7 +9,7 @@ func AboutCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Title:       "About Artemis",
-					Description: "[Artemis-Bot](https://github.com/jerskisnow/Artemis-Bot), derived from the Greek goddess of the hunt, is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community. The bot could be characterized as a multi-function/purpose bot that fits all your needs when it comes to managing interaction with your community.",
+					Description: "[Artemis-Bot](https://github.com/jerskisnow/Artemis-Bot), derived from the Greek goddess of the hunt, is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community. The bot could be characterized as a multi-function/purpose bot that fits all your needs when it comes to managing and interacting with your community.",
 					Color:       0x336db0,
 				},
 			},

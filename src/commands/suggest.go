@@ -274,8 +274,8 @@ func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	in_cache, ex := utils.Cache.ExistsCache(id)
 	if ex != nil {
-		voteError(s, i)
 		utils.Cout("[ERROR] Exists in Redis failed: %v", utils.Red, ex)
+		voteError(s, i)
 		return
 	}
 
