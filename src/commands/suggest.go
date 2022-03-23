@@ -238,29 +238,26 @@ func cannotVoteTwice(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-func countAndMutate(array *[]interface{}, userid string, removeFound bool) int {
-	var voteCount int = 0
-	for i, v := range *array {
-		if v.(string) == userid {
-			if removeFound {
-				// Remove from array
-				tmp := *array
-				*array = append(tmp[:i], tmp[i+1:]...)
+func countAndMutate(arr *[]interface{}, uid string, rm bool) int {
+	var vc int = 0
+	for i, v := range *arr {
+		if v.(string) == uid {
+			if rm {
+				tmp := *arr
+				*arr = append(tmp[:i], tmp[i+1:]...)
 				continue
 			} else {
 				return -1
 			}
 		}
-		voteCount++
+		vc++
 	}
-
-	if !removeFound {
-		tmp := *array
-		*array = append(tmp, userid)
-		voteCount++
+	if !rm {
+		tmp := *arr
+		*arr = append(tmp, uid)
+		vc++
 	}
-
-	return voteCount
+	return vc
 }
 
 func UpvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {

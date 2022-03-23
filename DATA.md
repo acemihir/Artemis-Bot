@@ -35,5 +35,5 @@ id (number):
 ### Caching
 Cached items will be deleted after 8 hours.
 
-Suggestions: message_id -> upvotes, downvotes
-Interactive: message_id -> expiry, participants
+Suggestions: id -> upvotes, downvotes
+Interactive: id -> expiry, participants
