@@ -169,6 +169,20 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	case "about":
 		commands.AboutCommand(s, i)
 	case "config":
+		if !utils.HasPermission(i.Member.Permissions, utils.AdminPermission) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{
+						{
+							Description: "You do not have permission to use this command. (``ADMINISTRATOR``)",
+							Color:       utils.WarnEmbedColour,
+						},
+					},
+				},
+			})
+			return
+		}
 		commands.ConfigCommand(s, i)
 	case "help":
 		commands.HelpCommand(s, i)
@@ -186,8 +200,36 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		sbcmd := i.ApplicationCommandData().Options[0].Name
 		switch sbcmd {
 		case "create":
+			if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Embeds: []*discordgo.MessageEmbed{
+							{
+								Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
+								Color:       utils.WarnEmbedColour,
+							},
+						},
+					},
+				})
+				return
+			}
 			commands.PollCreateCommand(s, i)
 		case "end":
+			if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Embeds: []*discordgo.MessageEmbed{
+							{
+								Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
+								Color:       utils.WarnEmbedColour,
+							},
+						},
+					},
+				})
+				return
+			}
 			commands.PollEndCommand(s, i)
 		case "list":
 			commands.PollListCommand(s, i)
@@ -195,6 +237,20 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	case "report":
 		commands.ReportCommand(s, i)
 	case "status":
+		if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{
+						{
+							Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
+							Color:       utils.WarnEmbedColour,
+						},
+					},
+				},
+			})
+			return
+		}
 		commands.StatusCommand(s, i)
 	case "suggest":
 		commands.SuggestCommand(s, i)

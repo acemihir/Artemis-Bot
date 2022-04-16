@@ -7,6 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type dropdownSubmissionData struct {
@@ -244,7 +246,7 @@ func StatusDropdown(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	embed := msg.Embeds[0]
 
 	desc_array := strings.Split(embed.Description, "\n")
-	desc_array[len(desc_array)-4] = fmt.Sprintf("**Status:** %s (%s)", strings.Title(new_status), time.Now().Format("2006-01-02 15:04:05"))
+	desc_array[len(desc_array)-4] = fmt.Sprintf("**Status:** %s (%s)", cases.Title(language.BritishEnglish).String(new_status), time.Now().Format("2006-01-02 15:04:05"))
 
 	colour := utils.PlainEmbedColour
 	switch new_status {

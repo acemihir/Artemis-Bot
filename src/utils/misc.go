@@ -25,6 +25,9 @@ const (
 	GreenEmbedColour  = 0x97ff78
 	YellowEmbedColour = 0xffed78
 	RedEmbedColour    = 0xfc5d5d
+
+	AdminPermission = 0x8    // ADMINISTRATOR
+	StaffPermission = 0x2000 // MANAGE_MESSAGES
 )
 
 func Cout(text string, colour string, params ...interface{}) {
@@ -63,4 +66,6 @@ func ErrorResponse(s *discordgo.Session, i *discordgo.Interaction) {
 	})
 }
 
-func ErrorFollowup()
+func HasPermission(perms int64, req int64) bool {
+	return (perms & req) == req
+}

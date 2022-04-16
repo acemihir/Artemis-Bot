@@ -5,5 +5,5 @@ import (
 )
 
 func ConfigCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-
+	// TODO: This
 }
