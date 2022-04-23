@@ -132,7 +132,7 @@ func SuggestionModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 							Name: data.downvote_emoji,
 						},
 						Label: "Downvote",
-						Style: discordgo.SuccessButton,
+						Style: discordgo.DangerButton,
 					},
 				},
 			},

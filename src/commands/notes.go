@@ -35,8 +35,6 @@ func NotesCreateCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		utils.ErrorResponse(s, i.Interaction)
 		return
 	}
-
-	// ...
 }
 
 func NotesDeleteCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
