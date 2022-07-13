@@ -16,7 +16,7 @@ func LinkButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	case "status_change":
 		commands.StatusDropdown(s, i)
 
-	// Config part
+	// Configuration part
 	case "cfg_main_auth":
 		commands.ConfigMainAuthButton(s, i)
 	case "cfg_main_chns":

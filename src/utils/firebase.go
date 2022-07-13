@@ -42,8 +42,15 @@ func SetupFirebase(file string) {
 	}
 }
 
-func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{}) error {
-	_, ex := at.Firestore.Collection(collection).Doc(doc).Set(at.Context, data)
+func (at *GoogleFirebase) SetFirestore(collection, doc string, data interface{}, merge bool) error {
+	var ex error
+
+	if merge {
+		_, ex = at.Firestore.Collection(collection).Doc(doc).Set(at.Context, data, firestore.MergeAll)
+	} else {
+		_, ex = at.Firestore.Collection(collection).Doc(doc).Set(at.Context, data)
+	}
+
 	return ex
 }
 

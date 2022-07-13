@@ -113,7 +113,7 @@ func ReportModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// "guild_id":   i.GuildID,
 		"channel_id": msg.ChannelID,
 		"message_id": msg.ID,
-	})
+	}, false)
 	if ex != nil {
 		utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
 		utils.ErrorResponse(s, i.Interaction)

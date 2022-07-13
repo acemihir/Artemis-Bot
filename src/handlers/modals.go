@@ -14,6 +14,10 @@ func LinkModals(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	case "modals_suggestion":
 		commands.SuggestionModal(s, i)
 	case "modals_report":
-		commands.ReportCommand(s, i)
+		commands.ReportModal(s, i)
+
+	// Configuration part
+	case "modals_config_auth_staffrole":
+		commands.ConfigAuthStaffroleModal(s, i)
 	}
 }

@@ -17,7 +17,7 @@ func TestFirestoreSet(t *testing.T) {
 		"message_id": "3456",
 		"upvotes":    6,
 		"downvotes":  2,
-	})
+	}, false)
 	if ex != nil {
 		t.Fatalf("Set in Firestore failed: %v", ex)
 	}

@@ -54,6 +54,7 @@ func SuggestCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
+
 						discordgo.TextInput{
 							CustomID:    "suggestion",
 							Label:       "Your suggestion",
@@ -163,7 +164,7 @@ func SuggestionModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		"message_id": msg.ID,
 		"upvotes":    []string{},
 		"downvotes":  []string{},
-	})
+	}, false)
 	if ex != nil {
 		utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
 		utils.ErrorResponse(s, i.Interaction)

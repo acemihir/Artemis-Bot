@@ -2,10 +2,16 @@ package commands
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
+// ===========================================
+// MENU FUNCTIONS
+// ===========================================
 func ConfigCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -164,9 +170,37 @@ func ConfigMainAppearanceButton(s *discordgo.Session, i *discordgo.InteractionCr
 
 // func ConfigMainMiscButton(s *discordgo.Session, i *discordgo.InteractionCreate) {}
 
+// ===========================================
+// INDIVIDUAL FUNCTION BUTTON RESPONSES
+// ===========================================
 func ConfigAuthStaffroleButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	fmt.Println("TODO")
-	// TODO: This
+	ex := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseModal,
+		Data: &discordgo.InteractionResponseData{
+			CustomID: "modals_config_auth_staffrole",
+			Title:    "Enter the staffrole",
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.TextInput{
+							CustomID:    "staffrole",
+							Label:       "Name or ID of role",
+							Style:       discordgo.TextInputShort,
+							Placeholder: "@moderator",
+							Required:    true,
+							MaxLength:   300,
+							MinLength:   3,
+						},
+					},
+				},
+			},
+		},
+	})
+	if ex != nil {
+		utils.Cout("[ERROR] Could not open up the modal: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
 }
 
 func ConfigChnsSugButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -187,4 +221,83 @@ func ConfigAppearUpvoteButton(s *discordgo.Session, i *discordgo.InteractionCrea
 func ConfigAppearDownvoteButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	fmt.Println("TODO")
 	// TODO: This
+}
+
+// ===========================================
+// REACTIONS TO THE SUBMISSIONS OF THE MODALS
+// ===========================================
+func ConfigAuthStaffroleModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	role_id := i.ModalSubmitData().Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+	})
+
+	fmt.Println(role_id)
+	var role *discordgo.Role = nil
+
+	// Get all the roles
+	roles, ex := s.GuildRoles(i.GuildID)
+	if ex != nil {
+		utils.Cout("[ERROR] Could not get server roles: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
+
+	// Check if number
+	if _, err := strconv.Atoi(role_id); err == nil {
+		// Get the role by id
+		for _, r := range roles {
+			if r.ID == role_id {
+				role = r
+				break
+			}
+		}
+	} else {
+		// Remove the @ that is possibly in front
+		tmp := strings.Replace(role_id, "@", "", 1)
+
+		// Get the role by name
+		for _, r := range roles {
+			if r.Name == tmp {
+				role = r
+				break
+			}
+		}
+	}
+
+	// If the role was not found then notify the user
+	if role == nil {
+		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Config",
+					Description: "The role you tried to configure was not found.",
+					Color:       utils.WarnEmbedColour,
+				},
+			},
+		})
+		return
+	}
+
+	// Save the data to the database
+	ex = utils.Firebase.SetFirestore("guilds", i.GuildID, map[string]interface{}{
+		"staffrole_id": role.ID,
+	}, true)
+	if ex != nil {
+		utils.Cout("[ERROR] Could not set the staffrole: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
+
+	// Send a message stating that the role was set
+	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Title:       "Artemis - Config",
+				Description: "The stafffrole is now set to ``" + role.Name + " (" + role.ID + ")``.",
+				Color:       utils.DefaultEmbedColour,
+			},
+		},
+	})
 }
