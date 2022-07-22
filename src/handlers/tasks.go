@@ -8,7 +8,6 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-co-op/gocron"
-	"github.com/jerskisnow/Artemis-Bot/src/commands"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
@@ -34,7 +33,7 @@ func FlushSuggestions() {
 				continue
 			}
 
-			vote_data := commands.SuggestionVotes{}
+			vote_data := utils.SuggestionVotes{}
 			ex = json.Unmarshal([]byte(v), &vote_data)
 			if ex != nil {
 				utils.Cout("[ERROR] Could not parse JSON: %v", utils.Red, ex)

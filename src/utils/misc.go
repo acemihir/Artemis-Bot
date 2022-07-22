@@ -30,6 +30,11 @@ const (
 	StaffPermission = 0x2000 // MANAGE_MESSAGES
 )
 
+type SuggestionVotes struct {
+	Upvotes   []interface{}
+	Downvotes []interface{}
+}
+
 func Cout(text string, colour string, params ...interface{}) {
 	if len(params) == 0 {
 		fmt.Println(colour + text + Reset)

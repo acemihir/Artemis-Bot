@@ -10,11 +10,6 @@ import (
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
-type SuggestionVotes struct {
-	Upvotes   []interface{}
-	Downvotes []interface{}
-}
-
 type modalSuggestionData struct {
 	sug_channel    string
 	upvote_emoji   string
@@ -295,7 +290,7 @@ var upvoteButton = &handlers.MessageComponent{
 			return
 		}
 
-		vote_data := SuggestionVotes{}
+		vote_data := utils.SuggestionVotes{}
 
 		// Check if the data is not in cache
 		if in_cache == 0 {
@@ -378,7 +373,7 @@ var downvoteButton = &handlers.MessageComponent{
 			return
 		}
 
-		vote_data := SuggestionVotes{}
+		vote_data := utils.SuggestionVotes{}
 
 		// Check if the data is not in cache
 		if in_cache == 0 {

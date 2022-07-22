@@ -182,7 +182,7 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// Check if permission is required
 		if v.Permission != 0 {
 			// Check if the user has that permission
-			if !utils.HasPermission(i.Member.Permissions, *v.Permission) {
+			if !utils.HasPermission(i.Member.Permissions, v.Permission) {
 				// Insufficient permission
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
