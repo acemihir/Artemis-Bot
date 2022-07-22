@@ -5,12 +5,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jerskisnow/Artemis-Bot/shards"
-	"github.com/jerskisnow/Artemis-Bot/src/commands"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 // GuildID should be empty in production
-func RegisterCommands(Mgr *shards.Manager, guildID string) {
+func SubmitCommands(Mgr *shards.Manager, guildID string) {
 	cmds := []*discordgo.ApplicationCommand{
 		{
 			Name:        "about",
@@ -43,8 +42,8 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 							Value: "help",
 						},
 						{
-							Name:  "Notes",
-							Value: "notes",
+							Name:  "Note",
+							Value: "note",
 						},
 						{
 							Name:  "Poll",
@@ -67,7 +66,7 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 			},
 		},
 		{
-			Name:        "notes",
+			Name:        "note",
 			Description: "Create & Interact with your own notes.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
@@ -135,7 +134,7 @@ func RegisterCommands(Mgr *shards.Manager, guildID string) {
 	}
 }
 
-func DeleteCommands(Mgr *shards.Manager, guildID string) {
+func RetractCommands(Mgr *shards.Manager, guildID string) {
 	var s *discordgo.Session
 
 	if guildID == "" {
@@ -161,52 +160,36 @@ func DeleteCommands(Mgr *shards.Manager, guildID string) {
 	}
 }
 
-// We don't need no fancy I/O loops
+// ======================
+// COMMAND HANDLER
+// ======================
+var cmds = map[string]*SlashCommand{}
+
+type SlashCommand struct {
+	Name       string
+	Permission int64
+	Exec       func(*discordgo.Session, *discordgo.InteractionCreate)
+}
+
+func RegisterCommand(cmd *SlashCommand) {
+	cmds[cmd.Name] = cmd
+}
+
 func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.ApplicationCommandData()
 
-	switch data.Name {
-	case "about":
-		commands.AboutCommand(s, i)
-	case "config":
-		if !utils.HasPermission(i.Member.Permissions, utils.AdminPermission) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Embeds: []*discordgo.MessageEmbed{
-						{
-							Description: "You do not have permission to use this command. (``ADMINISTRATOR``)",
-							Color:       utils.WarnEmbedColour,
-						},
-					},
-				},
-			})
-			return
-		}
-		commands.ConfigCommand(s, i)
-	case "help":
-		commands.HelpCommand(s, i)
-	case "notes":
-		sbcmd := i.ApplicationCommandData().Options[0].Name
-		switch sbcmd {
-		case "create":
-			commands.NotesCreateCommand(s, i)
-		case "delete":
-			commands.NotesDeleteCommand(s, i)
-		case "list":
-			commands.NotesListCommand(s, i)
-		}
-	case "poll":
-		sbcmd := i.ApplicationCommandData().Options[0].Name
-		switch sbcmd {
-		case "create":
-			if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
+	if v, ok := cmds[data.Name]; ok {
+		// Check if permission is required
+		if v.Permission != 0 {
+			// Check if the user has that permission
+			if !utils.HasPermission(i.Member.Permissions, *v.Permission) {
+				// Insufficient permission
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
 					Data: &discordgo.InteractionResponseData{
 						Embeds: []*discordgo.MessageEmbed{
 							{
-								Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
+								Description: "You do not have permission to use this command.",
 								Color:       utils.WarnEmbedColour,
 							},
 						},
@@ -214,45 +197,8 @@ func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				})
 				return
 			}
-			commands.PollCreateCommand(s, i)
-		case "end":
-			if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Embeds: []*discordgo.MessageEmbed{
-							{
-								Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
-								Color:       utils.WarnEmbedColour,
-							},
-						},
-					},
-				})
-				return
-			}
-			commands.PollEndCommand(s, i)
-		case "list":
-			commands.PollListCommand(s, i)
 		}
-	case "report":
-		commands.ReportCommand(s, i)
-	case "status":
-		if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Embeds: []*discordgo.MessageEmbed{
-						{
-							Description: "You do not have permission to use this command. (``MANAGE_MESSAGES``)",
-							Color:       utils.WarnEmbedColour,
-						},
-					},
-				},
-			})
-			return
-		}
-		commands.StatusCommand(s, i)
-	case "suggest":
-		commands.SuggestCommand(s, i)
+
+		v.Exec(s, i)
 	}
 }

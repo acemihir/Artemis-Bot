@@ -2,22 +2,26 @@ package handlers
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/commands"
 )
 
-func LinkModals(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// ======================
+// MODAL HANDLER
+// ======================
+var mdls = map[string]*Modal{}
+
+type Modal struct {
+	ID   string
+	Exec func(*discordgo.Session, *discordgo.InteractionCreate)
+}
+
+func RegisterModal(modal *Modal) {
+	mdls[modal.ID] = modal
+}
+
+func LinkModal(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.ModalSubmitData()
 
-	switch data.CustomID {
-	case "modals_notes":
-		commands.NotesModal(s, i)
-	case "modals_suggestion":
-		commands.SuggestionModal(s, i)
-	case "modals_report":
-		commands.ReportModal(s, i)
-
-	// Configuration part
-	case "modals_config_auth_staffrole":
-		commands.ConfigAuthStaffroleModal(s, i)
+	if v, ok := mdls[data.CustomID]; ok {
+		v.Exec(s, i)
 	}
 }

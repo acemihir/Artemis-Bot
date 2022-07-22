@@ -7,50 +7,58 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jerskisnow/Artemis-Bot/src/handlers"
 	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
-func HelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	var buffer bytes.Buffer
-	buffer.WriteString("```asciidoc\n")
-	buffer.WriteString("== Help == \n[View the autocompletion for more detailed explanation.]\n\n== Commands ==\n")
+func init() {
+	handlers.RegisterCommand(helpCmd)
+}
 
-	var cmds []*discordgo.ApplicationCommand
-	var ex error
+var helpCmd = &handlers.SlashCommand{
+	Name: "help",
+	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		var buffer bytes.Buffer
+		buffer.WriteString("```asciidoc\n")
+		buffer.WriteString("== Help == \n[View the autocompletion for more detailed explanation.]\n\n== Commands ==\n")
 
-	if os.Getenv("PRODUCTION") == "0" {
-		cmds, ex = s.ApplicationCommands(s.State.User.ID, os.Getenv("GUILD_ID"))
-	} else {
-		cmds, ex = s.ApplicationCommands(s.State.User.ID, "")
-	}
+		var cmds []*discordgo.ApplicationCommand
+		var ex error
 
-	if ex != nil {
-		utils.Cout("[ERROR][CMD-HELP] Failed to fetch application commands: %v", utils.Red, ex)
-		return
-	}
+		if os.Getenv("PRODUCTION") == "0" {
+			cmds, ex = s.ApplicationCommands(s.State.User.ID, os.Getenv("GUILD_ID"))
+		} else {
+			cmds, ex = s.ApplicationCommands(s.State.User.ID, "")
+		}
 
-	for _, v := range cmds {
-		buffer.WriteString(fmt.Sprintf("/%s", v.Name))
-
-		spacing, ex := strconv.Atoi(os.Getenv("HELP_SPACING_BASE"))
 		if ex != nil {
-			utils.Cout("[ERROR][CMD-HELP] Could not parse HELP_SPACING_BASE: %v", utils.Red, ex)
-		}
-		spacing -= len(v.Name)
-
-		for i := 1; i <= spacing; i++ {
-			buffer.WriteString(" ")
+			utils.Cout("[ERROR][CMD-HELP] Failed to fetch application commands: %v", utils.Red, ex)
+			return
 		}
 
-		buffer.WriteString(fmt.Sprintf(":: %s\n", v.Description))
-	}
+		for _, v := range cmds {
+			buffer.WriteString(fmt.Sprintf("/%s", v.Name))
 
-	buffer.WriteString("```")
+			spacing, ex := strconv.Atoi(os.Getenv("HELP_SPACING_BASE"))
+			if ex != nil {
+				utils.Cout("[ERROR][CMD-HELP] Could not parse HELP_SPACING_BASE: %v", utils.Red, ex)
+			}
+			spacing -= len(v.Name)
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: buffer.String(),
-		},
-	})
+			for i := 1; i <= spacing; i++ {
+				buffer.WriteString(" ")
+			}
+
+			buffer.WriteString(fmt.Sprintf(":: %s\n", v.Description))
+		}
+
+		buffer.WriteString("```")
+
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: buffer.String(),
+			},
+		})
+	},
 }

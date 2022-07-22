@@ -62,9 +62,9 @@ func main() {
 		if i.Type == discordgo.InteractionApplicationCommand {
 			handlers.LinkCommand(s, i)
 		} else if i.Type == discordgo.InteractionMessageComponent {
-			handlers.LinkButton(s, i)
+			handlers.LinkMessageComponent(s, i)
 		} else if i.Type == discordgo.InteractionModalSubmit {
-			handlers.LinkModals(s, i)
+			handlers.LinkModal(s, i)
 		}
 	})
 
@@ -78,16 +78,16 @@ func main() {
 	// ==========================================
 	if os.Getenv("DELETE_COMMANDS") == "1" {
 		if os.Getenv("PRODUCTION") == "0" {
-			handlers.DeleteCommands(Mgr, os.Getenv("GUILD_ID"))
+			handlers.RetractCommands(Mgr, os.Getenv("GUILD_ID"))
 		} else {
-			handlers.DeleteCommands(Mgr, "")
+			handlers.RetractCommands(Mgr, "")
 		}
 	}
 	if os.Getenv("REGISTER_COMMANDS") == "1" {
 		if os.Getenv("PRODUCTION") == "0" {
-			handlers.RegisterCommands(Mgr, os.Getenv("GUILD_ID"))
+			handlers.SubmitCommands(Mgr, os.Getenv("GUILD_ID"))
 		} else {
-			handlers.RegisterCommands(Mgr, "")
+			handlers.SubmitCommands(Mgr, "")
 		}
 	}
 

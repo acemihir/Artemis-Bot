@@ -23,3 +23,6 @@
 - [ ] Advanced user and server information
 - [ ] Meeting (reminder) system
 - [ ] Invite tracking + rewards
+
+### Setup
+This bot requires both credentials to firebase (firebase-credentials.json) and a .env file to operate. They must be in the same directory as the executable. The .env file can be created and copied over from .env.example. The firebase credentials can be downloaded from the firebase panel.
