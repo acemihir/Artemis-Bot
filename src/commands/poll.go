@@ -1,9 +1,9 @@
 package commands
 
 import (
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func init() {
@@ -12,7 +12,7 @@ func init() {
 
 var pollCommand = &handlers.SlashCommand{
 	Name: "poll",
-	Exec: func(s *discordgo.Session, ic *discordgo.InteractionCreate) {
+	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		sbcmd := i.ApplicationCommandData().Options[0].Name
 		switch sbcmd {
 		case "create":
@@ -30,7 +30,7 @@ var pollCommand = &handlers.SlashCommand{
 				})
 				return
 			}
-			commands.pollCreateSubcmd(s, i)
+			pollCreateSubcmd(s, i)
 		case "end":
 			if !utils.HasPermission(i.Member.Permissions, utils.StaffPermission) {
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -46,21 +46,24 @@ var pollCommand = &handlers.SlashCommand{
 				})
 				return
 			}
-			commands.pollEndSubcmd(s, i)
+			pollEndSubcmd(s, i)
 		case "list":
-			commands.pollListSubcmd(s, i)
+			pollListSubcmd(s, i)
 		}
 	},
 }
 
 func pollCreateSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// TODO: This
+	utils.ComingSoonResponse(s, i.Interaction)
 }
 
 func pollEndSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// TODO: This
+	utils.ComingSoonResponse(s, i.Interaction)
 }
 
 func pollListSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// TODO: This
+	utils.ComingSoonResponse(s, i.Interaction)
 }

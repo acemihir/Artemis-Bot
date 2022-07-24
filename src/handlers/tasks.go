@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/go-co-op/gocron"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func FlushSuggestions() {

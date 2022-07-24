@@ -1,35 +1,33 @@
 package commands
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func init() {
 	handlers.RegisterCommand(configCommand)
-	
+
 	handlers.RegisterMessageComponent(configMainAuthButton)
 	handlers.RegisterMessageComponent(configMainChannelsButton)
-	handlers.RegisterMessageComponent(configMainAppearanceButton)
 	handlers.RegisterMessageComponent(configAuthStaffroleButton)
 	handlers.RegisterMessageComponent(configChnsSugButton)
 	handlers.RegisterMessageComponent(configChnsRepButton)
-	handlers.RegisterMessageComponent(configAppearUpvoteButton)
-	handlers.RegisterMessageComponent(configAppearDownvoteButton)
 
 	handlers.RegisterModal(configAuthStaffroleModal)
+	handlers.RegisterModal(configChnsSugModal)
+	handlers.RegisterModal(configChnsRepModal)
 }
 
 // ===========================================
 // MENU FUNCTIONS
 // ===========================================
 var configCommand = &handlers.SlashCommand{
-	Name: "config",
+	Name:       "config",
 	Permission: utils.AdminPermission,
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -61,22 +59,6 @@ var configCommand = &handlers.SlashCommand{
 								Label: "Channels",
 								Style: discordgo.PrimaryButton,
 							},
-							discordgo.Button{
-								CustomID: "cfg_main_appear",
-								Emoji: discordgo.ComponentEmoji{
-									Name: "👗",
-								},
-								Label: "Appearance",
-								Style: discordgo.PrimaryButton,
-							},
-							// discordgo.Button{
-							// 	CustomID: "cfg_main_misc",
-							// 	Emoji: discordgo.ComponentEmoji{
-							// 		Name: "🛰️",
-							// 	},
-							// 	Label: "Misc",
-							// 	Style: discordgo.PrimaryButton,
-							// },
 						},
 					},
 				},
@@ -85,6 +67,9 @@ var configCommand = &handlers.SlashCommand{
 	},
 }
 
+// ===========================================
+// MAIN MENUS
+// ===========================================
 var configMainAuthButton = &handlers.MessageComponent{
 	ID: "cfg_main_auth",
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -157,48 +142,8 @@ var configMainChannelsButton = &handlers.MessageComponent{
 	},
 }
 
-var configMainAppearanceButton = &handlers.MessageComponent{
-	ID: "cfg_main_appear",
-	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseUpdateMessage,
-			Data: &discordgo.InteractionResponseData{
-				Embeds: []*discordgo.MessageEmbed{
-					{
-						Title:       "Config - Appearance",
-						Description: "This section of the configuration is designated for altering the appearance of the bot such as the emojis the bot uses.",
-						Color:       0x336db0,
-					},
-				},
-				Components: []discordgo.MessageComponent{
-					discordgo.ActionsRow{
-						Components: []discordgo.MessageComponent{
-							discordgo.Button{
-								CustomID: "cfg_appear_upvote",
-								Emoji: discordgo.ComponentEmoji{
-									Name: "⬆️",
-								},
-								Label: "Upvote Emoji",
-								Style: discordgo.SecondaryButton,
-							},
-							discordgo.Button{
-								CustomID: "cfg_appear_downvote",
-								Emoji: discordgo.ComponentEmoji{
-									Name: "⬇️",
-								},
-								Label: "Downvote Emoji",
-								Style: discordgo.SecondaryButton,
-							},
-						},
-					},
-				},
-			},
-		})
-	},
-}
-
 // ===========================================
-// INDIVIDUAL FUNCTION BUTTON RESPONSES
+// SECONDARY MENUS
 // ===========================================
 var configAuthStaffroleButton = &handlers.MessageComponent{
 	ID: "cfg_auth_staffrole",
@@ -206,7 +151,7 @@ var configAuthStaffroleButton = &handlers.MessageComponent{
 		ex := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseModal,
 			Data: &discordgo.InteractionResponseData{
-				CustomID: "modals_config_auth_staffrole",
+				CustomID: "config_auth_staffrole",
 				Title:    "Enter the staffrole",
 				Components: []discordgo.MessageComponent{
 					discordgo.ActionsRow{
@@ -236,50 +181,83 @@ var configAuthStaffroleButton = &handlers.MessageComponent{
 var configChnsSugButton = &handlers.MessageComponent{
 	ID: "cfg_chns_sug",
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		fmt.Println("TODO")
-		// TODO: This
+		ex := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseModal,
+			Data: &discordgo.InteractionResponseData{
+				CustomID: "config_channels_sugchannel",
+				Title:    "Enter a channel",
+				Components: []discordgo.MessageComponent{
+					discordgo.ActionsRow{
+						Components: []discordgo.MessageComponent{
+							discordgo.TextInput{
+								CustomID:    "sugchannel",
+								Label:       "Name or ID of channel",
+								Style:       discordgo.TextInputShort,
+								Placeholder: "#suggestions",
+								Required:    true,
+								MaxLength:   300,
+								MinLength:   3,
+							},
+						},
+					},
+				},
+			},
+		})
+		if ex != nil {
+			utils.Cout("[ERROR] Could not open up the modal: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
 	},
 }
 
 var configChnsRepButton = &handlers.MessageComponent{
 	ID: "cfg_chns_rep",
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		fmt.Println("TODO")
-		// TODO: This
-	},
-}
-
-var configAppearUpvoteButton = &handlers.MessageComponent{
-	ID: "cfg_appear_upvote",
-	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		fmt.Println("TODO")
-		// TODO: This
-	},
-}
-
-var configAppearDownvoteButton = &handlers.MessageComponent{
-	ID: "cfg_appear_downvote",
-	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		fmt.Println("TODO")
-		// TODO: This
+		ex := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseModal,
+			Data: &discordgo.InteractionResponseData{
+				CustomID: "config_channels_repchannel",
+				Title:    "Enter a channel",
+				Components: []discordgo.MessageComponent{
+					discordgo.ActionsRow{
+						Components: []discordgo.MessageComponent{
+							discordgo.TextInput{
+								CustomID:    "repchannel",
+								Label:       "Name or ID of channel",
+								Style:       discordgo.TextInputShort,
+								Placeholder: "#reports",
+								Required:    true,
+								MaxLength:   300,
+								MinLength:   3,
+							},
+						},
+					},
+				},
+			},
+		})
+		if ex != nil {
+			utils.Cout("[ERROR] Could not open up the modal: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
 	},
 }
 
 // ===========================================
-// REACTIONS TO THE SUBMISSIONS OF THE MODALS
+// SUBMISSION REACTION
 // ===========================================
 var configAuthStaffroleModal = &handlers.Modal{
-	ID: "modals_config_auth_staffrole",
+	ID: "config_auth_staffrole",
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		role_id := i.ModalSubmitData().Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
-	
+
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
 		})
-	
-		fmt.Println(role_id)
+
 		var role *discordgo.Role = nil
-	
+
 		// Get all the roles
 		roles, ex := s.GuildRoles(i.GuildID)
 		if ex != nil {
@@ -287,7 +265,7 @@ var configAuthStaffroleModal = &handlers.Modal{
 			utils.ErrorResponse(s, i.Interaction)
 			return
 		}
-	
+
 		// Check if number
 		if _, err := strconv.Atoi(role_id); err == nil {
 			// Get the role by id
@@ -300,7 +278,7 @@ var configAuthStaffroleModal = &handlers.Modal{
 		} else {
 			// Remove the @ that is possibly in front
 			tmp := strings.Replace(role_id, "@", "", 1)
-	
+
 			// Get the role by name
 			for _, r := range roles {
 				if r.Name == tmp {
@@ -309,7 +287,7 @@ var configAuthStaffroleModal = &handlers.Modal{
 				}
 			}
 		}
-	
+
 		// If the role was not found then notify the user
 		if role == nil {
 			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
@@ -323,17 +301,17 @@ var configAuthStaffroleModal = &handlers.Modal{
 			})
 			return
 		}
-	
+
 		// Save the data to the database
 		ex = utils.Firebase.SetFirestore("guilds", i.GuildID, map[string]interface{}{
-			"staffrole_id": role.ID,
+			"staffrole": role.ID,
 		}, true)
 		if ex != nil {
 			utils.Cout("[ERROR] Could not set the staffrole: %v", utils.Red, ex)
 			utils.ErrorResponse(s, i.Interaction)
 			return
 		}
-	
+
 		// Send a message stating that the role was set
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
@@ -344,5 +322,159 @@ var configAuthStaffroleModal = &handlers.Modal{
 				},
 			},
 		})
-	}
+	},
+}
+
+var configChnsSugModal = &handlers.Modal{
+	ID: "config_channels_sugchannel",
+	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		chn_id := i.ModalSubmitData().Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+		})
+
+		var chn *discordgo.Channel = nil
+
+		// Get all the channels
+		channels, ex := s.GuildChannels(i.GuildID)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not get server channels: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
+
+		// Check if number
+		if _, err := strconv.Atoi(chn_id); err == nil {
+			// Get the channel by id
+			for _, c := range channels {
+				if c.ID == chn_id {
+					chn = c
+					break
+				}
+			}
+		} else {
+			tmp := strings.Replace(chn_id, "#", "", 1)
+
+			// Get the channel by name
+			for _, r := range channels {
+				if r.Name == tmp {
+					chn = r
+					break
+				}
+			}
+		}
+
+		// If the channel was not found then notify the user
+		if chn == nil {
+			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Artemis - Config",
+						Description: "The channel you tried to configure was not found.",
+						Color:       utils.WarnEmbedColour,
+					},
+				},
+			})
+			return
+		}
+
+		// Save the data to the database
+		ex = utils.Firebase.SetFirestore("guilds", i.GuildID, map[string]interface{}{
+			"sug_channel": chn.ID,
+		}, true)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not set the sugchannel: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
+
+		// Send a message stating that the channel was set
+		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Config",
+					Description: "The suggestions channel is now set to ``" + chn.Name + " (" + chn.ID + ")``.",
+					Color:       utils.DefaultEmbedColour,
+				},
+			},
+		})
+	},
+}
+
+var configChnsRepModal = &handlers.Modal{
+	ID: "config_channels_repchannel",
+	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		chn_id := i.ModalSubmitData().Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+		})
+
+		var chn *discordgo.Channel = nil
+
+		// Get all the channels
+		channels, ex := s.GuildChannels(i.GuildID)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not get server channels: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
+
+		// Check if number
+		if _, err := strconv.Atoi(chn_id); err == nil {
+			// Get the channel by id
+			for _, c := range channels {
+				if c.ID == chn_id {
+					chn = c
+					break
+				}
+			}
+		} else {
+			tmp := strings.Replace(chn_id, "#", "", 1)
+
+			// Get the channel by name
+			for _, r := range channels {
+				if r.Name == tmp {
+					chn = r
+					break
+				}
+			}
+		}
+
+		// If the channel was not found then notify the user
+		if chn == nil {
+			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Artemis - Config",
+						Description: "The channel you tried to configure was not found.",
+						Color:       utils.WarnEmbedColour,
+					},
+				},
+			})
+			return
+		}
+
+		// Save the data to the database
+		ex = utils.Firebase.SetFirestore("guilds", i.GuildID, map[string]interface{}{
+			"rep_channel": chn.ID,
+		}, true)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not set the sugchannel: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
+
+		// Send a message stating that the channel was set
+		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Config",
+					Description: "The reports channel is now set to ``" + chn.Name + " (" + chn.ID + ")``.",
+					Color:       utils.DefaultEmbedColour,
+				},
+			},
+		})
+	},
 }

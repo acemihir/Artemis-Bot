@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -44,6 +44,8 @@ var statusCmd = &handlers.SlashCommand{
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		id := i.ApplicationCommandData().Options[0].StringValue()
 
+		// TODO: Check for staffrole
+
 		// Get data from firestore
 		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {
@@ -76,6 +78,13 @@ var statusCmd = &handlers.SlashCommand{
 
 		// If there is no submission found with the given ID
 		if len(res) == 0 || res["channel_id"] == nil || res["message_id"] == nil {
+			submissionNotFound(s, i, id)
+			return
+		}
+
+		// Check if channel is in guild
+		chn, ex := s.Channel(res["channel_id"].(string))
+		if ex != nil || chn == nil || chn.GuildID != i.GuildID {
 			submissionNotFound(s, i, id)
 			return
 		}

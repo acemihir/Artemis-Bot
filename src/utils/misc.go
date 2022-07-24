@@ -71,6 +71,34 @@ func ErrorResponse(s *discordgo.Session, i *discordgo.Interaction) {
 	})
 }
 
+func ComingSoonResponse(s *discordgo.Session, i *discordgo.Interaction) {
+	s.InteractionRespond(i, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Description: "This feature will be available soon. Feel free to join our support server for more information.",
+					Color:       DefaultEmbedColour,
+				},
+			},
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.Button{
+							Emoji: discordgo.ComponentEmoji{
+								Name: "👥",
+							},
+							Label: "Info",
+							Style: discordgo.LinkButton,
+							URL:   "https://discord.gg/3SYg3M5",
+						},
+					},
+				},
+			},
+		},
+	})
+}
+
 func HasPermission(perms int64, req int64) bool {
 	return (perms & req) == req
 }

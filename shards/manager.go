@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 type Manager struct {

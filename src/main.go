@@ -6,10 +6,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/OnlyF0uR/Artemis-Bot/shards"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/shards"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
+
+	// Activate all the init functions
+	_ "github.com/OnlyF0uR/Artemis-Bot/src/commands"
+
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/joho/godotenv"
 )
 

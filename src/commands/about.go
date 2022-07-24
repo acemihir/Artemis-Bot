@@ -1,8 +1,8 @@
 package commands
 
 import (
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
 )
 
 func init() {
@@ -18,7 +18,7 @@ var aboutCmd = &handlers.SlashCommand{
 				Embeds: []*discordgo.MessageEmbed{
 					{
 						Title:       "About Artemis",
-						Description: "[Artemis-Bot](https://github.com/jerskisnow/Artemis-Bot), derived from the Greek goddess of the hunt, is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community. The bot could be characterized as a multi-function/purpose bot that fits all your needs when it comes to managing and interacting with your community.",
+						Description: "[Artemis-Bot](https://github.com/OnlyF0uR/Artemis-Bot), derived from the Greek goddess of the hunt, is an ambitious discord bot project. It mainly helps establish a perfect connection between management and the community. The bot could be characterized as a multi-function/purpose bot that fits all your needs when it comes to managing and interacting with your community.",
 						Color:       0x336db0,
 					},
 				},
@@ -47,7 +47,7 @@ var aboutCmd = &handlers.SlashCommand{
 								},
 								Label: "Contribute",
 								Style: discordgo.LinkButton,
-								URL:   "https://github.com/jerskisnow/Artemis-Bot/wiki/Donating",
+								URL:   "https://github.com/OnlyF0uR/Artemis-Bot/wiki/Donating",
 							},
 							discordgo.Button{
 								Emoji: discordgo.ComponentEmoji{

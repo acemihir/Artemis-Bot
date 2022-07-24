@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 type modalSuggestionData struct {

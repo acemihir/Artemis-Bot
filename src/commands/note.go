@@ -3,9 +3,9 @@ package commands
 import (
 	"fmt"
 
+	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/src/handlers"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 func init() {
@@ -16,15 +16,15 @@ func init() {
 
 var noteCommand = &handlers.SlashCommand{
 	Name: "note",
-	Exec: func(s *discordgo.Session, ic *discordgo.InteractionCreate) {
+	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		sbcmd := i.ApplicationCommandData().Options[0].Name
 		switch sbcmd {
 		case "create":
-			commands.noteCreateSubcmd(s, i)
+			noteCreateSubcmd(s, i)
 		case "delete":
-			commands.noteDeleteSubcmd(s, i)
+			noteDeleteSubcmd(s, i)
 		case "list":
-			commands.noteListSubcmd(s, i)
+			noteListSubcmd(s, i)
 		}
 	},
 }
@@ -60,11 +60,11 @@ func noteCreateSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func noteDeleteSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// ...
+	utils.ComingSoonResponse(s, i.Interaction)
 }
 
 func noteListSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// ...
+	utils.ComingSoonResponse(s, i.Interaction)
 }
 
 var noteCreateModal = &handlers.Modal{
@@ -74,5 +74,6 @@ var noteCreateModal = &handlers.Modal{
 		note := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 
 		fmt.Println(note)
+		utils.ComingSoonResponse(s, i.Interaction)
 	},
 }

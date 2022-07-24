@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 )
 
 func TestCreateId(t *testing.T) {

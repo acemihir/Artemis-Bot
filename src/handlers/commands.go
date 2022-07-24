@@ -3,9 +3,9 @@ package handlers
 import (
 	"strconv"
 
+	"github.com/OnlyF0uR/Artemis-Bot/shards"
+	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jerskisnow/Artemis-Bot/shards"
-	"github.com/jerskisnow/Artemis-Bot/src/utils"
 )
 
 // GuildID should be empty in production
@@ -17,7 +17,7 @@ func SubmitCommands(Mgr *shards.Manager, guildID string) {
 		},
 		{
 			Name:        "config",
-			Description: "Configure the bot to fit your needs. (MANAGE_MESSAGES)",
+			Description: "Configure the bot to fit your needs. (ADMINISTRATOR)",
 		},
 		{
 			Name:        "help",
@@ -94,6 +94,14 @@ func SubmitCommands(Mgr *shards.Manager, guildID string) {
 					Name:        "create",
 					Description: "Create a personal encrypted note.",
 					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Name:        "amount",
+							Description: "The amount of options for the poll.",
+							Required:    true,
+							Type:        discordgo.ApplicationCommandOptionString,
+						},
+					},
 				},
 				{
 					Name:        "end",
@@ -178,8 +186,8 @@ func RegisterCommand(cmd *SlashCommand) {
 func LinkCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.ApplicationCommandData()
 
+	// Check if command exists
 	if v, ok := cmds[data.Name]; ok {
-		// Check if permission is required
 		if v.Permission != 0 {
 			// Check if the user has that permission
 			if !utils.HasPermission(i.Member.Permissions, v.Permission) {

@@ -21,7 +21,7 @@ func RegisterMessageComponent(cmp *MessageComponent) {
 func LinkMessageComponent(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	data := i.MessageComponentData()
 
-	if v, ok := mdls[data.CustomID]; ok {
+	if v, ok := msgCmpnts[data.CustomID]; ok {
 		v.Exec(s, i)
 	}
 }
