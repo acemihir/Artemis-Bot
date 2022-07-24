@@ -3,7 +3,7 @@
 ## Supported Versions
 | Version | Supported          |
 | ------- | ------------------ |
-| v6.0.x  | :white_check_mark: |
+| v6.x.x  | :white_check_mark: |
 | < v6    | :x:                |
 
 ## Reporting a Vulnerability
