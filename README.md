@@ -1,18 +1,22 @@
-# Suggestions
+# Artemis-Bot
 [![Discord Bots](https://top.gg/api/widget/status/566616056165302282.svg)](https://top.gg/bot/566616056165302282)
-Suggestions is a highly configurable with lots of features; it mainly allows people to suggest their ideas or create reports. You can then afterwards review these suggestions/reports and consider what to do with them.
 
-# Features
-Suggestions other features besides allowing staffmembers to handle suggestions. A list of commands and some other features can be found below.
-### Commands
-![list of commands](https://www.skisnowgames.nl/images/36alrqa9.png)
-### Features (Premium)
-Auto Consider >> Automatically update the status of a suggestion to "Considering" after x amount of votes.
-Auto Approve >> Automatically update the status of a suggestion to "Approved" after x amount of votes.
-Auto Reject >> Automatically update the status of a suggestion to "Rejected" after x amount of votes.
-Delete Approved >> Automatically delete suggestion messages that were approved.
-Delete Rejected >> Automatically delete suggestion messages that were rejected.
+### Roadmap
+- [x] Fundamental bot structure
+- [x] Redis integration + tests
+- [x] Firebase + Firestore integration + tests
+- [x] Add suggest and report commands
+- [x] Implement first layer of cache flushing
+- [x] Implement status command for changing submission statusses
+- [x] Add config command
+- [ ] User verification command
+- [ ] Implement user notes
+- [ ] Full support for polls and tickets
+- [ ] Giveaways
+- [ ] Server statistics
+- [ ] Advanced user and server information
+- [ ] Meeting (reminder) system
+- [ ] Invite tracking + rewards
 
-# Contributing
-### Code
-Feel free to contribute, not much to say here yet. If you want to add a new feature, create a pull request. If you feel like you want to improve some code that is currently being used, go ahead create a pull request.
+### Setup
+This bot requires both credentials to firebase (firebase-credentials.json) and a .env file to operate. They must be in the same directory as the executable. The .env file can be created and copied over from .env.example. The firebase credentials can be downloaded from the firebase panel.
