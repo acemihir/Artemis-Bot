@@ -72,15 +72,15 @@ func FlushSuggestions() {
 
 var scheduler *gocron.Scheduler
 
-func RegisterTasks() {
+func RegisterTasks(isProd bool) {
 	scheduler = gocron.NewScheduler(time.UTC)
 
-	if os.Getenv("PRODUCTION") == "0" {
-		scheduler.Every(8).Minutes().Do(FlushSuggestions)
-		utils.Cout("[INFO] Suggestions will be flushed every 8 minutes.", utils.Cyan)
-	} else {
+	if isProd {
 		scheduler.Every(5).Hours().Do(FlushSuggestions)
 		utils.Cout("[INFO] Suggestions will be flushed every 5 hours.", utils.Cyan)
+	} else {
+		scheduler.Every(8).Minutes().Do(FlushSuggestions)
+		utils.Cout("[INFO] Suggestions will be flushed every 8 minutes.", utils.Cyan)
 	}
 
 	scheduler.StartAsync()

@@ -18,4 +18,4 @@
 - [ ] Invite tracking + rewards
 
 ### Setup
-This bot requires both credentials to firebase (firebase-credentials.json) and a .env file to operate. They must be in the same directory as the executable. The .env file can be created and copied over from .env.example. The firebase credentials can be downloaded from the firebase panel.
+This bot requires credentials to firebase (firebase-credentials.json) to operate. They must be in the same directory as the executable. The configuration file with be created automatically when the binary gets executed for the first time.

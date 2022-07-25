@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"os/signal"
-	"strconv"
 	"time"
 
 	"github.com/OnlyF0uR/Artemis-Bot/shards"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -22,27 +20,19 @@ var (
 )
 
 func main() {
+	// Load the config
+	handlers.LoadConfig()
+
 	utils.Cout("[INFO] Start sequence initiated.\n", utils.Blue)
-
-	envEx := godotenv.Load(".env")
-	if envEx != nil {
-		utils.Cout("[ERROR] Failed loading environment file: %v", utils.Red, envEx)
-		os.Exit(1)
-	}
-
 	// ==========================================
-	ce, cacheEx := strconv.Atoi(os.Getenv("CACHE_EXPIRY"))
-	if cacheEx != nil {
-		utils.Cout("[ERROR] Could not parse cache expiry time: %v", utils.Red, cacheEx)
-		os.Exit(1)
-	}
 
-	utils.SetupCache(time.Duration(ce) * time.Minute)
+	utils.SetupCache(time.Duration(handlers.Cfg.Data.CacheExpiry) * time.Minute)
 	utils.SetupFirebase("firebase-credentials.json")
-	handlers.RegisterTasks()
+
+	handlers.RegisterTasks(handlers.Cfg.AppMode == "production")
 
 	// ==========================================
-	Mgr, botEx := shards.New("Bot " + os.Getenv("BOT_TOKEN"))
+	Mgr, botEx := shards.New("Bot " + handlers.Cfg.Client.AuthToken)
 	if botEx != nil {
 		utils.Cout("[ERROR] Session creation failed: %v", utils.Red, botEx)
 		os.Exit(1)
@@ -80,18 +70,25 @@ func main() {
 	}
 
 	// ==========================================
-	if os.Getenv("DELETE_COMMANDS") == "1" {
-		if os.Getenv("PRODUCTION") == "0" {
-			handlers.RetractCommands(Mgr, os.Getenv("GUILD_ID"))
-		} else {
+	if handlers.Cfg.AppMode == "production" {
+		if handlers.Cfg.Commands.RetractAll {
+			// Delete globally
 			handlers.RetractCommands(Mgr, "")
 		}
-	}
-	if os.Getenv("REGISTER_COMMANDS") == "1" {
-		if os.Getenv("PRODUCTION") == "0" {
-			handlers.SubmitCommands(Mgr, os.Getenv("GUILD_ID"))
-		} else {
+
+		if handlers.Cfg.Commands.SubmitAll {
+			// Register globally
 			handlers.SubmitCommands(Mgr, "")
+		}
+	} else {
+		if handlers.Cfg.Commands.RetractAll {
+			// Delete for development guild
+			handlers.RetractCommands(Mgr, handlers.Cfg.Client.GuildID)
+		}
+
+		if handlers.Cfg.Commands.SubmitAll {
+			// Register for development guild
+			handlers.SubmitCommands(Mgr, handlers.Cfg.Client.GuildID)
 		}
 	}
 
@@ -104,7 +101,7 @@ func main() {
 
 	utils.Cout("[INFO] Shutdown sequence initiated.", utils.Blue)
 	Mgr.Shutdown()
-	if os.Getenv("PRODUCTION") == "1" {
+	if handlers.Cfg.AppMode == "production" {
 		handlers.ShutdownTasks()
 	}
 	utils.Cout("\n[SUCCESS] Shutdown sequence completed.", utils.Green)

@@ -3,8 +3,6 @@ package commands
 import (
 	"bytes"
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
@@ -25,10 +23,10 @@ var helpCmd = &handlers.SlashCommand{
 		var cmds []*discordgo.ApplicationCommand
 		var ex error
 
-		if os.Getenv("PRODUCTION") == "0" {
-			cmds, ex = s.ApplicationCommands(s.State.User.ID, os.Getenv("GUILD_ID"))
-		} else {
+		if handlers.Cfg.AppMode == "production" {
 			cmds, ex = s.ApplicationCommands(s.State.User.ID, "")
+		} else {
+			cmds, ex = s.ApplicationCommands(s.State.User.ID, handlers.Cfg.Client.GuildID)
 		}
 
 		if ex != nil {
@@ -39,10 +37,7 @@ var helpCmd = &handlers.SlashCommand{
 		for _, v := range cmds {
 			buffer.WriteString(fmt.Sprintf("/%s", v.Name))
 
-			spacing, ex := strconv.Atoi(os.Getenv("HELP_SPACING_BASE"))
-			if ex != nil {
-				utils.Cout("[ERROR][CMD-HELP] Could not parse HELP_SPACING_BASE: %v", utils.Red, ex)
-			}
+			spacing := handlers.Cfg.Misc.HelpSpacingBase
 			spacing -= len(v.Name)
 
 			for i := 1; i <= spacing; i++ {

@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
@@ -39,12 +37,21 @@ func noteCreateSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.TextInput{
+							CustomID:    "title",
+							Label:       "Title",
+							Style:       discordgo.TextInputShort,
+							Placeholder: "Note #1",
+							Required:    true,
+							MaxLength:   30,
+							MinLength:   1,
+						},
+						discordgo.TextInput{
 							CustomID:    "note",
 							Label:       "Your note",
 							Style:       discordgo.TextInputParagraph,
 							Placeholder: "Buy some strawberries at the store.",
 							Required:    true,
-							MaxLength:   300,
+							MaxLength:   600,
 							MinLength:   3,
 						},
 					},
@@ -71,9 +78,20 @@ var noteCreateModal = &handlers.Modal{
 	ID: "note_create",
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		data := i.ModalSubmitData()
-		note := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 
-		fmt.Println(note)
+		title := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+		contents := data.Components[0].(*discordgo.ActionsRow).Components[1].(*discordgo.TextInput).Value
+
+		ex := utils.Firebase.SetFirestore("notes", title, map[string]interface{}{
+			"author":   i.User.ID,
+			"contents": contents,
+		}, false)
+		if ex != nil {
+			utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
+			utils.ErrorResponse(s, i.Interaction)
+			return
+		}
+
 		utils.ComingSoonResponse(s, i.Interaction)
 	},
 }

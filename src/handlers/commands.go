@@ -78,6 +78,14 @@ func SubmitCommands(Mgr *shards.Manager, guildID string) {
 					Name:        "delete",
 					Description: "Delete a personal note.",
 					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Name:        "title",
+							Description: "The title of the note.",
+							Required:    true,
+							Type:        discordgo.ApplicationCommandOptionString,
+						},
+					},
 				},
 				{
 					Name:        "list",
