@@ -47,8 +47,6 @@ var statusCmd = &handlers.SlashCommand{
 	Exec: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		id := i.ApplicationCommandData().Options[0].StringValue()
 
-		// TODO: Check for staffrole
-
 		// Get data from firestore
 		res, ex := utils.Firebase.GetFirestore("submissions", id)
 		if ex != nil {

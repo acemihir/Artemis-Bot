@@ -82,9 +82,14 @@ var noteCreateModal = &handlers.Modal{
 		title := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 		contents := data.Components[0].(*discordgo.ActionsRow).Components[1].(*discordgo.TextInput).Value
 
+		// Let's atleast make sure Google cannot read the notes :/
+		key := []byte(handlers.Cfg.Data.EncryptionKey)
+		ct := utils.EncryptAES(key, contents)
+
+		// Save the note in firestore
 		ex := utils.Firebase.SetFirestore("notes", title, map[string]interface{}{
 			"author":   i.User.ID,
-			"contents": contents,
+			"contents": ct,
 		}, false)
 		if ex != nil {
 			utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
