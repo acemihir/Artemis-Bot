@@ -21,12 +21,15 @@ type dropdownSubmissionData struct {
 var status_dropdown_data = make(map[string]dropdownSubmissionData)
 
 func submissionNotFound(s *discordgo.Session, i *discordgo.InteractionCreate, id string) {
-	s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
-		Embeds: []*discordgo.MessageEmbed{
-			{
-				Title:       "Artemis - Status",
-				Description: fmt.Sprintf("Submission ``%s`` could not be found", id),
-				Color:       utils.WarnEmbedColour,
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Status",
+					Description: fmt.Sprintf("Submission ``%s`` could not be found", id),
+					Color:       utils.WarnEmbedColour,
+				},
 			},
 		},
 	})

@@ -8,9 +8,9 @@ require (
 	github.com/bwmarrin/discordgo v0.24.0
 	github.com/go-co-op/gocron v1.13.0
 	github.com/go-redis/redis/v8 v8.11.4
-	github.com/joho/godotenv v1.4.0
 	golang.org/x/text v0.3.7
 	google.golang.org/api v0.71.0
+	gopkg.in/ini.v1 v1.66.6
 )
 
 require (
@@ -37,5 +37,4 @@ require (
 	google.golang.org/genproto v0.0.0-20220304144024-325a89244dc8 // indirect
 	google.golang.org/grpc v1.44.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
-	gopkg.in/ini.v1 v1.66.6 // indirect
 )
