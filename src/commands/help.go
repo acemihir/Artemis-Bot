@@ -37,7 +37,7 @@ var helpCmd = &handlers.SlashCommand{
 		for _, v := range cmds {
 			buffer.WriteString(fmt.Sprintf("/%s", v.Name))
 
-			spacing := handlers.Cfg.Misc.HelpSpacingBase
+			spacing := handlers.Cfg.Appearance.HelpSpacingBase
 			spacing -= len(v.Name)
 
 			for i := 1; i <= spacing; i++ {

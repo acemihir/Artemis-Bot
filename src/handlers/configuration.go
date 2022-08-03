@@ -29,16 +29,17 @@ type data struct {
 	HMACKey       string `ini:"hmac_key"`
 }
 
-type misc struct {
-	HelpSpacingBase int `ini:"help_spacing_base"`
+type appearance struct {
+	HelpSpacingBase int    `ini:"help_spacing_base"`
+	BotName         string `ini:"bot_name"`
 }
 
 type IniConfig struct {
-	AppMode  string   `ini:"app_mode"`
-	Client   client   `ini:"client"`
-	Commands commands `ini:"commands"`
-	Data     data     `ini:"data"`
-	Misc     misc     `ini:"misc"`
+	AppMode    string     `ini:"app_mode"`
+	Client     client     `ini:"client"`
+	Commands   commands   `ini:"commands"`
+	Data       data       `ini:"data"`
+	Appearance appearance `ini:"appearance"`
 }
 
 const defaultConfig string = `# Either development or production
@@ -70,9 +71,10 @@ encryption_key = <ENC_KEY>
 # HMAC key used while generating sha256 hashes
 hmac_key = <HMAC_KEY>
 
-[misc]
+[appearance]
 # Amount of base spacings in the help command
 help_spacing_base = 9
+bot_name = "Artemis"
 `
 
 var Cfg *IniConfig
@@ -126,8 +128,9 @@ func LoadConfig() {
 		Data: data{
 			CacheExpiry: 480,
 		},
-		Misc: misc{
+		Appearance: appearance{
 			HelpSpacingBase: 9,
+			BotName:         "Artemis",
 		},
 	}
 	ex = cfg.MapTo(Cfg)
