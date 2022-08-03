@@ -41,9 +41,9 @@ func main() {
 	Mgr.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		s.UpdateStatusComplex(discordgo.UpdateStatusData{
 			Activities: []*discordgo.Activity{{
-				Name: "the wind guide my arrows",
-				Type: discordgo.ActivityTypeWatching,
-				URL:  "",
+				Name: handlers.Cfg.Client.ActivityText,
+				Type: discordgo.ActivityType(handlers.Cfg.Client.ActivityType),
+				URL:  handlers.Cfg.Client.ActivityUrl,
 			}},
 		})
 	})

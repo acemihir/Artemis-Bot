@@ -11,8 +11,11 @@ import (
 )
 
 type client struct {
-	AuthToken string `ini:"auth_token"`
-	GuildID   string `ini:"guild_id"`
+	AuthToken    string `ini:"auth_token"`
+	GuildID      string `ini:"guild_id"`
+	ActivityType int    `ini:"activity_type"`
+	ActivityText string `ini:"activity_text"`
+	ActivityUrl  string `ini:"activity_url"`
 }
 
 type commands struct {
@@ -45,6 +48,12 @@ app_mode = production
 auth_token = ""
 # The guild where the commands get registered (Only active when running in development mode)
 guild_id = ""
+# https://discord.com/developers/docs/game-sdk/activities#data-models-activitytype-enum
+activity_type = 3
+# The text displayed for the activity
+activity_text = "the wind guide my arrows"
+# Optional activity Url
+activity_url = ""
 
 [commands]
 # Will throw error when there are no commands registered
@@ -105,6 +114,11 @@ func LoadConfig() {
 
 	Cfg = &IniConfig{
 		AppMode: "production",
+		Client: client{
+			ActivityType: 3,
+			ActivityText: "the wind guide my arrows",
+			ActivityUrl:  "",
+		},
 		Data: data{
 			CacheExpiry: 480,
 		},
