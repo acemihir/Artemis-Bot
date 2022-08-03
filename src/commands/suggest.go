@@ -201,6 +201,32 @@ var suggestionCreateModal = &handlers.Modal{
 	},
 }
 
+func voteError(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Description: "Oops! A wild error seems to have occured.\n\nPlease try again later, if this error is persistent please report it in our Support discord.",
+				Color:       utils.ErrorEmbedColour,
+			},
+		},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Emoji: discordgo.ComponentEmoji{
+							Name: "👥",
+						},
+						Label: "Support",
+						Style: discordgo.LinkButton,
+						URL:   "https://discord.gg/3SYg3M5",
+					},
+				},
+			},
+		},
+		Flags: 1 << 6,
+	})
+}
+
 func cannotVoteTwice(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 		Embeds: []*discordgo.MessageEmbed{
@@ -249,7 +275,7 @@ var upvoteButton = &handlers.MessageComponent{
 		in_cache, ex := utils.Cache.ExistsCache(id)
 		if ex != nil {
 			utils.Cout("[ERROR] Exists in Redis failed: %v", utils.Red, ex)
-			utils.ErrorFollowUp(s, i.Interaction)
+			voteError(s, i)
 			return
 		}
 
@@ -260,7 +286,7 @@ var upvoteButton = &handlers.MessageComponent{
 			// Fetch the data from Firestore
 			res, ex := utils.Firebase.GetFirestore("submissions", id)
 			if ex != nil {
-				utils.ErrorFollowUp(s, i.Interaction)
+				voteError(s, i)
 				utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
 				return
 			}
@@ -279,7 +305,7 @@ var upvoteButton = &handlers.MessageComponent{
 			// Fetch the data from redis
 			res, ex := utils.Cache.GetCache(id)
 			if ex != nil {
-				utils.ErrorFollowUp(s, i.Interaction)
+				voteError(s, i)
 				utils.Cout("[ERROR] Get from Redis failed: %v", utils.Red, ex)
 				return
 			}
@@ -331,7 +357,7 @@ var downvoteButton = &handlers.MessageComponent{
 
 		in_cache, ex := utils.Cache.ExistsCache(id)
 		if ex != nil {
-			utils.ErrorFollowUp(s, i.Interaction)
+			voteError(s, i)
 			utils.Cout("[ERROR] Exists in Redis failed: %v", utils.Red, ex)
 			return
 		}
@@ -343,7 +369,7 @@ var downvoteButton = &handlers.MessageComponent{
 			// Fetch the data from Firestore
 			res, ex := utils.Firebase.GetFirestore("submissions", id)
 			if ex != nil {
-				utils.ErrorFollowUp(s, i.Interaction)
+				voteError(s, i)
 				utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
 				return
 			}
@@ -362,7 +388,7 @@ var downvoteButton = &handlers.MessageComponent{
 			// Fetch the data from redis
 			res, ex := utils.Cache.GetCache(id)
 			if ex != nil {
-				utils.ErrorFollowUp(s, i.Interaction)
+				voteError(s, i)
 				utils.Cout("[ERROR] Get from Redis failed: %v", utils.Red, ex)
 				return
 			}
