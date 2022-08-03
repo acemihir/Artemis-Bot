@@ -12,10 +12,6 @@ import (
 func SubmitCommands(Mgr *shards.Manager, guildID string) {
 	cmds := []*discordgo.ApplicationCommand{
 		{
-			Name:        "about",
-			Description: "Obtain information about the bot.",
-		},
-		{
 			Name:        "config",
 			Description: "Configure the bot to fit your needs. (ADMINISTRATOR)",
 		},
@@ -29,10 +25,6 @@ func SubmitCommands(Mgr *shards.Manager, guildID string) {
 					Required:    false,
 					Type:        discordgo.ApplicationCommandOptionString,
 					Choices: []*discordgo.ApplicationCommandOptionChoice{
-						{
-							Name:  "About",
-							Value: "about",
-						},
 						{
 							Name:  "Config",
 							Value: "config",
