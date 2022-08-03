@@ -6,8 +6,8 @@ import (
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 )
 
-func TestCreateId(t *testing.T) {
-	res := utils.CreateId("abc!", 10)
+func TestRandomString(t *testing.T) {
+	res := utils.RandomString("abc!", 10)
 
 	t.Logf("Custom ID: %s", res)
 

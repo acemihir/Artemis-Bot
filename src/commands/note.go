@@ -1,7 +1,11 @@
 package commands
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
+	"time"
 
 	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
@@ -69,6 +73,43 @@ func noteCreateSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func noteDeleteSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	note_id := i.ApplicationCommandData().Options[0].StringValue()
+
+	res, ex := utils.Firebase.GetFirestore("notes", note_id)
+	if ex != nil {
+		utils.Cout("[ERROR] Get from Firestore failed: %v", utils.Red, ex)
+		utils.ErrorResponse(s, i.Interaction)
+		return
+	}
+
+	if len(res) == 0 {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Artemis - Notes",
+						Description: "You do not have any notes with that title.",
+						Color:       utils.WarnEmbedColour,
+					},
+				},
+			},
+		})
+		return
+	}
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Description: "Note deleted.",
+					Color:       utils.DefaultEmbedColour,
+				},
+			},
+		},
+	})
+
 	utils.ComingSoonResponse(s, i.Interaction)
 }
 
@@ -98,10 +139,21 @@ var noteCreateModal = &handlers.Modal{
 		}
 		ct := utils.EncryptAES(key, contents)
 
+		// Create hash of author
+		h := hmac.New(sha256.New, []byte(handlers.Cfg.Data.HMACKey))
+		h.Write([]byte(i.User.ID))
+
+		author_hash := hex.EncodeToString(h.Sum(nil))
+
+		// Generate note id
+		note_id := utils.RandomString("n_", 6)
+
 		// Save the note in firestore
-		ex = utils.Firebase.SetFirestore("notes", title, map[string]interface{}{
-			"author":   i.User.ID,
-			"contents": ct,
+		ex = utils.Firebase.SetFirestore("notes", note_id, map[string]interface{}{
+			"author_hash": author_hash,
+			"title":       title,
+			"contents":    ct,
+			"timestamp":   time.Now().Unix(),
 		}, false)
 		if ex != nil {
 			utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)

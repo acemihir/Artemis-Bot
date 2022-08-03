@@ -1,13 +1,20 @@
 # Data
-Information about all the data that is being collected is displayed below. Guild related data will be removed if the bot gets kicked out of the guild. If you would like to request the removal of your personal data then please contact one of our staffmembers over in our [Support](https://discord.gg/3SYg3M5) server.
+Information about all the data that is being collected is displayed below. Guild related data will be removed if the bot gets kicked out of the guild.
 
-### Submissions
-id (string):
- - guild_id (string)
- - channel_id (string)
- - message_id (string)
- - upvotes (number)
- - downvotes (number)
+### Guilds
+guild_id (string):
+ - staff_role (string)
+ - sug_channel (string)
+ - rep_channel (string)
+ - upvotes (user id array)
+ - downvotes (user id array)
+
+### Notes
+note_id (string):
+ - author_hash (string)
+ - title (string)
+ - contents (string)
+ - timestamp (int64)
 
 ### Interactive
 id (string):
@@ -16,21 +23,6 @@ id (string):
  - channel_id (string)
  - message_id (string)
  - participants (string[])
-
-### Guilds
-id (string):
- - staff_role (string)
- - sug_channel (string)
- - rep_channel (string)
- - upvote_emoji (string)
- - downvote_emoji (string)
- - blacklist (string[])
-
-### Notes
-id (number):
- - content (encrypted string)
- - author (hashed string)
- - creation_date (timestamp)
 
 ### Caching
 Cached items will be deleted after 8 hours.

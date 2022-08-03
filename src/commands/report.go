@@ -88,7 +88,7 @@ var reportCreateModal = &handlers.Modal{
 		// Remove the data from the map
 		delete(rep_modal_data, i.Member.User.ID)
 
-		id := utils.CreateId("r_", 6)
+		id := utils.RandomString("r_", 6)
 
 		msg, ex := s.ChannelMessageSendComplex(rep_channel, &discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{

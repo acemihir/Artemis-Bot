@@ -113,7 +113,7 @@ var suggestionCreateModal = &handlers.Modal{
 		// Remove the data from the map
 		delete(sug_modal_data, i.Member.User.ID)
 
-		id := utils.CreateId("s_", 6)
+		id := utils.RandomString("s_", 6)
 
 		msg, ex := s.ChannelMessageSendComplex(data.sug_channel, &discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{

@@ -26,6 +26,7 @@ type commands struct {
 type data struct {
 	CacheExpiry   int    `ini:"cache_expiry"`
 	EncryptionKey string `ini:"encryption_key"`
+	HMACKey       string `ini:"hmac_key"`
 }
 
 type misc struct {
@@ -66,6 +67,8 @@ submit_all = false
 cache_expiry = 480
 # The 32-byte base64 key used to encrypt/decrypt semi-private data
 encryption_key = <ENC_KEY>
+# HMAC key used while generating sha256 hashes
+hmac_key = <HMAC_KEY>
 
 [misc]
 # Amount of base spacings in the help command
@@ -95,6 +98,7 @@ func LoadConfig() {
 
 		key := base64.URLEncoding.EncodeToString(keyBuffer)
 		contents := strings.Replace(defaultConfig, "<ENC_KEY>", key, 1)
+		contents = strings.Replace(contents, "<HMAC_KEY>", utils.RandomString("", 16), 1)
 
 		_, ex = f.WriteString(contents)
 		if ex != nil {
