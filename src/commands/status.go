@@ -26,7 +26,7 @@ func submissionNotFound(s *discordgo.Session, i *discordgo.InteractionCreate, id
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Status",
+					Title:       handlers.Cfg.Appearance.BotName + " - Status",
 					Description: fmt.Sprintf("Submission ``%s`` could not be found", id),
 					Color:       utils.WarnEmbedColour,
 				},
@@ -237,7 +237,7 @@ var statusDropdown = &handlers.MessageComponent{
 			s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title:       "Artemis - Status",
+						Title:       handlers.Cfg.Appearance.BotName + " - Status",
 						Description: "The dropdown menu was expired, please use the status command again.",
 						Color:       utils.WarnEmbedColour,
 					},
@@ -321,7 +321,7 @@ var statusDropdown = &handlers.MessageComponent{
 		s.FollowupMessageEdit(s.State.User.ID, i.Interaction, i.Message.ID, &discordgo.WebhookEdit{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Status",
+					Title:       handlers.Cfg.Appearance.BotName + " - Status",
 					Description: fmt.Sprintf("You successfully changed the status of ``%s`` to ``%s``.", dropdown_data.SubmissionID, new_status),
 					Color:       utils.DefaultEmbedColour,
 				},

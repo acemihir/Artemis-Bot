@@ -33,7 +33,7 @@ var reportCmd = &handlers.SlashCommand{
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
 						{
-							Title:       "Artemis - Report",
+							Title:       handlers.Cfg.Appearance.BotName + " - Report",
 							Description: "Please configure a report channel first. This can be done via the ``/config`` command.",
 							Color:       utils.WarnEmbedColour,
 						},
@@ -108,7 +108,7 @@ var reportCreateModal = &handlers.Modal{
 				s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 					Embeds: []*discordgo.MessageEmbed{
 						{
-							Title:       "Artemis - Report",
+							Title:       handlers.Cfg.Appearance.BotName + " - Report",
 							Description: "Make sure the configured reports channel still exists and if I have permissions to send message in it. This can be done via the ``/config`` command.",
 							Color:       utils.WarnEmbedColour,
 						},
@@ -135,7 +135,7 @@ var reportCreateModal = &handlers.Modal{
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Report",
+					Title:       handlers.Cfg.Appearance.BotName + " - Report",
 					Description: "You're report has been submitted!",
 					Color:       utils.DefaultEmbedColour,
 				},

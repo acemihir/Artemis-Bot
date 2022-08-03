@@ -92,7 +92,7 @@ func main() {
 		}
 	}
 
-	utils.Cout("\n[SUCCESS] Artemis-Bot is now fully operational.", utils.Green)
+	utils.Cout("\n[SUCCESS] "+handlers.Cfg.Appearance.BotName+"-Bot is now fully operational.", utils.Green)
 
 	// ==========================================
 	stop := make(chan os.Signal, 1)

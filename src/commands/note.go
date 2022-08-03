@@ -88,7 +88,7 @@ func noteDeleteSubcmd(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title:       "Artemis - Notes",
+						Title:       handlers.Cfg.Appearance.BotName + " - Notes",
 						Description: "You do not have any notes with that title.",
 						Color:       utils.WarnEmbedColour,
 					},
@@ -165,7 +165,7 @@ var noteCreateModal = &handlers.Modal{
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Suggest",
+					Title:       handlers.Cfg.Appearance.BotName + " - Notes",
 					Description: "Note has been submitted.",
 					Color:       utils.DefaultEmbedColour,
 				},

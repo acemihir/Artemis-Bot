@@ -36,7 +36,7 @@ var configCommand = &handlers.SlashCommand{
 				Embeds: []*discordgo.MessageEmbed{
 					{
 						Title:       "Config - Menu",
-						Description: "This is the config menu for Artemis, from here you can simply select a category and follow further instructions.",
+						Description: "This is the config menu for " + handlers.Cfg.Appearance.BotName + ", from here you can simply select a category and follow further instructions.",
 						Color:       0x336db0,
 					},
 				},
@@ -293,7 +293,7 @@ var configAuthStaffroleModal = &handlers.Modal{
 			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title:       "Artemis - Config",
+						Title:       handlers.Cfg.Appearance.BotName + " - Config",
 						Description: "The role you tried to configure was not found.",
 						Color:       utils.WarnEmbedColour,
 					},
@@ -316,7 +316,7 @@ var configAuthStaffroleModal = &handlers.Modal{
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Config",
+					Title:       handlers.Cfg.Appearance.BotName + " - Config",
 					Description: "The stafffrole is now set to ``" + role.Name + " (" + role.ID + ")``.",
 					Color:       utils.DefaultEmbedColour,
 				},
@@ -370,7 +370,7 @@ var configChnsSugModal = &handlers.Modal{
 			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title:       "Artemis - Config",
+						Title:       handlers.Cfg.Appearance.BotName + " - Config",
 						Description: "The channel you tried to configure was not found.",
 						Color:       utils.WarnEmbedColour,
 					},
@@ -393,7 +393,7 @@ var configChnsSugModal = &handlers.Modal{
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Config",
+					Title:       handlers.Cfg.Appearance.BotName + " - Config",
 					Description: "The suggestions channel is now set to ``" + chn.Name + " (" + chn.ID + ")``.",
 					Color:       utils.DefaultEmbedColour,
 				},
@@ -447,7 +447,7 @@ var configChnsRepModal = &handlers.Modal{
 			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title:       "Artemis - Config",
+						Title:       handlers.Cfg.Appearance.BotName + " - Config",
 						Description: "The channel you tried to configure was not found.",
 						Color:       utils.WarnEmbedColour,
 					},
@@ -470,7 +470,7 @@ var configChnsRepModal = &handlers.Modal{
 		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Artemis - Config",
+					Title:       handlers.Cfg.Appearance.BotName + " - Config",
 					Description: "The reports channel is now set to ``" + chn.Name + " (" + chn.ID + ")``.",
 					Color:       utils.DefaultEmbedColour,
 				},
