@@ -71,6 +71,31 @@ func ErrorResponse(s *discordgo.Session, i *discordgo.Interaction) {
 	})
 }
 
+func ErrorFollowUp(s *discordgo.Session, i *discordgo.Interaction) {
+	s.FollowupMessageCreate(s.State.User.ID, i, false, &discordgo.WebhookParams{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Description: "Oops! A wild error seems to have occured.\n\nPlease try again later, if this error is persistent please report it in our Support discord.",
+				Color:       ErrorEmbedColour,
+			},
+		},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Emoji: discordgo.ComponentEmoji{
+							Name: "👥",
+						},
+						Label: "Support",
+						Style: discordgo.LinkButton,
+						URL:   "https://discord.gg/3SYg3M5",
+					},
+				},
+			},
+		},
+	})
+}
+
 func ComingSoonResponse(s *discordgo.Session, i *discordgo.Interaction) {
 	s.InteractionRespond(i, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,

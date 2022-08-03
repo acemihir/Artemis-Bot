@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"encoding/base64"
+
 	"github.com/OnlyF0uR/Artemis-Bot/src/handlers"
 	"github.com/OnlyF0uR/Artemis-Bot/src/utils"
 	"github.com/bwmarrin/discordgo"
@@ -82,21 +84,40 @@ var noteCreateModal = &handlers.Modal{
 		title := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 		contents := data.Components[0].(*discordgo.ActionsRow).Components[1].(*discordgo.TextInput).Value
 
+		// Defer response
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+		})
+
 		// Let's atleast make sure Google cannot read the notes :/
-		key := []byte(handlers.Cfg.Data.EncryptionKey)
+		key, ex := base64.URLEncoding.DecodeString(handlers.Cfg.Data.EncryptionKey)
+		if ex != nil {
+			utils.Cout("[ERROR] Could decode base64 encryption key: %v", utils.Red, ex)
+			utils.ErrorFollowUp(s, i.Interaction)
+			return
+		}
 		ct := utils.EncryptAES(key, contents)
 
 		// Save the note in firestore
-		ex := utils.Firebase.SetFirestore("notes", title, map[string]interface{}{
+		ex = utils.Firebase.SetFirestore("notes", title, map[string]interface{}{
 			"author":   i.User.ID,
 			"contents": ct,
 		}, false)
 		if ex != nil {
 			utils.Cout("[ERROR] Could not save in Firestore: %v", utils.Red, ex)
-			utils.ErrorResponse(s, i.Interaction)
+			utils.ErrorFollowUp(s, i.Interaction)
 			return
 		}
 
-		utils.ComingSoonResponse(s, i.Interaction)
+		// Notify user about submitted note
+		s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Artemis - Suggest",
+					Description: "Note has been submitted.",
+					Color:       utils.DefaultEmbedColour,
+				},
+			},
+		})
 	},
 }
